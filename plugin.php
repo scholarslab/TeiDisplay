@@ -43,22 +43,110 @@ function tei_display_uninstall(){
 	delete_option('tei_display_type');
 }
 
-function tei_display_after_save_item($item)
+function tei_display_after_save_item($item,$stylesheet=TEI_DISPLAY_P4_STYLESHEET)
 {
-	if ($item->Files &&  item('Item Type Name') == 'TEI XML'){
-		//get TEI file
-		$db = get_db();
-		$fileId = $db->getTable('File')->findBySql('item_id = ?', array($item['id']));
-		$teiFile = WEB_ROOT . '/files/display/' . $fileId[0]->id . '/fullsize';
-		$doc = simplexml_load_file($teiFile);
+	$db = get_db();
+	$itemTypeId = $db->getTable('ItemType')->findByName('TEI XML')->id;
+	if ($item->Files && $item['item_type_id'] == $itemTypeId){
+	
+		//declare DomDocument and load the TEI file and declare xpath
+		$xml_doc = new DomDocument;
+		$fileId = $db->getTable('File')->findBySql('item_id = ?', array($item->id));	
+		$teiFile = FILES_DIR . DIRECTORY_SEPARATOR . $fileId[0]->archive_filename;	
+		$xml_doc->load($teiFile);
+		$xpath = new DOMXPath($xml_doc);
 		
-		//get title
-		$title = $doc->xpath('//teiHeader/fileDesc/titleStmt/title');
 		
+		//get element_ids
+		$dcSetId = $db->getTable('ElementSet')->findByName('Dublin Core')->id;
+		$dcElements = $db->getTable('Element')->findBySql('element_set_id = ?', array($dcSetId));
+		$dc = array();
+		
+		//write DC element names and ids to new array for processing
+		foreach ($dcElements as $dcElement){
+			$dc[$dcElement['name']] = $dcElement['id'];
+		}
+		
+		//map TEI to DC
+		//based on CDL encoding guidelines: http://www.cdlib.org/groups/stwg/META_BPG.html#d52e344
+		foreach ($dc as $name=>$id){
+			if ($name == 'Title'){
+				$queries = array('//teiHeader/fileDesc/titleStmt/title');
+			} elseif ($name == 'Creator'){
+				$queries = array('//teiHeader/fileDesc/titleStmt/author');
+			} elseif ($name == 'Subject'){
+				$queries = array(	'//teiHeader/profileDesc/textClass/keywords/list/item');
+			} elseif ($name == 'Description'){
+				$queries = array(	'//teiHeader/encodingDesc/refsDecl',
+									'//teiHeader/encodingDesc/projectDesc',
+									'//teiHeader/encodingDesc/editorialDesc');
+			} elseif ($name == 'Publisher'){
+				$queries = array(	'//teiHeader/fileDesc/publicationStmt/publisher/publisher',
+									'//teiHeader/fileDesc/publicationStmt/publisher/pubPlace');
+			} elseif ($name == 'Contributor'){
+				$queries = array(	'//teiHeader/fileDesc/titleStmt/editor',
+									'//teiHeader/fileDesc/titleStmt/funder',
+									'//teiHeader/fileDesc/titleStmt/sponsor',
+									'//teiHeader/fileDesc/titleStmt/principle');
+			} elseif ($name == 'Date'){
+				$queries = array(	'//teiHeader/fileDesc/publicationStmt/date');
+			} elseif ($name == 'Type'){
+				$queries = array(	'//teiHeader/@type');
+			} elseif ($name == 'Format'){
+				$queries == array();
+			} elseif ($name == 'Identifier'){
+				$queries = array(	'//teiHeader/fileDesc/publicationStmt/idno[@type="ARK"]');
+			} elseif ($name == 'Source'){
+				$queries = array(	'//teiHeader/sourceDesc/bibful/publicationStmt/publisher',
+									'//teiHeader/sourceDesc/bibful/publicationStmt/pubPlace',
+									'//teiHeader/sourceDesc/bibful/publicationStmt/date',
+									'//teiHeader/sourceDesc/bibl');
+			} elseif ($name == 'Language'){
+				$queries = array(	'//teiHeader/profileDesc/langUsage/language');
+			} elseif ($name == 'Relation'){
+				$queries = array(	'//teiHeader/fileDesc/seriesStmt/title');
+			} elseif ($name == 'Coverage'){
+				$queries == array();
+			} elseif ($name == 'Rights'){
+				$queries == array('//teiheader/fileDesc/publicationStmt/availability');
+			}
+			
+			foreach ($queries as $query){
+				$nodes = $xpath->query($query);
+				foreach ($nodes as $node){
+					//see if that text is already set
+					$elementTexts = $db->getTable('ElementText')->findBySql('record_id = ? AND element_id = ?', array($item->id, $id));
+					$texts = array();
+					foreach ($elementTexts as $elementText){
+						$texts[] = $elementText['text'];
+					}
+					$myFile = "/tmp/test.txt";
+					$fh = fopen($myFile, 'a') or die("can't open file");
+					fwrite($fh, $texts[0] . ' ' . trim($node->nodeValue) . '|');
+					fclose($fh);
+					
+					if (!in_array(trim($node->nodeValue), $texts)){
+						$db->insert('element_texts', array(	'record_id'=>$item['id'],
+												'record_type_id'=>'2',
+												'element_id'=>$id,
+												'html'=>0,
+												'text'=>trim($node->nodeValue)));
+					}
+				}
+			}
+		}
 	}
 }
 
-function solr_search_admin_navigation($tabs)
+/*function tei_node_value($name,$node){
+	if ($name == 'Format'){
+		return 'text/xml';
+	} else {
+		return $node->nodeValue;
+	}
+}*/
+
+function tei_display_admin_navigation($tabs)
 {
     if (get_acl()->checkUserPermission('TeiDisplay', 'index')) {
         $tabs['Upload TEI File'] = uri('tei-display/upload/');        
@@ -140,8 +228,7 @@ function render_tei_file($item_id, $stylesheet=TEI_DISPLAY_P4_STYLESHEET){
 	
 	$db = get_db();
 	$fileId = $db->getTable('File')->findBySql('item_id = ?', array($item_id));
-	
-	$teiFile = WEB_ROOT . '/files/display/' . $fileId[0]->id . '/fullsize';
+	$teiFile = FILES_DIR . DIRECTORY_SEPARATOR . $fileId[0]->archive_filename;
 	
 	$xml_doc->load($teiFile);
 	
