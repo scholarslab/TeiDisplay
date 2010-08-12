@@ -1,0 +1,16 @@
+.tei_toc{
+	width:30%;
+	float:left;
+	margin-right:10px;
+}
+.tei_toc>ul{
+	margin:0;
+	padding:0;
+}
+.tei_content{
+	width:65%;
+	margin-left:32%;
+}
+.toggle_toc{
+	float:right;
+}

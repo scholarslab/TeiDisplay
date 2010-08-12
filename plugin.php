@@ -10,18 +10,22 @@
  **/
 
 define('TEI_DISPLAY_DIRECTORY', dirname(__FILE__));
-define('TEI_DISPLAY_P4_STYLESHEET', TEI_DISPLAY_DIRECTORY . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'tei_p4.xsl');
+define('TEI_DISPLAY_STYLESHEET_FOLDER', TEI_DISPLAY_DIRECTORY . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR);
 
 add_plugin_hook('install', 'tei_display_install');
 add_plugin_hook('uninstall', 'tei_display_uninstall');
 add_plugin_hook('after_save_item', 'tei_display_after_save_item');
+add_plugin_hook('before_delete_item', 'tei_display_before_delete_item');
 add_plugin_hook('config_form', 'tei_display_config_form');
 add_plugin_hook('config', 'tei_display_config');
+add_plugin_hook('define_acl', 'tei_display_define_acl');
+add_plugin_hook('admin_theme_header', 'tei_display_admin_header');
+add_plugin_hook('public_theme_header', 'tei_display_public_header');
+add_filter('admin_navigation_main', 'tei_display_admin_navigation');
 
 function tei_display_install()
 {
 	$db = get_db();
-
 	try {
 		$xh = new XSLTProcessor; // we check for the ability to use XSLT
 		//add TEI Lite XML item type to list
@@ -29,6 +33,17 @@ function tei_display_install()
 										'description'=>'Text Encoding Initiative-compatible XML file'));
 	
 		set_option('tei_display_type', 'entire');
+		set_option('tei_default_stylesheet', 'default.xsl');
+		
+		// create for facet mapping
+		$db->exec("CREATE TABLE IF NOT EXISTS `{$db->prefix}tei_display_configs` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`item_id` int(10) unsigned,
+			`tei_id` tinytext collate utf8_unicode_ci,
+			`stylesheet` tinytext collate utf8_unicode_ci,	      
+			`display_type` tinytext collate utf8_unicode_ci,	    
+	       PRIMARY KEY  (`id`)
+	       ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 	} catch (Exception $e) {
 		throw new Zend_Exception("This plugin requires XSLT support");
 	}
@@ -38,12 +53,15 @@ function tei_display_uninstall(){
 	$db = get_db();
 	$itemType = get_db()->getTable('ItemType')->findByName('TEI XML');
 	$itemType->delete();
+	$sql = "DROP TABLE IF EXISTS `{$db->prefix}tei_display_configs`";
+	$db->query($sql);
 	
 	//delete option
 	delete_option('tei_display_type');
+	delete_option('tei_default_stylesheet');
 }
 
-function tei_display_after_save_item($item,$stylesheet=TEI_DISPLAY_P4_STYLESHEET)
+function tei_display_after_save_item($item)
 {
 	$db = get_db();
 	$itemTypeId = $db->getTable('ItemType')->findByName('TEI XML')->id;
@@ -51,8 +69,8 @@ function tei_display_after_save_item($item,$stylesheet=TEI_DISPLAY_P4_STYLESHEET
 	
 		//declare DomDocument and load the TEI file and declare xpath
 		$xml_doc = new DomDocument;
-		$fileId = $db->getTable('File')->findBySql('item_id = ?', array($item->id));	
-		$teiFile = FILES_DIR . DIRECTORY_SEPARATOR . $fileId[0]->archive_filename;	
+		$file = $db->getTable('File')->findBySql('item_id = ?', array($item['id']));	
+		$teiFile = $file[0]->getWebPath('archive');
 		$xml_doc->load($teiFile);
 		$xpath = new DOMXPath($xml_doc);
 		
@@ -64,12 +82,12 @@ function tei_display_after_save_item($item,$stylesheet=TEI_DISPLAY_P4_STYLESHEET
 		
 		//write DC element names and ids to new array for processing
 		foreach ($dcElements as $dcElement){
-			$dc[$dcElement['name']] = $dcElement['id'];
+			$dc[] = $dcElement['name'];
 		}
 		
 		//map TEI to DC
 		//based on CDL encoding guidelines: http://www.cdlib.org/groups/stwg/META_BPG.html#d52e344
-		foreach ($dc as $name=>$id){
+		foreach ($dc as $name){
 			if ($name == 'Title'){
 				$queries = array('//teiHeader/fileDesc/titleStmt/title');
 			} elseif ($name == 'Creator'){
@@ -91,8 +109,10 @@ function tei_display_after_save_item($item,$stylesheet=TEI_DISPLAY_P4_STYLESHEET
 			} elseif ($name == 'Date'){
 				$queries = array(	'//teiHeader/fileDesc/publicationStmt/date');
 			} elseif ($name == 'Type'){
-				$queries = array(	'//teiHeader/@type');
+				//skip type, defined with Item Type Metadata dropdown
+				$queries = array();				
 			} elseif ($name == 'Format'){
+				//skip format, added manually as text/xml below
 				$queries == array();
 			} elseif ($name == 'Identifier'){
 				$queries = array(	'//teiHeader/fileDesc/publicationStmt/idno[@type="ARK"]');
@@ -106,52 +126,94 @@ function tei_display_after_save_item($item,$stylesheet=TEI_DISPLAY_P4_STYLESHEET
 			} elseif ($name == 'Relation'){
 				$queries = array(	'//teiHeader/fileDesc/seriesStmt/title');
 			} elseif ($name == 'Coverage'){
+				//skip coverage, there is no clear mapping from TEI Header to Dublin Core
 				$queries == array();
 			} elseif ($name == 'Rights'){
 				$queries == array('//teiheader/fileDesc/publicationStmt/availability');
 			}
 			
+			$element = $item->getElementByNameAndSetName($name, 'Dublin Core');
+			$elementTexts = $item->getTextsByElement($element);
+			$texts = array();
+			foreach ($elementTexts as $elementText){
+				$texts[] = $elementText['text'];
+			}
+			
 			foreach ($queries as $query){
 				$nodes = $xpath->query($query);
-				foreach ($nodes as $node){
-					//see if that text is already set
-					$elementTexts = $db->getTable('ElementText')->findBySql('record_id = ? AND element_id = ?', array($item->id, $id));
-					$texts = array();
-					foreach ($elementTexts as $elementText){
-						$texts[] = $elementText['text'];
-					}
-					$myFile = "/tmp/test.txt";
-					$fh = fopen($myFile, 'a') or die("can't open file");
-					fwrite($fh, $texts[0] . ' ' . trim($node->nodeValue) . '|');
-					fclose($fh);
-					
-					if (!in_array(trim($node->nodeValue), $texts)){
-						$db->insert('element_texts', array(	'record_id'=>$item['id'],
-												'record_type_id'=>'2',
-												'element_id'=>$id,
-												'html'=>0,
-												'text'=>trim($node->nodeValue)));
+				foreach ($nodes as $node){					
+					//see if that text is already set and don't put in any blank or null fields
+					$value = preg_replace('/\s\s+/', ' ', trim($node->nodeValue));
+					if (!in_array(trim($value), $texts) && trim($value) != '' && trim($value) != NULL){
+						$item->addTextForElement($element, trim($value));
 					}
 				}
 			}
 		}
+		//add format as text/xml separately since it is not extracted from the TEI Header
+		$element = $item->getElementByNameAndSetName('Format', 'Dublin Core');
+		$elementTexts = $item->getTextsByElement($element);
+		$texts = array();
+		foreach ($elementTexts as $elementText){
+			$texts[] = $elementText['text'];
+		}
+		if (!in_array('text/xml', $texts)){
+			$item->addTextForElement($element, 'text/xml');
+		}
+		$item->saveElementTexts();
+		$tei2 = $xml_doc->getElementsByTagName('TEI.2');
+		foreach ($tei2 as $tei2){
+			$tei_id = $tei2->getAttribute('id');
+		}
+		
+		
+		//finally, add the file to the tei_display_config table if it isn't already there
+		$configs = $db->getTable('TeiDisplay_Config')->findAll();
+		$configTeiIds = array();
+		foreach ($configs as $config){
+			$configTeiIds[] = $config['tei_id'];
+		}
+		if (!in_array(trim($tei_id), $configTeiIds)){
+			$db->insert('tei_display_config', array('item_id'=>$item['id'], 'tei_id'=>trim($tei_id)));
+		}
 	}
 }
 
-/*function tei_node_value($name,$node){
-	if ($name == 'Format'){
-		return 'text/xml';
-	} else {
-		return $node->nodeValue;
+function tei_display_before_delete_item($item)
+{
+	$db = get_db();
+	$itemTypeId = $db->getTable('ItemType')->findByName('TEI XML')->id;
+	if ($item->Files && $item['item_type_id'] == $itemTypeId){
+		$files = $db->getTable('TeiDisplay_Config')->findBySql('item_id = ?', array($item['id']));
+		foreach ($files as $file){
+			$file->delete();
+		}
 	}
-}*/
+}
+
+function tei_display_define_acl($acl)
+{
+    $acl->loadResourceList(array('TeiDisplay_Config' => array('browse', 'status')));
+}
 
 function tei_display_admin_navigation($tabs)
 {
-    if (get_acl()->checkUserPermission('TeiDisplay', 'index')) {
-        $tabs['Upload TEI File'] = uri('tei-display/upload/');        
+    if (get_acl()->checkUserPermission('TeiDisplay_Config', 'index')) {
+        $tabs['TEI Config'] = uri('tei-display/config/');        
     }
     return $tabs;
+}
+
+function tei_display_admin_header($request)
+{
+	if ($request->getModuleName() == 'tei-display') {
+		echo '<link rel="stylesheet" href="' . html_escape(css('tei_display_main')) . '" />';
+    }
+}
+
+function tei_display_public_header($request)
+{
+	echo '<link rel="stylesheet" media="screen" href="' . WEB_PLUGIN . '/TeiDisplay/views/public/css/tei_display_public.css"/>';
 }
 
 //set TEI Display type
@@ -192,6 +254,8 @@ function tei_display_config(){
  * Displayable element form
  *********/
 function tei_display_options(){
+	$xslFiles = TeiDisplay_File::getFiles();
+
     require "Zend/Form/Element.php";
     $form = new Zend_Form();  	
     $form->setMethod('post');
@@ -201,8 +265,19 @@ function tei_display_options(){
     $teiDisplay->setLabel('Display Type:');
     $teiDisplay->addMultiOption('entire', 'Entire Document');
 	$teiDisplay->addMultiOption('segmental', 'Segmental');    
-    $teiDisplay->setValue(get_option('tei_display_type'));    
+    $teiDisplay->setValue(get_option('tei_display_type'));
     $form->addElement($teiDisplay);
+    
+    //default stylesheet
+    $stylesheet = new Zend_Form_Element_Select('tei_default_stylesheet');
+    $stylesheet->setLabel('Default Stylesheet:');
+	$stylesheet->setValue(get_option('tei_default_stylesheet'));
+	
+    foreach ($xslFiles as $xslFile) {
+		$stylesheet->addMultiOption($xslFile, $xslFile);
+    }
+	$form->addElement($stylesheet);
+    
     
     
     return $form;
@@ -212,23 +287,29 @@ function tei_display_options(){
  * Public plugin functions
  ******************************/
 	
-function render_tei_file($item_id, $stylesheet=TEI_DISPLAY_P4_STYLESHEET){
+function render_tei_file($item_id, $section){
+	//query for file-specific stylesheet and display_type. use default from option table if NULL
+	$stylesheet = tei_display_local_stylesheet($item_id);
+	$displayType = tei_display_local_display($item_id);
+
 	$xp = new XsltProcessor();
 	// create a DOM document and load the XSL stylesheet
 	$xsl = new DomDocument;
-	$xsl->load($stylesheet);
-  
+
 	// import the XSL styelsheet into the XSLT process
+	$xsl->load($stylesheet);
 	$xp->importStylesheet($xsl);
+	
 	//set query parameter to pass into stylesheet
-	$xp->setParameter('', 'display', get_option('tei_display_type'));
+	$xp->setParameter('', 'display', $displayType);
+	$xp->setParameter('', 'section', $section);
 	
 	// create a DOM document and load the XML data
 	$xml_doc = new DomDocument;
 	
 	$db = get_db();
-	$fileId = $db->getTable('File')->findBySql('item_id = ?', array($item_id));
-	$teiFile = FILES_DIR . DIRECTORY_SEPARATOR . $fileId[0]->archive_filename;
+	$file = $db->getTable('File')->findBySql('item_id = ?', array($item_id));
+	$teiFile = $file[0]->getWebPath('archive');
 	
 	$xml_doc->load($teiFile);
 	
@@ -238,5 +319,30 @@ function render_tei_file($item_id, $stylesheet=TEI_DISPLAY_P4_STYLESHEET){
 		}
 	} catch (Exception $e){
 		$this->view->error = $e->getMessage();
+	}
+}
+
+function tei_display_get_title($item_id){
+	$item = get_item_by_id($item_id);
+	return strip_formatting(item('Dublin Core', 'Title', $options, $item));
+}
+
+function tei_display_local_stylesheet($item_id){
+	$db = get_db();
+	$results = $db->getTable('TeiDisplay_Config')->findBySql('item_id = ?', array($item_id));
+	if ($results[0]->stylesheet != NULL && $results[0]->stylesheet != ''){
+		return TEI_DISPLAY_STYLESHEET_FOLDER . $results[0]->stylesheet;
+	} else {
+		return TEI_DISPLAY_STYLESHEET_FOLDER . get_option('tei_default_stylesheet');
+	}
+	
+}
+function tei_display_local_display($item_id){
+	$db = get_db();
+	$results = $db->getTable('TeiDisplay_Config')->findBySql('item_id = ?', array($item_id));
+	if ($results[0]->display_type != NULL && $results[0]->display_type != ''){
+		return $results[0]->display_type;
+	} else {
+		return get_option('tei_display_type');
 	}
 }
