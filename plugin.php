@@ -213,7 +213,9 @@ function tei_display_admin_header($request)
 
 function tei_display_public_header($request)
 {
+	echo '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>';
 	echo '<link rel="stylesheet" media="screen" href="' . WEB_PLUGIN . '/TeiDisplay/views/public/css/tei_display_public.css"/>';
+	echo js('tei_display_toggle_toc');
 }
 
 //set TEI Display type

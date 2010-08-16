@@ -4,6 +4,9 @@
 	<xsl:param name="display"/>
 	<xsl:param name="section"/>
 
+	<!-- include component.xsl, created by CDL for XTF -->
+	<xsl:include href="component.xsl"/>
+
 	<xsl:template match="/">
 		<div id="tei_display">
 			<xsl:choose>
@@ -20,7 +23,7 @@
 								<xsl:apply-templates select="descendant::node()[@id=$section]"/>
 							</xsl:when>
 							<xsl:otherwise>
-								<xsl:apply-templates select="//body"/>
+								<xsl:apply-templates select="//front"/>
 							</xsl:otherwise>
 						</xsl:choose>
 					</div>
@@ -30,50 +33,88 @@
 	</xsl:template>
 
 	<xsl:template name="toc">
+		<xsl:if test="//front">
+			<h4>Front</h4>
+			<ul>
+				<xsl:apply-templates select="descendant::front/div1" mode="toc"/>
+			</ul>
+		</xsl:if>
+
+		<h4>Body</h4>
 		<ul>
-			<xsl:for-each select="descendant::body/div1">
-				<li>
-					<xsl:if test="@type">
-						<xsl:value-of
-							select="concat(translate(substring(@type, 1, 1), abcdefghijklmnopqrstuvwxyz, ABCDEFGHIJKLMNOPQRSTUVWXYZ), substring(@type, 2))"/>
-						<xsl:text>: </xsl:text>
-					</xsl:if>
-					<a href="?section={@id}">
-						<xsl:choose>
-							<xsl:when test="string(normalize-space(head))">
-								<xsl:value-of select="normalize-space(head)"/>
-							</xsl:when>
-							<xsl:otherwise>[No Title]</xsl:otherwise>
-						</xsl:choose>
-					</a>
-					<xsl:if test="div2">						
-						<a href="#" class="toggle_toc">+</a>
-						<ul class="toc_sub" style="display:none;">
-							<xsl:for-each select="div2">
-								<li>
-									<xsl:if test="@type">
-										<xsl:value-of
-											select="concat(translate(substring(@type, 1, 1), abcdefghijklmnopqrstuvwxyz, ABCDEFGHIJKLMNOPQRSTUVWXYZ), substring(@type, 2))"/>
-										<xsl:text>: </xsl:text>
-									</xsl:if>
-									<a href="?section={@id}">
-										<xsl:choose>
-											<xsl:when test="string(normalize-space(head))">
-												<xsl:value-of select="normalize-space(head)"/>
-											</xsl:when>
-											<xsl:otherwise>[No Title]</xsl:otherwise>
-										</xsl:choose>
-									</a>
-								</li>
-							</xsl:for-each>
-						</ul>
-					</xsl:if>					
-				</li>
-			</xsl:for-each>
+			<xsl:apply-templates select="descendant::body/div1" mode="toc"/>
 		</ul>
 	</xsl:template>
 
-	<xsl:template match="body">
+	<xsl:template match="div1" mode="toc">
+		<li>
+			<xsl:if test="@type">
+				<span class="toc_type">
+					<xsl:value-of select="@type"/>
+				</span>
+				<xsl:text>: </xsl:text>
+			</xsl:if>
+			<xsl:variable name="title">
+				<xsl:choose>
+					<xsl:when test="string(normalize-space(head))">
+						<xsl:value-of select="normalize-space(head)"/>
+					</xsl:when>
+					<xsl:otherwise>[No Title]</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+			<xsl:choose>
+				<xsl:when test="$section=@id">
+					<b>
+						<xsl:value-of select="$title"/>
+					</b>
+				</xsl:when>
+				<xsl:otherwise>
+					<a href="?section={@id}">
+						<xsl:value-of select="$title"/>
+					</a>
+				</xsl:otherwise>
+			</xsl:choose>
+			<xsl:if test="div2">
+				<a class="toggle_toc">±</a>
+				<ul class="toc_sub" style="display:none;">
+					<xsl:apply-templates select="div2" mode="toc"/>
+				</ul>
+			</xsl:if>
+		</li>
+	</xsl:template>
+
+	<xsl:template match="div2" mode="toc">
+		<li>
+			<xsl:if test="@type">
+				<span class="toc_type">
+					<xsl:value-of select="@type"/>
+				</span>
+				<xsl:text>: </xsl:text>
+			</xsl:if>
+			<xsl:variable name="title">
+				<xsl:choose>
+					<xsl:when test="string(normalize-space(head))">
+						<xsl:value-of select="normalize-space(head)"/>
+					</xsl:when>
+					<xsl:otherwise>[No Title]</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+			<xsl:choose>
+				<xsl:when test="$section=@id">
+					<b>
+						<xsl:value-of select="$title"/>
+					</b>
+				</xsl:when>
+				<xsl:otherwise>
+					<a href="?section={@id}">
+						<xsl:value-of select="$title"/>
+					</a>
+				</xsl:otherwise>
+			</xsl:choose>
+		</li>
+	</xsl:template>
+
+	<!--<xsl:template match="body">
 		<xsl:apply-templates/>
 	</xsl:template>
 
@@ -129,6 +170,6 @@
 				</b>
 			</xsl:when>
 		</xsl:choose>
-	</xsl:template>
+	</xsl:template>-->
 
 </xsl:stylesheet>
