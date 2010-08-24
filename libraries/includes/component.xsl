@@ -1,5 +1,5 @@
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="#all">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns="http://www.w3.org/1999/xhtml">
 
 	<!--
       Copyright (c) 2008, Regents of the University of California
@@ -169,23 +169,9 @@
 	<!-- ====================================================================== -->
 
 	<xsl:template match="*[local-name()='lg']">
-		<xsl:choose>
-			<xsl:when test="@type='stanza' and parent::lg">
-				<tr>
-					<td colspan="2">
-						<br/>
-						<table border="0" cellspacing="0" cellpadding="0">
-							<xsl:apply-templates/>
-						</table>
-					</td>
-				</tr>
-			</xsl:when>
-			<xsl:otherwise>
-				<table border="0" cellspacing="0" cellpadding="0">
-					<xsl:apply-templates/>
-				</table>
-			</xsl:otherwise>
-		</xsl:choose>
+		<div class="linegroup">
+			<xsl:apply-templates/>
+		</div>
 	</xsl:template>
 
 	<xsl:template match="*[local-name()='l']">
@@ -485,6 +471,12 @@
 		<br/>
 	</xsl:template>
 
+	<xsl:template match="*[local-name() = 'closer']">
+		<blockquote>
+			<xsl:apply-templates/>
+		</blockquote>
+	</xsl:template>
+
 	<xsl:template match="*[local-name()='epigraph']/*[local-name()='bibl']">
 		<p class="right">
 			<xsl:apply-templates/>
@@ -667,114 +659,15 @@
 	<!-- ====================================================================== -->
 
 	<xsl:template match="*[local-name()='ref']">
-
-		<!-- variables -->
-		<xsl:variable name="target" select="@target"/>
-		<xsl:variable name="chunk">
-			<xsl:choose>
-				<xsl:when test="@type='secref'">
-					<xsl:value-of select="$target"/>
-				</xsl:when>
-				<xsl:when test="@type='noteref' or @type='endnote'">
-					<xsl:value-of
-						select="key('endnote-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"
-					/>
-				</xsl:when>
-				<xsl:when test="@type='fnoteref'">
-					<xsl:value-of
-						select="key('fnote-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"
-					/>
-				</xsl:when>
-				<xsl:when test="@type='pageref'">
-					<xsl:choose>
-						<xsl:when test="$target='endnotes'">
-							<xsl:value-of select="'endnotes'"/>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:value-of
-								select="key('pb-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"
-							/>
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of
-						select="key('generic-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"
-					/>
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:variable>
-		<xsl:variable name="toc" select="key('div-id', $chunk)/parent::*/@*[local-name()='id']"/>
-		<xsl:variable name="class">ref</xsl:variable>
-
 		<!-- process refs -->
 		<xsl:choose>
-			<!-- end note refs -->
-			<xsl:when test="@type='noteref' or @type='endnote'">
-				<!--<sup>
-					<xsl:attribute name="class">
-						<xsl:value-of select="$class"/>
-					</xsl:attribute>
-					<xsl:text>[</xsl:text>
-					<a>
-						<xsl:attribute name="href"><xsl:value-of select="$doc.path"
-								/>&#038;chunk.id=<xsl:value-of select="$chunk"
-								/>&#038;toc.id=<xsl:value-of select="$toc"
-								/>&#038;toc.depth=<xsl:value-of select="$toc.depth"
-								/>&#038;brand=<xsl:value-of select="$brand"/><xsl:value-of
-								select="$search"/>&#038;anchor.id=<xsl:value-of select="$target"
-							/>#X</xsl:attribute>
-						<xsl:attribute name="target">_top</xsl:attribute>
-						<xsl:apply-templates/>
-					</a>
-					<xsl:text>]</xsl:text>
-				</sup>-->
-			</xsl:when>
-			<!-- footnote refs -->
-			<xsl:when test="@type='fnoteref'">
-				<!--<sup>
-					<xsl:attribute name="class">
-						<xsl:value-of select="$class"/>
-					</xsl:attribute>
-					<xsl:text>[</xsl:text>
-					<a>
-						<xsl:attribute name="href">javascript://</xsl:attribute>
-						<xsl:attribute name="onclick">
-							<xsl:text>javascript:window.open('</xsl:text><xsl:value-of
-								select="$doc.path"/>&#038;doc.view=popup&#038;chunk.id=<xsl:value-of
-								select="$target"
-							/><xsl:text>','popup','width=300,height=300,resizable=yes,scrollbars=yes')</xsl:text>
-						</xsl:attribute>
-						<xsl:apply-templates/>
-					</a>
-					<xsl:text>]</xsl:text>
-				</sup>-->
-			</xsl:when>
-			<!-- page refs -->
-			<xsl:when test="@type='pageref'">
-				<!--<a>
-					<xsl:attribute name="href"><xsl:value-of select="$doc.path"
-							/>&#038;chunk.id=<xsl:value-of select="$chunk"
-							/>&#038;toc.id=<xsl:value-of select="$toc"
-							/>&#038;toc.depth=<xsl:value-of select="$toc.depth"
-							/>&#038;brand=<xsl:value-of select="$brand"
-							/>&#038;anchor.id=<xsl:value-of select="$target"/>#X</xsl:attribute>
-					<xsl:attribute name="target">_top</xsl:attribute>
+			<xsl:when test="string(@target)">
+				<a href="{@target}" class="ref">					
 					<xsl:apply-templates/>
-				</a>-->
+				</a>
 			</xsl:when>
-			<!-- all others -->
 			<xsl:otherwise>
-				<!--<a>
-					<xsl:attribute name="href"><xsl:value-of select="$doc.path"
-							/>&#038;chunk.id=<xsl:value-of select="$chunk"
-							/>&#038;toc.id=<xsl:value-of select="$toc"
-							/>&#038;toc.depth=<xsl:value-of select="$toc.depth"
-							/>&#038;brand=<xsl:value-of select="$brand"
-							/>&#038;anchor.id=<xsl:value-of select="$target"/>#X</xsl:attribute>
-					<xsl:attribute name="target">_top</xsl:attribute>
-					<xsl:apply-templates/>
-				</a>-->
+				<xsl:apply-templates/>
 			</xsl:otherwise>
 		</xsl:choose>
 
@@ -799,7 +692,7 @@
 		<xsl:variable name="img_src">
 			<xsl:value-of select="@entity"/>
 		</xsl:variable>
-	
+
 		<xsl:choose>
 			<xsl:when test="@rend='hide'">
 				<div class="illgrp">
@@ -850,8 +743,8 @@
 
 	<xsl:template match="*[local-name()='pb']">
 		<hr class="pb"/>
-		<div align="center">&#x2015; <span class="run-head"><xsl:value-of select="@n"
-		/></span> &#x2015;</div>
+		<div align="center">&#x2015; <span class="run-head"><xsl:value-of select="@n"/></span>
+			&#x2015;</div>
 	</xsl:template>
 
 	<xsl:template match="*[local-name()='milestone']">

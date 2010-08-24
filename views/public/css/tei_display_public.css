@@ -1,3 +1,7 @@
+#tei_display{
+	display:table;	
+	width:100%;
+}
 .tei_toc {
 	width:30%;
 	float:left;
@@ -14,6 +18,12 @@
 .toggle_toc {
 	float:right;
 	cursor:pointer;
+}
+.tei_section{
+	margin-bottom:40px;	
+}
+.tei_subsection{
+	margin-bottom:20px;	
 }
 /*
   *******************************
@@ -179,4 +189,9 @@ background-color: #E9EEF4;
 
 .run-head  { 
 color: gray;
+}
+
+.linegroup{
+	margin-left:20px;
+	margin-bottom:10px;	
 }

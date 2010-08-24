@@ -5,13 +5,13 @@
 	<xsl:param name="section"/>
 
 	<!-- include component.xsl, created by CDL for XTF -->
-	<xsl:include href="component.xsl"/>
+	<xsl:include href="includes/component.xsl"/>
 
 	<xsl:template match="/">
 		<div id="tei_display">
 			<xsl:choose>
 				<xsl:when test="$display = 'entire'">
-					<xsl:apply-templates select="//body"/>
+					<xsl:apply-templates select="//*[local-name()='body']"/>
 				</xsl:when>
 				<xsl:when test="$display='segmental'">
 					<div class="tei_toc">
@@ -23,7 +23,7 @@
 								<xsl:apply-templates select="descendant::node()[@id=$section]"/>
 							</xsl:when>
 							<xsl:otherwise>
-								<xsl:apply-templates select="//front"/>
+								<xsl:apply-templates select="//*[local-name()='teiHeader']"/>
 							</xsl:otherwise>
 						</xsl:choose>
 					</div>
@@ -33,20 +33,20 @@
 	</xsl:template>
 
 	<xsl:template name="toc">
-		<xsl:if test="//front">
+		<xsl:if test="//*[local-name()='front']">
 			<h4>Front</h4>
 			<ul>
-				<xsl:apply-templates select="descendant::front/div1" mode="toc"/>
+				<xsl:apply-templates select="descendant::*[local-name()='front']/*[local-name()='div1'] | descendant::*[local-name()='front']/*[local-name()='div']" mode="toc"/>
 			</ul>
 		</xsl:if>
 
 		<h4>Body</h4>
 		<ul>
-			<xsl:apply-templates select="descendant::body/div1" mode="toc"/>
+			<xsl:apply-templates select="descendant::*[local-name()='body']/*[local-name()='div1'] | descendant::*[local-name()='body']/*[local-name()='div']" mode="toc"/>
 		</ul>
 	</xsl:template>
 
-	<xsl:template match="div1" mode="toc">
+	<xsl:template match="*[local-name()='div'] | *[local-name()='div1'] | *[local-name()='div2']" mode="toc">
 		<li>
 			<xsl:if test="@type">
 				<span class="toc_type">
@@ -56,8 +56,8 @@
 			</xsl:if>
 			<xsl:variable name="title">
 				<xsl:choose>
-					<xsl:when test="string(normalize-space(head))">
-						<xsl:value-of select="normalize-space(head)"/>
+					<xsl:when test="string(normalize-space(*[local-name()='head']))">
+						<xsl:value-of select="normalize-space(*[local-name()='head'][1])"/>
 					</xsl:when>
 					<xsl:otherwise>[No Title]</xsl:otherwise>
 				</xsl:choose>
@@ -74,45 +74,27 @@
 					</a>
 				</xsl:otherwise>
 			</xsl:choose>
-			<xsl:if test="div2">
+			<xsl:if test="child::*[local-name()='div2'] or (child::*[local-name()='div'] and (parent::*[local-name()='front'] or parent::*[local-name()='body']))">
 				<a class="toggle_toc">±</a>
 				<ul class="toc_sub" style="display:none;">
-					<xsl:apply-templates select="div2" mode="toc"/>
+					<xsl:apply-templates select="*[local-name()='div'] | *[local-name()='div2']" mode="toc"/>
 				</ul>
-			</xsl:if>
+			</xsl:if>			
 		</li>
 	</xsl:template>
-
-	<xsl:template match="div2" mode="toc">
-		<li>
-			<xsl:if test="@type">
-				<span class="toc_type">
-					<xsl:value-of select="@type"/>
-				</span>
-				<xsl:text>: </xsl:text>
-			</xsl:if>
-			<xsl:variable name="title">
-				<xsl:choose>
-					<xsl:when test="string(normalize-space(head))">
-						<xsl:value-of select="normalize-space(head)"/>
-					</xsl:when>
-					<xsl:otherwise>[No Title]</xsl:otherwise>
-				</xsl:choose>
-			</xsl:variable>
-			<xsl:choose>
-				<xsl:when test="$section=@id">
-					<b>
-						<xsl:value-of select="$title"/>
-					</b>
-				</xsl:when>
-				<xsl:otherwise>
-					<a href="?section={@id}">
-						<xsl:value-of select="$title"/>
-					</a>
-				</xsl:otherwise>
-			</xsl:choose>
-		</li>
+	
+	<xsl:template match="*[local-name()='div1'] | *[local-name()='div'][parent::*[local-name()='body']] | *[local-name()='div'][parent::*[local-name()='front']]">
+		<div class="tei_section">
+			<xsl:apply-templates/>
+		</div>
 	</xsl:template>
+	
+	<xsl:template match="*[local-name()='div2'] | *[local-name()='div'][parent::*[local-name()='body']]/*[local-name()='div'] | *[local-name()='div'][parent::*[local-name()='front']]/*[local-name()='div']">
+		<div class="tei_subsection">
+			<xsl:apply-templates/>
+		</div>
+	</xsl:template>
+	
 
 	<!--<xsl:template match="body">
 		<xsl:apply-templates/>
