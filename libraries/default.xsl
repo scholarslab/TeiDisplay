@@ -11,7 +11,7 @@
 		<div id="tei_display">
 			<xsl:choose>
 				<xsl:when test="$display = 'entire'">
-					<xsl:apply-templates select="//*[local-name()='body']"/>
+					<xsl:apply-templates select="//*[local-name()='text']"/>
 				</xsl:when>
 				<xsl:when test="$display='segmental'">
 					<div class="tei_toc">
@@ -20,10 +20,12 @@
 					<div class="tei_content">
 						<xsl:choose>
 							<xsl:when test="string($section)">
-								<xsl:apply-templates select="descendant::node()[@id=$section]"/>
+								<xsl:apply-templates select="descendant::node()[concat(count(ancestor::node()), '0000', count(preceding::node()))=$section]"/>
 							</xsl:when>
 							<xsl:otherwise>
-								<xsl:apply-templates select="//*[local-name()='teiHeader']"/>
+								<p>
+									<b>Select a section from the table of contents on the left.</b>
+								</p>
 							</xsl:otherwise>
 						</xsl:choose>
 					</div>
@@ -33,20 +35,28 @@
 	</xsl:template>
 
 	<xsl:template name="toc">
+		<h4>
+			<a href="?section={concat(count(/TEI.2/ancestor::node()), '0000', count(/TEI.2/preceding::node()))}">View Entire Document</a>
+		</h4>
 		<xsl:if test="//*[local-name()='front']">
 			<h4>Front</h4>
 			<ul>
-				<xsl:apply-templates select="descendant::*[local-name()='front']/*[local-name()='div1'] | descendant::*[local-name()='front']/*[local-name()='div']" mode="toc"/>
+				<xsl:apply-templates
+					select="descendant::*[local-name()='front']/*[local-name()='div1'] | descendant::*[local-name()='front']/*[local-name()='div']"
+					mode="toc"/>
 			</ul>
 		</xsl:if>
 
 		<h4>Body</h4>
 		<ul>
-			<xsl:apply-templates select="descendant::*[local-name()='body']/*[local-name()='div1'] | descendant::*[local-name()='body']/*[local-name()='div']" mode="toc"/>
+			<xsl:apply-templates
+				select="descendant::*[local-name()='body']/*[local-name()='div1'] | descendant::*[local-name()='body']/*[local-name()='div']"
+				mode="toc"/>
 		</ul>
 	</xsl:template>
 
-	<xsl:template match="*[local-name()='div'] | *[local-name()='div1'] | *[local-name()='div2']" mode="toc">
+	<xsl:template match="*[local-name()='div'] | *[local-name()='div1'] | *[local-name()='div2']"
+		mode="toc">
 		<li>
 			<xsl:if test="@type">
 				<span class="toc_type">
@@ -63,95 +73,58 @@
 				</xsl:choose>
 			</xsl:variable>
 			<xsl:choose>
-				<xsl:when test="$section=@id">
+				<xsl:when test="$section=concat(count(ancestor::node()), '0000', count(preceding::node()))">
 					<b>
 						<xsl:value-of select="$title"/>
 					</b>
 				</xsl:when>
 				<xsl:otherwise>
-					<a href="?section={@id}">
+					<a href="?section={concat(count(ancestor::node()), '0000', count(preceding::node()))}">
 						<xsl:value-of select="$title"/>
 					</a>
 				</xsl:otherwise>
 			</xsl:choose>
-			<xsl:if test="child::*[local-name()='div2'] or (child::*[local-name()='div'] and (parent::*[local-name()='front'] or parent::*[local-name()='body']))">
+			<xsl:if
+				test="child::*[local-name()='div2'] or (child::*[local-name()='div'] and (parent::*[local-name()='front'] or parent::*[local-name()='body']))">
+				<xsl:variable name="ids">
+					<xsl:for-each select="child::*[local-name()='div2'] | child::*[local-name()='div']">
+						<xsl:value-of select="concat('|',concat(count(ancestor::node()), '0000', count(preceding::node())),'|')"/>
+					</xsl:for-each>
+				</xsl:variable>
 				<a class="toggle_toc">±</a>
-				<ul class="toc_sub" style="display:none;">
-					<xsl:apply-templates select="*[local-name()='div'] | *[local-name()='div2']" mode="toc"/>
-				</ul>
-			</xsl:if>			
+				<xsl:choose>
+					<xsl:when test="string($section) and contains($ids, concat('|',$section,'|'))">
+						<ul class="toc_sub">
+							<xsl:apply-templates
+								select="*[local-name()='div'] | *[local-name()='div2']" mode="toc"/>
+						</ul>
+					</xsl:when>
+					<xsl:otherwise>
+						<ul class="toc_sub" style="display:none;">
+							<xsl:apply-templates
+								select="*[local-name()='div'] | *[local-name()='div2']" mode="toc"/>
+						</ul>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:if>
 		</li>
 	</xsl:template>
-	
-	<xsl:template match="*[local-name()='div1'] | *[local-name()='div'][parent::*[local-name()='body']] | *[local-name()='div'][parent::*[local-name()='front']]">
+
+	<xsl:template
+		match="*[local-name()='div1'] | *[local-name()='div'][parent::*[local-name()='body']] | *[local-name()='div'][parent::*[local-name()='front']]">
 		<div class="tei_section">
 			<xsl:apply-templates/>
 		</div>
 	</xsl:template>
-	
-	<xsl:template match="*[local-name()='div2'] | *[local-name()='div'][parent::*[local-name()='body']]/*[local-name()='div'] | *[local-name()='div'][parent::*[local-name()='front']]/*[local-name()='div']">
+
+	<xsl:template
+		match="*[local-name()='div2'] | *[local-name()='div'][parent::*[local-name()='body']]/*[local-name()='div'] | *[local-name()='div'][parent::*[local-name()='front']]/*[local-name()='div']">
 		<div class="tei_subsection">
 			<xsl:apply-templates/>
 		</div>
 	</xsl:template>
-	
 
-	<!--<xsl:template match="body">
-		<xsl:apply-templates/>
-	</xsl:template>
-
-	<xsl:template match="p">
-		<p>
-			<xsl:apply-templates/>
-		</p>
-	</xsl:template>
-
-	<xsl:template match="pb">
-		<div style="width:50%;text-align:center;margin:10px auto;">
-			<xsl:value-of select="@n"/>
-			<br/>
-			<hr/>
-		</div>
-	</xsl:template>
-
-	<xsl:template match="head">
-		<xsl:choose>
-			<xsl:when test="parent::div1">
-				<h2>
-					<xsl:value-of select="."/>
-				</h2>
-			</xsl:when>
-			<xsl:when test="parent::div2">
-				<h3>
-					<xsl:value-of select="."/>
-				</h3>
-			</xsl:when>
-			<xsl:when test="parent::div3">
-				<h4>
-					<xsl:value-of select="."/>
-				</h4>
-			</xsl:when>
-			<xsl:when test="parent::div4">
-				<h5>
-					<xsl:value-of select="."/>
-				</h5>
-			</xsl:when>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template match="hi">
-		<xsl:choose>
-			<xsl:when test="@rend = 'italic'">
-				<i>
-					<xsl:apply-templates/>
-				</i>
-			</xsl:when>
-			<xsl:when test="@rend = 'bold'">
-				<b>
-					<xsl:apply-templates/>
-				</b>
-			</xsl:when>
-		</xsl:choose>
-	</xsl:template>-->
+	<!-- disable teiHeader from public display, by default.  pertinent metadata is display with DC fields -->
+	<xsl:template match="*[local-name()='teiHeader']"/>
 
 </xsl:stylesheet>
