@@ -26,11 +26,13 @@ add_filter('admin_navigation_main', 'tei_display_admin_navigation');
 function tei_display_install()
 {
 	$db = get_db();
-	try {
+	if (!class_exists('XSLTProcessor')) {
+		throw new Exception('Unable to access XSLTProcessor class.  Make sure the php-xsl package is installed.');
+	} else{
 		$xh = new XSLTProcessor; // we check for the ability to use XSLT
 		//add TEI Lite XML item type to list
-		$db->insert('item_types', array('name'=>'TEI XML',
-										'description'=>'Text Encoding Initiative-compatible XML file'));
+		/*$db->insert('item_types', array('name'=>'TEI XML',
+										'description'=>'Text Encoding Initiative-compatible XML file'));*/
 	
 		set_option('tei_display_type', 'entire');
 		set_option('tei_default_stylesheet', 'default.xsl');
@@ -39,20 +41,32 @@ function tei_display_install()
 		$db->exec("CREATE TABLE IF NOT EXISTS `{$db->prefix}tei_display_configs` (
 			`id` int(10) unsigned NOT NULL auto_increment,
 			`item_id` int(10) unsigned,
+			`file_id` int(10) unsigned,
 			`tei_id` tinytext collate utf8_unicode_ci,
 			`stylesheet` tinytext collate utf8_unicode_ci,	      
 			`display_type` tinytext collate utf8_unicode_ci,	    
 	       PRIMARY KEY  (`id`)
 	       ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-	} catch (Exception $e) {
-		throw new Zend_Exception("This plugin requires XSLT support");
+		
+		//repopulate the tei_display_config table with existing TEI Document typed files upon plugin reinstallation
+		$files = $db->getTable('File')->findBySql('mime_browser = ?', array('application/xml'));
+		foreach ($files as $file){
+			$xml_doc = new DomDocument;	
+			$teiFile = $file->getWebPath('archive');
+			$xml_doc->load($teiFile);
+			$tei2 = $xml_doc->getElementsByTagName('TEI.2');
+			foreach ($tei2 as $tei2){
+				$tei_id = $tei2->getAttribute('id');
+			}
+			if ($tei_id != NULL && $tei_id != ''){
+				$db->insert('tei_display_config', array('item_id'=>$file->item_id, 'file_id'=>$file->id, 'tei_id'=>trim($tei_id)));
+			}
+		}
 	}
 }
 
 function tei_display_uninstall(){
 	$db = get_db();
-	$itemType = get_db()->getTable('ItemType')->findByName('TEI XML');
-	$itemType->delete();
 	$sql = "DROP TABLE IF EXISTS `{$db->prefix}tei_display_configs`";
 	$db->query($sql);
 	
@@ -64,116 +78,139 @@ function tei_display_uninstall(){
 function tei_display_after_save_item($item)
 {
 	$db = get_db();
-	$itemTypeId = $db->getTable('ItemType')->findByName('TEI XML')->id;
-	if ($item->Files && $item['item_type_id'] == $itemTypeId){
-	
-		//declare DomDocument and load the TEI file and declare xpath
-		$xml_doc = new DomDocument;
-		$file = $db->getTable('File')->findBySql('item_id = ?', array($item['id']));	
-		$teiFile = $file[0]->getWebPath('archive');
-		$xml_doc->load($teiFile);
-		$xpath = new DOMXPath($xml_doc);	
-		
-		//get element_ids
-		$dcSetId = $db->getTable('ElementSet')->findByName('Dublin Core')->id;
-		$dcElements = $db->getTable('Element')->findBySql('element_set_id = ?', array($dcSetId));
-		$dc = array();
-		
-		//write DC element names and ids to new array for processing
-		foreach ($dcElements as $dcElement){
-			$dc[] = $dcElement['name'];
-		}
-		
-		//map TEI to DC
-		//based on CDL encoding guidelines: http://www.cdlib.org/groups/stwg/META_BPG.html#d52e344
-		foreach ($dc as $name){
-			if ($name == 'Title'){
-				$queries = array('//*[local-name() = "teiHeader"]/*[local-name() = "fileDesc"]/*[local-name() = "titleStmt"]/*[local-name() = "title"]');
-			} elseif ($name == 'Creator'){
-				$queries = array('//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="author"]');
-			} elseif ($name == 'Subject'){
-				$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="profileDesc"]/*[local-name()="textClass"]/*[local-name()="keywords"]/*[local-name()="list"]/*[local-name()="item"]');
-			} elseif ($name == 'Description'){
-				$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="encodingDesc"]/*[local-name()="refsDecl"]',
-									'//*[local-name()="teiHeader"]/*[local-name()="encodingDesc"]/*[local-name()="projectDesc"]',
-									'//*[local-name()="teiHeader"]/*[local-name()="encodingDesc"]/*[local-name()="editorialDesc"]');
-			} elseif ($name == 'Publisher'){
-				$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="publisher"]/*[local-name()="publisher"]',
-									'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="publisher"]/*[local-name()="pubPlace"]');
-			} elseif ($name == 'Contributor'){
-				$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="editor"]',
-									'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="funder"]',
-									'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="sponsor"]',
-									'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="principle"]');
-			} elseif ($name == 'Date'){
-				$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="date"]');
-			} elseif ($name == 'Type'){
-				//type, defined with Item Type Metadata dropdown
-				$queries = array();				
-			} elseif ($name == 'Format'){
-				//format, added manually as text/*[local-name()="xml"] below
-				$queries == array();
-			} elseif ($name == 'Identifier'){
-				$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="idno"][@type="ARK"]');
-			} elseif ($name == 'Source'){
-				$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="sourceDesc"]/*[local-name()="bibful"]/*[local-name()="publicationStmt"]/*[local-name()="publisher"]',
-									'//*[local-name()="teiHeader"]/*[local-name()="sourceDesc"]/*[local-name()="bibful"]/*[local-name()="publicationStmt"]/*[local-name()="pubPlace"]',
-									'//*[local-name()="teiHeader"]/*[local-name()="sourceDesc"]/*[local-name()="bibful"]/*[local-name()="publicationStmt"]/*[local-name()="date"]',
-									'//*[local-name()="teiHeader"]/*[local-name()="sourceDesc"]/*[local-name()="bibl"]');
-			} elseif ($name == 'Language'){
-				$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="profileDesc"]/*[local-name()="langUsage"]/*[local-name()="language"]');
-			} elseif ($name == 'Relation'){
-				$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="seriesStmt"]/*[local-name()="title"]');
-			} elseif ($name == 'Coverage'){
-				//skip coverage, there is no clear mapping from TEI Header to Dublin Core
-				$queries == array();
-			} elseif ($name == 'Rights'){
-				$queries == array('//*[local-name()="teiheader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="availability"]');
-			}
+	//$itemTypeId = $db->getTable('ItemType')->findByName('TEI XML')->id;
+	$files = $item->Files;
+	foreach ($files as $file){
+		$mimeType = $file->mime_browser;
+		if ($mimeType == 'application/xml' || $mimeType == 'text/xml'){
+			//declare DomDocument and load the TEI file and declare xpath
+			$xml_doc = new DomDocument;	
+			$teiFile = $file->getWebPath('archive');
+			$xml_doc->load($teiFile);
+			$xpath = new DOMXPath($xml_doc);
 			
-			$element = $item->getElementByNameAndSetName($name, 'Dublin Core');
-			$elementTexts = $item->getTextsByElement($element);
-			$texts = array();
-			foreach ($elementTexts as $elementText){
-				$texts[] = $elementText['text'];
+			$tei2 = $xml_doc->getElementsByTagName('TEI.2');
+			foreach ($tei2 as $tei2){
+				$tei_id = $tei2->getAttribute('id');
 			}
-			
-			foreach ($queries as $query){
-				$nodes = $xpath->query($query);
-				foreach ($nodes as $node){					
-					//see if that text is already set and don't put in any blank or null fields
-					$value = preg_replace('/\s\s+/', ' ', trim($node->nodeValue));
-					if (!in_array(trim($value), $texts) && trim($value) != '' && trim($value) != NULL){
-						$item->addTextForElement($element, trim($value));
-					}
+			if ($tei_id != NULL and $tei_id != ''){
+				//add the file to the tei_display_config table if it isn't already there
+				$configs = $db->getTable('TeiDisplay_Config')->findAll();
+				$configTeiIds = array();
+				foreach ($configs as $config){
+					$configTeiIds[] = $config['tei_id'];
 				}
+				if (!in_array(trim($tei_id), $configTeiIds)){
+					$db->insert('tei_display_config', array('item_id'=>$item->id, 'file_id'=>$file->id, 'tei_id'=>trim($tei_id)));
+				}
+				
+				//get element_ids
+				$dcSetId = $db->getTable('ElementSet')->findByName('Dublin Core')->id;
+				$dcElements = $db->getTable('Element')->findBySql('element_set_id = ?', array($dcSetId));
+				$dc = array();
+				
+				//write DC element names and ids to new array for processing
+				foreach ($dcElements as $dcElement){
+					$dc[] = $dcElement['name'];
+				}
+				
+				//map TEI to DC
+				//based on CDL encoding guidelines: http://www.cdlib.org/groups/stwg/META_BPG.html#d52e344
+				foreach ($dc as $name){
+					if ($name == 'Title'){
+						$queries = array('//*[local-name() = "teiHeader"]/*[local-name() = "fileDesc"]/*[local-name() = "titleStmt"]/*[local-name() = "title"]');
+					} elseif ($name == 'Creator'){
+						$queries = array('//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="author"]');
+					} elseif ($name == 'Subject'){
+						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="profileDesc"]/*[local-name()="textClass"]/*[local-name()="keywords"]/*[local-name()="list"]/*[local-name()="item"]');
+					} elseif ($name == 'Description'){
+						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="encodingDesc"]/*[local-name()="refsDecl"]',
+											'//*[local-name()="teiHeader"]/*[local-name()="encodingDesc"]/*[local-name()="projectDesc"]',
+											'//*[local-name()="teiHeader"]/*[local-name()="encodingDesc"]/*[local-name()="editorialDesc"]');
+					} elseif ($name == 'Publisher'){
+						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="publisher"]/*[local-name()="publisher"]',
+											'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="publisher"]/*[local-name()="pubPlace"]');
+					} elseif ($name == 'Contributor'){
+						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="editor"]',
+											'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="funder"]',
+											'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="sponsor"]',
+											'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="principle"]');
+					} elseif ($name == 'Date'){
+						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="date"]');
+					} elseif ($name == 'Type'){
+						//type, defined with Item Type Metadata dropdown
+						$queries = array();				
+					} elseif ($name == 'Format'){
+						//format, added manually as text/*[local-name()="xml"] below
+						$queries == array();
+					} elseif ($name == 'Identifier'){
+						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="idno"][@type="ARK"]');
+					} elseif ($name == 'Source'){
+						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="sourceDesc"]/*[local-name()="bibful"]/*[local-name()="publicationStmt"]/*[local-name()="publisher"]',
+											'//*[local-name()="teiHeader"]/*[local-name()="sourceDesc"]/*[local-name()="bibful"]/*[local-name()="publicationStmt"]/*[local-name()="pubPlace"]',
+											'//*[local-name()="teiHeader"]/*[local-name()="sourceDesc"]/*[local-name()="bibful"]/*[local-name()="publicationStmt"]/*[local-name()="date"]',
+											'//*[local-name()="teiHeader"]/*[local-name()="sourceDesc"]/*[local-name()="bibl"]');
+					} elseif ($name == 'Language'){
+						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="profileDesc"]/*[local-name()="langUsage"]/*[local-name()="language"]');
+					} elseif ($name == 'Relation'){
+						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="seriesStmt"]/*[local-name()="title"]');
+					} elseif ($name == 'Coverage'){
+						//skip coverage, there is no clear mapping from TEI Header to Dublin Core
+						$queries == array();
+					} elseif ($name == 'Rights'){
+						$queries == array('//*[local-name()="teiheader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="availability"]');
+					}
+					
+					//get item element texts
+					$ielement = $item->getElementByNameAndSetName($name, 'Dublin Core');
+					$ielementTexts = $item->getTextsByElement($ielement);
+					$itexts = array();
+					foreach ($ielementTexts as $ielementText){
+						$itexts[] = $ielementText['text'];
+					}
+					
+					//get file element texts
+					$felement = $file->getElementByNameAndSetName($name, 'Dublin Core');
+					$felementTexts = $file->getTextsByElement($felement);
+					$ftexts = array();
+					foreach ($felementTexts as $felementText){
+						$ftexts[] = $felementText['text'];
+					}
+					
+					//set element texts for item and file
+					foreach ($queries as $query){
+						$nodes = $xpath->query($query);
+						foreach ($nodes as $node){					
+							//see if that text is already set and don't put in any blank or null fields
+							$value = preg_replace('/\s\s+/', ' ', trim($node->nodeValue));
+							
+							//item
+							if (!in_array(trim($value), $itexts) && trim($value) != '' && trim($value) != NULL){
+								$item->addTextForElement($ielement, trim($value));
+							}
+							
+							//file
+							if (!in_array(trim($value), $ftexts) && trim($value) != '' && trim($value) != NULL){
+								$file->addTextForElement($felement, trim($value));
+							}
+						}
+					}
+					
+					//set element texts for file
+				}
+				//set TEI Document type on TEI XML file
+				$element = $file->getElementByNameAndSetName('Type', 'Dublin Core');
+				$elementTexts = $file->getTextsByElement($element);
+				$texts = array();
+				foreach ($elementTexts as $elementText){
+					$texts[] = $elementText['text'];
+				}
+				if (!in_array('TEI Document', $texts)){
+					$file->addTextForElement($element, 'TEI Document');
+				}
+				$item->saveElementTexts();
+				$file->saveElementTexts();
 			}
-		}
-		//add format as text/xml separately since it is not extracted from the TEI Header
-		$element = $item->getElementByNameAndSetName('Format', 'Dublin Core');
-		$elementTexts = $item->getTextsByElement($element);
-		$texts = array();
-		foreach ($elementTexts as $elementText){
-			$texts[] = $elementText['text'];
-		}
-		if (!in_array('text/xml', $texts)){
-			$item->addTextForElement($element, 'text/xml');
-		}
-		$item->saveElementTexts();
-		$tei2 = $xml_doc->getElementsByTagName('TEI.2');
-		foreach ($tei2 as $tei2){
-			$tei_id = $tei2->getAttribute('id');
-		}
-		
-		
-		//finally, add the file to the tei_display_config table if it isn't already there
-		$configs = $db->getTable('TeiDisplay_Config')->findAll();
-		$configTeiIds = array();
-		foreach ($configs as $config){
-			$configTeiIds[] = $config['tei_id'];
-		}
-		if (!in_array(trim($tei_id), $configTeiIds)){
-			$db->insert('tei_display_config', array('item_id'=>$item['id'], 'tei_id'=>trim($tei_id)));
 		}
 	}
 }
@@ -181,12 +218,9 @@ function tei_display_after_save_item($item)
 function tei_display_before_delete_item($item)
 {
 	$db = get_db();
-	$itemTypeId = $db->getTable('ItemType')->findByName('TEI XML')->id;
-	if ($item->Files && $item['item_type_id'] == $itemTypeId){
-		$files = $db->getTable('TeiDisplay_Config')->findBySql('item_id = ?', array($item['id']));
-		foreach ($files as $file){
-			$file->delete();
-		}
+	$files = $db->getTable('TeiDisplay_Config')->findBySql('item_id = ?', array($item['id']));
+	foreach ($files as $file){
+		$file->delete();
 	}
 }
 
@@ -287,11 +321,15 @@ function tei_display_options(){
 /******************************
  * Public plugin functions
  ******************************/
+
+function tei_display_installed(){
+	return 'active';
+}
 	
-function render_tei_file($item_id, $section){
+function render_tei_file($file_id, $section){
 	//query for file-specific stylesheet and display_type. use default from option table if NULL
-	$stylesheet = tei_display_local_stylesheet($item_id);
-	$displayType = tei_display_local_display($item_id);
+	$stylesheet = tei_display_local_stylesheet($file_id);
+	$displayType = tei_display_local_display($file_id);
 
 	$xp = new XsltProcessor();
 	// create a DOM document and load the XSL stylesheet
@@ -309,8 +347,8 @@ function render_tei_file($item_id, $section){
 	$xml_doc = new DomDocument;
 	
 	$db = get_db();
-	$file = $db->getTable('File')->findBySql('item_id = ?', array($item_id));
-	$teiFile = $file[0]->getWebPath('archive');
+	$teiFile = $db->getTable('File')->find($file_id)->getWebPath('archive');
+	//$teiFile = $file[0]->getWebPath('archive');
 	
 	$xml_doc->load($teiFile);
 	
@@ -323,14 +361,15 @@ function render_tei_file($item_id, $section){
 	}
 }
 
-function tei_display_get_title($item_id){
-	$item = get_item_by_id($item_id);
-	return strip_formatting(item('Dublin Core', 'Title', $options, $item));
+function tei_display_get_title($file_id){
+	$db = get_db();
+	$file = $db->getTable('File')->find($file_id);
+	return strip_formatting(item_file('Dublin Core', 'Title', $options, $file));
 }
 
-function tei_display_local_stylesheet($item_id){
+function tei_display_local_stylesheet($file_id){
 	$db = get_db();
-	$results = $db->getTable('TeiDisplay_Config')->findBySql('item_id = ?', array($item_id));
+	$results = $db->getTable('TeiDisplay_Config')->findBySql('file_id = ?', array($file_id));
 	if ($results[0]->stylesheet != NULL && $results[0]->stylesheet != ''){
 		return TEI_DISPLAY_STYLESHEET_FOLDER . $results[0]->stylesheet;
 	} else {
@@ -338,9 +377,9 @@ function tei_display_local_stylesheet($item_id){
 	}
 	
 }
-function tei_display_local_display($item_id){
+function tei_display_local_display($file_id){
 	$db = get_db();
-	$results = $db->getTable('TeiDisplay_Config')->findBySql('item_id = ?', array($item_id));
+	$results = $db->getTable('TeiDisplay_Config')->findBySql('file_id = ?', array($file_id));
 	if ($results[0]->display_type != NULL && $results[0]->display_type != ''){
 		return $results[0]->display_type;
 	} else {

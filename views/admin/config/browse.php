@@ -27,7 +27,7 @@
 	                <tr>
 						<td><?php echo html_escape($entry['id']); ?></td>
 						<td><?php echo html_escape($entry['tei_id']); ?></td>
-	                    <td><?php echo html_escape(tei_display_get_title($entry['item_id'])); ?></td>
+	                    <td><?php echo html_escape(tei_display_get_title($entry['file_id'])); ?></td>
 	                    <td><?php echo html_escape($entry['stylesheet']); ?></td>
 	                    <td><?php echo html_escape($entry['display_type']); ?></td>
 						<td><a href="<?php echo html_escape(uri('tei-display/config/edit')); ?>?id=<?php echo $entry['id']; ?>" class="edit">Edit</a></td>
