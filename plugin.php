@@ -29,11 +29,7 @@ function tei_display_install()
 	if (!class_exists('XSLTProcessor')) {
 		throw new Exception('Unable to access XSLTProcessor class.  Make sure the php-xsl package is installed.');
 	} else{
-		$xh = new XSLTProcessor; // we check for the ability to use XSLT
-		//add TEI Lite XML item type to list
-		/*$db->insert('item_types', array('name'=>'TEI XML',
-										'description'=>'Text Encoding Initiative-compatible XML file'));*/
-	
+		$xh = new XSLTProcessor; // we check for the ability to use XSLT	
 		set_option('tei_display_type', 'entire');
 		set_option('tei_default_stylesheet', 'default.xsl');
 		
@@ -78,7 +74,6 @@ function tei_display_uninstall(){
 function tei_display_after_save_item($item)
 {
 	$db = get_db();
-	//$itemTypeId = $db->getTable('ItemType')->findByName('TEI XML')->id;
 	$files = $item->Files;
 	foreach ($files as $file){
 		$mimeType = $file->mime_browser;
@@ -89,11 +84,25 @@ function tei_display_after_save_item($item)
 			$xml_doc->load($teiFile);
 			$xpath = new DOMXPath($xml_doc);
 			
-			$tei2 = $xml_doc->getElementsByTagName('TEI.2');
-			foreach ($tei2 as $tei2){
-				$tei_id = $tei2->getAttribute('id');
+			$teiNode = $xml_doc->getElementsByTagName('TEI');
+			$tei2Node = $xml_doc->getElementsByTagName('TEI.2');
+					
+			foreach ($teiNode as $teiNode){
+				$p5_id = $teiNode->getAttribute('id');
+			} 				
+			foreach ($tei2Node as $tei2Node){
+				$p4_id = $tei2Node->getAttribute('id');
 			}
-			if ($tei_id != NULL and $tei_id != ''){
+			
+			if (isset($p5_id)){
+				$tei_id = $p5_id;
+			} else if (isset($p4_id)){
+				$tei_id = $p4_id;
+			} else {
+				$tei_id = NULL;
+			}
+			
+			if ($tei_id != NULL){
 				//add the file to the tei_display_config table if it isn't already there
 				$configs = $db->getTable('TeiDisplay_Config')->findAll();
 				$configTeiIds = array();
