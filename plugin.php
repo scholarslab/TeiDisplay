@@ -88,7 +88,7 @@ function tei_display_after_save_item($item)
 			$tei2Node = $xml_doc->getElementsByTagName('TEI.2');
 					
 			foreach ($teiNode as $teiNode){
-				$p5_id = $teiNode->getAttribute('id');
+				$p5_id = $teiNode->getAttribute('xml:id');
 			} 				
 			foreach ($tei2Node as $tei2Node){
 				$p4_id = $tei2Node->getAttribute('id');
