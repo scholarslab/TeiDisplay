@@ -10,6 +10,7 @@
                 echo '<p class="error">' . html_escape($err) . '</p>';
             }
         ?>
+        <?php if (!empty($entries)){ ?>
 		<div class="pagination"><?php echo pagination_links(); ?></div>
 	    <table class="simple" cellspacing="0" cellpadding="0">
 	            <thead>
@@ -35,7 +36,8 @@
 	                <?php endforeach; ?>
 	            </tbody>
 	        </table>    
-</div>
+		</div>
+		<?php } else { echo '<p>No TEI files identified in system.  <a href="' . html_escape(uri('items/add')) . '">Add an Item.</a></p>'; }?>
 
 <?php 
     foot(); 

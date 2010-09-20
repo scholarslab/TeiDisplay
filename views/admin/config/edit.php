@@ -4,7 +4,7 @@
 <h1>Configure TEI File Display</h1>
 
 <div id="primary">
-	<h2>Title: <?php echo tei_display_get_title($item_id) ?></h2>
+	<h2>Title: <?php echo tei_display_get_title($file_id) ?></h2>
 	<?php
             if (!empty($err)) {
                 echo '<p class="error">' . html_escape($err) . '</p>';

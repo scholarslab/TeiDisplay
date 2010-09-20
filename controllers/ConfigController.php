@@ -28,8 +28,8 @@ class TeiDisplay_ConfigController extends Omeka_Controller_Action
 		$db = get_db();
 		$id = $this->_getParam('id');		
 		$entry = $db->getTable('TeiDisplay_Config')->find($id);
-		$item_id = $db->getTable('Item')->find($entry['item_id'])->id;
-		$this->view->item_id = $item_id;
+		$file_id = $db->getTable('File')->find($entry['file_id'])->id;
+		$this->view->file_id = $file_id;
 		$form = $this->configForm($entry);
 		$this->view->form = $form;
 	}
