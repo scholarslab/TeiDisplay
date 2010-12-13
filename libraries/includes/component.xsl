@@ -744,7 +744,10 @@
 	<xsl:template match="*[local-name()='pb']">
 		<hr class="pb"/>
 		<div align="center">&#x2015; <span class="run-head"><xsl:value-of select="@n"/></span>
-			&#x2015;</div>
+		&#x2015;</div>
+		<xsl:if test="@facs">
+			<img src="{@facs}"/>
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="*[local-name()='milestone']">

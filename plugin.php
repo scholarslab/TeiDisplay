@@ -38,6 +38,7 @@ function tei_display_install()
 			`id` int(10) unsigned NOT NULL auto_increment,
 			`item_id` int(10) unsigned,
 			`file_id` int(10) unsigned,
+			`fedoraconnector_id` int(10) unsigned,
 			`tei_id` tinytext collate utf8_unicode_ci,
 			`stylesheet` tinytext collate utf8_unicode_ci,	      
 			`display_type` tinytext collate utf8_unicode_ci,	    
@@ -334,32 +335,57 @@ function tei_display_options(){
 function tei_display_installed(){
 	return 'active';
 }
+
+function render_tei_files($item_id, $section){
+	$db = get_db();
+	$item = $db->getTable('Item')->find($item_id);
+	$hasTeiFile = array();
+	foreach ($item->Files as $file){
+		if (trim(strip_formatting(item_file('Dublin Core', 'Type', $options, $file)) == 'TEI Document')){
+			$hasTeiFile[] = 'true';
+		}
+	}
+	if (in_array('true', $hasTeiFile)){
+		$teiFiles = $db->getTable('TeiDisplay_Config')->findBySql('item_id = ?', array($item_id));
+		foreach ($teiFiles as $teiFile){
+			render_tei_file($teiFile->id, $section);
+		}
+	}
+}
 	
-function render_tei_file($file_id, $section){
-	//query for file-specific stylesheet and display_type. use default from option table if NULL
-	$stylesheet = tei_display_local_stylesheet($file_id);
-	$displayType = tei_display_local_display($file_id);
-
+function render_tei_file($identifier, $section){
+	$db = get_db();
+	$teiRecord = $db->getTable('TeiDisplay_Config')->find($identifier);
+	//initialize Dom xslt, xml documents
 	$xp = new XsltProcessor();
-	// create a DOM document and load the XSL stylesheet
 	$xsl = new DomDocument;
+	$xml_doc = new DomDocument;
 
-	// import the XSL styelsheet into the XSLT process
+	if ($teiRecord->file_id != NULL){
+		$file_id = $teiRecord->file_id;
+		$teiFile = $db->getTable('File')->find($file_id)->getWebPath('archive');
+	} 
+	//render TEI file from Fedora.
+	if (function_exists('fedora_connector_installed')){
+		if ($teiRecord->fedoraconnector_id != NULL){
+			$pid = $teiRecord->fedoraconnector_id;
+			$datastream = $db->getTable('FedoraConnector_Datastream')->find($pid);
+			$server = fedora_connector_get_server($datastream);
+			$teiFile = fedora_connector_content_url($datastream, $server);		
+		}
+	}
+	
+	$stylesheet = tei_display_local_stylesheet($teiRecord->id);
+	$displayType = tei_display_local_display($teiRecord->id);
+	
+	$xml_doc->load($teiFile);
+	
 	$xsl->load($stylesheet);
 	$xp->importStylesheet($xsl);
 	
 	//set query parameter to pass into stylesheet
 	$xp->setParameter('', 'display', $displayType);
 	$xp->setParameter('', 'section', $section);
-	
-	// create a DOM document and load the XML data
-	$xml_doc = new DomDocument;
-	
-	$db = get_db();
-	$teiFile = $db->getTable('File')->find($file_id)->getWebPath('archive');
-	//$teiFile = $file[0]->getWebPath('archive');
-	
-	$xml_doc->load($teiFile);
 	
 	try { 
 		if ($doc = $xp->transformToXML($xml_doc)) {			
@@ -370,27 +396,35 @@ function render_tei_file($file_id, $section){
 	}
 }
 
-function tei_display_get_title($file_id){
+function tei_display_get_title($id){
 	$db = get_db();
-	$file = $db->getTable('File')->find($file_id);
-	return strip_formatting(item_file('Dublin Core', 'Title', $options, $file));
+	$teiFile = $db->getTable('TeiDisplay_Config')->find($id);
+	
+	if ($teiFile->file_id != NULL){
+		$file = $db->getTable('File')->find($teiFile->file_id);
+		return strip_formatting(item_file('Dublin Core', 'Title', $options, $file));
+	}
+	if ($teiFile->fedoraconnector_id != NULL){
+		$item = $db->getTable('Item')->find($teiFile->item_id);
+		return strip_formatting(item('Dublin Core', 'Title', $options, $item));
+	}
 }
 
-function tei_display_local_stylesheet($file_id){
+function tei_display_local_stylesheet($id){
 	$db = get_db();
-	$results = $db->getTable('TeiDisplay_Config')->findBySql('file_id = ?', array($file_id));
-	if ($results[0]->stylesheet != NULL && $results[0]->stylesheet != ''){
-		return TEI_DISPLAY_STYLESHEET_FOLDER . $results[0]->stylesheet;
+	$teiFile = $db->getTable('TeiDisplay_Config')->find($id);
+	if ($teiFile->stylesheet != NULL && $teiFile->stylesheet != ''){
+		return TEI_DISPLAY_STYLESHEET_FOLDER . $teiFile->stylesheet;
 	} else {
 		return TEI_DISPLAY_STYLESHEET_FOLDER . get_option('tei_default_stylesheet');
 	}
 	
 }
-function tei_display_local_display($file_id){
+function tei_display_local_display($id){
 	$db = get_db();
-	$results = $db->getTable('TeiDisplay_Config')->findBySql('file_id = ?', array($file_id));
-	if ($results[0]->display_type != NULL && $results[0]->display_type != ''){
-		return $results[0]->display_type;
+	$teiFile = $db->getTable('TeiDisplay_Config')->find($id);
+	if ($teiFile->display_type != NULL && $teiFile->display_type != ''){
+		return $teiFile->display_type;
 	} else {
 		return get_option('tei_display_type');
 	}
