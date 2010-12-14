@@ -38,6 +38,7 @@ function tei_display_install()
 			`id` int(10) unsigned NOT NULL auto_increment,
 			`item_id` int(10) unsigned,
 			`file_id` int(10) unsigned,
+			`is_fedora_datastream` tinyint(1) unsigned NOT NULL,
 			`fedoraconnector_id` int(10) unsigned,
 			`tei_id` tinytext collate utf8_unicode_ci,
 			`stylesheet` tinytext collate utf8_unicode_ci,	      
@@ -57,6 +58,42 @@ function tei_display_install()
 			}
 			if ($tei_id != NULL && $tei_id != ''){
 				$db->insert('tei_display_config', array('item_id'=>$file->item_id, 'file_id'=>$file->id, 'tei_id'=>trim($tei_id)));
+			}
+		}
+		
+		//repopulate the tei_display_config_table with existing TEI datastreams from Fedora if FedoraConnector is installed
+		//change datastream from 'TEI' to another string, if applicable
+		if (function_exists('fedora_connector_installed')){
+			$datastreams = $db->getTable('FedoraConnector_Datastream')->findBySql('datastream = ?', array('TEI'));
+			foreach ($datastreams as $datastream){
+				$teiFile = fedora_connector_content_url($datastream);
+				//get the TEI id
+				$xml_doc = new DomDocument;									
+				$xml_doc->load($teiFile);
+				$xpath = new DOMXPath($xml_doc);
+				
+				$teiNode = $xml_doc->getElementsByTagName('TEI');
+				$tei2Node = $xml_doc->getElementsByTagName('TEI.2');
+						
+				foreach ($teiNode as $teiNode){
+					$p5_id = $teiNode->getAttribute('xml:id');
+				} 				
+				foreach ($tei2Node as $tei2Node){
+					$p4_id = $tei2Node->getAttribute('id');
+				}
+				
+				if (isset($p5_id)){
+					$tei_id = $p5_id;
+				} else if (isset($p4_id)){
+					$tei_id = $p4_id;
+				} else {
+					$tei_id = NULL;
+				}
+				
+				if ($tei_id != NULL){
+					$teiData = array('item_id'=>$datastream->item_id, 'is_fedora_datastream'=>1, 'fedoraconnector_id'=>$datastream->id, 'tei_id'=>$tei_id);
+					$db->insert('tei_display_configs', $teiData);
+				}
 			}
 		}
 	}
@@ -370,8 +407,7 @@ function render_tei_file($identifier, $section){
 		if ($teiRecord->fedoraconnector_id != NULL){
 			$pid = $teiRecord->fedoraconnector_id;
 			$datastream = $db->getTable('FedoraConnector_Datastream')->find($pid);
-			$server = fedora_connector_get_server($datastream);
-			$teiFile = fedora_connector_content_url($datastream, $server);		
+			$teiFile = fedora_connector_content_url($datastream);		
 		}
 	}
 	
