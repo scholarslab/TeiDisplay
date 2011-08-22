@@ -9,8 +9,13 @@
  * @author Ethan Gruber - ewg4x at virginia.edu
  **/
 
-define('TEI_DISPLAY_DIRECTORY', dirname(__FILE__));
-define('TEI_DISPLAY_STYLESHEET_FOLDER', TEI_DISPLAY_DIRECTORY . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR);
+if (!defined('TEI_DISPLAY_DIRECTORY')) {
+    define('TEI_DISPLAY_DIRECTORY', dirname(__FILE__));
+}
+
+if (!defined('TEI_DISPLAY_STYLESHEET_FOLDER')) {
+    define('TEI_DISPLAY_STYLESHEET_FOLDER', TEI_DISPLAY_DIRECTORY . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR);
+}
 
 add_plugin_hook('install', 'tei_display_install');
 add_plugin_hook('uninstall', 'tei_display_uninstall');
