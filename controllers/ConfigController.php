@@ -4,7 +4,7 @@ class TeiDisplay_ConfigController extends Omeka_Controller_Action
     public function browseAction() 	
     {
     	$db = get_db();
-    	
+
     	$currentPage = $this->_getParam('page', 1);
     	$this->view->entries =  TeiDisplay_Config::getConfig($currentPage);
 		
@@ -19,7 +19,7 @@ class TeiDisplay_ConfigController extends Omeka_Controller_Action
                             'per_page'      => 20, 
                             'total_results' => $count, 
                             'link'          => $paginationUrl);
-        
+
         Zend_Registry::set('pagination', $pagination);
     }
 
@@ -71,7 +71,7 @@ class TeiDisplay_ConfigController extends Omeka_Controller_Action
 		$form->setAction('update');    	
     	$form->setMethod('post');
     	$form->setAttrib('enctype', 'multipart/form-data');  
-    	    		
+
 		$teiDisplay = new Zend_Form_Element_Select ('tei_display_type');
 	    $teiDisplay->setLabel('Display Type:');
 	    $teiDisplay->addMultiOption('', 'Select...');
@@ -81,7 +81,7 @@ class TeiDisplay_ConfigController extends Omeka_Controller_Action
 			$teiDisplay->setValue($entry['display_type']);
 		}
 	    $form->addElement($teiDisplay);
-	    
+
 	    //default stylesheet
 	    $stylesheet = new Zend_Form_Element_Select('tei_default_stylesheet');
 	    $stylesheet->setLabel('Default Stylesheet:');
