@@ -1,23 +1,39 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4; */
 
 /**
  * TeiDisplay plugin
  *
- * @license    http://www.apache.org/licenses/LICENSE-2.0.html
- * @version    $Id:$
- * @package TeiDisplay
- * @author Ethan Gruber - ewg4x at virginia.edu
- **/
+ * PHP version 5
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+ * applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+ * OF ANY KIND, either express or implied. See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ */
+
+//{{{constants
 
 if (!defined('TEI_DISPLAY_DIRECTORY')) {
     define('TEI_DISPLAY_DIRECTORY', dirname(__FILE__));
 }
 
 if (!defined('TEI_DISPLAY_STYLESHEET_FOLDER')) {
-    define('TEI_DISPLAY_STYLESHEET_FOLDER', TEI_DISPLAY_DIRECTORY . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR);
+    define('TEI_DISPLAY_STYLESHEET_FOLDER', TEI_DISPLAY_DIRECTORY . 'libraries/');
 }
 
-add_plugin_hook('install', 'tei_display_install');
+//}}}
+
+require_once TEI_DISPLAY_DIRECTORY . '/TeiPlugin.php';
+
+new TeiPlugin;
+
+/*
+  * add_plugin_hook('install', 'tei_display_install');
 add_plugin_hook('uninstall', 'tei_display_uninstall');
 add_plugin_hook('after_save_item', 'tei_display_after_save_item');
 add_plugin_hook('before_delete_item', 'tei_display_before_delete_item');
@@ -337,10 +353,12 @@ function tei_display_config(){
     }
 }
 
+
+ */
 /*********
  * Displayable element form
- *********/
-function tei_display_options(){
+ 
+ function tei_display_options(){
 	$xslFiles = TeiDisplay_File::getFiles();
 
     require "Zend/Form/Element.php";
@@ -369,10 +387,10 @@ function tei_display_options(){
     
     return $form;
 }
+ *********/
 
 /******************************
  * Public plugin functions
- ******************************/
 
 function tei_display_installed(){
 	return 'active';
@@ -470,3 +488,6 @@ function tei_display_local_display($id){
 		return get_option('tei_display_type');
 	}
 }
+
+ ******************************/
+

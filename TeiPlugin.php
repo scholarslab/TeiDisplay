@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ * TeiDisplay Plugin
  */
 class TeiPlugin
 {
