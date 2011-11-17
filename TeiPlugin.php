@@ -37,7 +37,7 @@ class TeiPlugin
   {
     // create the table
     $createTable = <<<EOS
-CREATE TABLE IF NOT EXISTS `{$db->prefix}tei_display_configs` (
+CREATE TABLE IF NOT EXISTS `{$this->_db->prefix}tei_display_configs` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `item_id` int(10) unsigned,
   `file_id` int(10) unsigned,
