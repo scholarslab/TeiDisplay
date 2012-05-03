@@ -12,7 +12,7 @@
 	padding:0;
 }
 .tei_content {
-	width:65%;
+	width:95%;
 	margin-left:32%;
 }
 .toggle_toc {
@@ -22,8 +22,12 @@
 .tei_section{
 	margin-bottom:40px;	
 }
-.tei_subsection{
-	margin-bottom:20px;	
+div.tei_subsection{
+	margin-bottom:20px;
+	margin-left:20px;
+}
+a.toggle_toc{
+	margin-bottom: 125px !important;
 }
 /*
   *******************************
@@ -38,48 +42,51 @@
 /* DIVS */
 
 DIV.illgrp {
-text-align: center;
+	text-align: center;
 }
 
+a.download-file {
+	font-size: 14px;
+}
 /* TEXT BLOCKS */
 
 BLOCKQUOTE  {
-font-size: 80%;
-margin-left: 3%;
-margin-right: 3%;
-margin-top: 3%;
-margin-bottom: 3%
+	font-size: 80%;
+	margin-left: 3%;
+	margin-right: 3%;
+	margin-top: 3%;
+	margin-bottom: 3%
 }
 
 P.normal {
-text-indent: 4%;
-margin-top: 0.5%;
-margin-bottom: 0;
+	text-indent: 4%;
+	margin-top: 0.5%;
+	margin-bottom: 0;
 }
 
 P.indent {
-text-indent: 4%;
-margin-top: 0.5%;
-margin-bottom: 0;
+	text-indent: 4%;
+	margin-top: 0.5%;
+	margin-bottom: 0;
 }
 
 P.noindent {
-text-indent: 0;
-margin-top: 0.5%;
-margin-bottom: 0;
+	text-indent: 0;
+	margin-top: 0.5%;
+	margin-bottom: 10px;
 }
 
 P.padded {
-text-indent: 4%;
-margin-top: 0.5%;
-margin-bottom: 2em; 
+	text-indent: 4%;
+	margin-top: 0.5%;
+	margin-bottom: 2em; 
 }
 
 P.hang {
-text-indent: -2em;
-margin-left: 2em;
-margin-top: 0;
-margin-bottom: 0;
+	text-indent: -2em;
+	margin-left: 2em;
+	margin-top: 0;
+	margin-bottom: 0;
 }
 
 P.right  {
@@ -121,6 +128,16 @@ color: #DDDDDD;
 height: 1px;
 margin-top: 3%;
 }
+
+
+/* PB IMAGE */
+IMG.pb {
+	width:20%;
+	float:right;
+	margin:5px;
+}    
+
+
 
 /* FONT CHANGES */
 
@@ -192,6 +209,553 @@ color: gray;
 }
 
 .linegroup{
-	margin-left:20px;
+	
 	margin-bottom:10px;	
 }
+
+
+
+
+/*
+  *******************************
+  ALL TEI ELEMENTS
+  *******************************
+ */
+
+.ab{}
+.abbr{}
+.accMat{}
+.acquisition{}
+.activity{}
+.actor{}
+.add{}
+.addName{}
+.addSpan{}
+.additional{}
+.additions{}
+.addrLine{}
+.address{}
+.adminInfo{}
+.affiliation{}
+.age{}
+.alt{}
+.altGrp{}
+.altIdent{}
+.altIdentifier{}
+.am{}
+.analytic{}
+.anchor{}
+.app{}
+.appInfo{}
+.application{}
+.arc{}
+.argument{}
+.att{}
+.attDef{}
+.attList{}
+.attRef{}
+.author{}
+.authority{}
+.availability{}
+.back{}
+.bibl{}
+.biblFull{}
+.biblScope{}
+.biblStruct{}
+.bicond{}
+.binary{}
+.binaryObject{}
+.binding{}
+.bindingDesc{}
+.birth{}
+.bloc{}
+.body{}
+.broadcast{}
+.byline{}
+.c{}
+.cRefPattern{}
+.caesura{}
+.calendar{}
+.calendarDesc{}
+.camera{}
+.caption{}
+.case{}
+.castGroup{}
+.castItem{}
+.castList{}
+.catDesc{}
+.catRef{}
+.catchwords{}
+.category{}
+.cb{}
+.cell{}
+.certainty{}
+.change{}
+.channel{}
+.char{}
+.charDecl{}
+.charName{}
+.charProp{}
+.choice{}
+.cit{}
+.cl{}
+.classCode{}
+.classDecl{}
+.classRef{}
+.classSpec{}
+.classes{}
+.climate{}
+.closer{}
+.code{}
+.collation{}
+.collection{}
+.colloc{}
+.colophon{}
+.cond{}
+.condition{}
+.constitution{}
+.constraint{}
+.constraintSpec{}
+.content{}
+.corr{}
+.correction{}
+.country{}
+.creation{}
+.custEvent{}
+.custodialHist{}
+.damage{}
+.damageSpan{}
+.datatype{}
+.date{}
+.dateline{}
+.death{}
+.decoDesc{}
+.decoNote{}
+.def{}
+.default{}
+.defaultVal{}
+.del{}
+.delSpan{}
+.depth{}
+.derivation{}
+.desc{}
+.dictScrap{}
+.dim{}
+.dimensions{}
+.distinct{}
+.distributor{}
+.district{}
+.div{}
+.div1{}
+.div2{}
+.div3{}
+.div4{}
+.div5{}
+.div6{}
+.div7{}
+.divGen{}
+.docAuthor{}
+.docDate{}
+.docEdition{}
+.docImprint{}
+.docTitle{}
+.domain{}
+.eLeaf{}
+.eTree{}
+.edition{}
+.editionStmt{}
+.editor{}
+.editorialDecl{}
+.education{}
+.eg{}
+.egXML{}
+.elementRef{}
+.elementSpec{}
+.email{}
+.emph{}
+.encodingDesc{}
+.entry{}
+.entryFree{}
+.epigraph{}
+.epilogue{}
+.equipment{}
+.equiv{}
+.etym{}
+.event{}
+.ex{}
+.exemplum{}
+.expan{}
+.explicit{}
+.extent{}
+.f{}
+.fDecl{}
+.fDescr{}
+.fLib{}
+.facsimile{}
+.factuality{}
+.faith{}
+.figDesc{}
+.figure{}
+.fileDesc{}
+.filiation{}
+.finalRubric{}
+.floatingText{}
+.floruit{}
+.foliation{}
+.foreign{}
+.forename{}
+.forest{}
+.form{}
+.formula{}
+.front{}
+.fs{}
+.fsConstraints{}
+.fsDecl{}
+.fsDescr{}
+.fsdDecl{}
+.fsdLink{}
+.funder{}
+.fvLib{}
+.fw{}
+.g{}
+.gap{}
+.gb{}
+.gen{}
+.genName{}
+.geo{}
+.geoDecl{}
+.geogFeat{}
+.geogName{}
+.gi{}
+.gloss{}
+.glyph{}
+.glyphName{}
+.gram{}
+.gramGrp{}
+.graph{}
+.graphic{}
+.group{}
+.handDesc{}
+.handNote{}
+.handNotes{}
+.handShift{}
+.head{}
+.headItem{}
+.headLabel{}
+.height{}
+.heraldry{}
+.hi{}
+.history{}
+.hom{}
+.hyph{}
+.hyphenation{}
+.iNode{}
+.iType{}
+.ident{}
+.idno{}
+.if{}
+.iff{}
+.imprimatur{}
+.imprint{}
+.incident{}
+.incipit{}
+.index{}
+.institution{}
+.interaction{}
+.interp{}
+.interpGrp{}
+.interpretation{}
+.item{}
+.join{}
+.joinGrp
+.keywords{}
+.kinesic{}
+.l{}
+.label{}
+.lacunaEnd{}
+.lacunaStart{}
+.lang{}
+.langKnowledge{}
+.langKnown{}
+.langUsage{}
+.language{}
+.layout{}
+.layoutDesc{}
+.lb{}
+.lbl{}
+.leaf{}
+.lem{}
+.lg{}
+.licence{}
+.line{}
+.link{}
+.linkGrp{}
+.list{}
+.listBibl{}
+.listChange{}
+.listEvent{}
+.listForest{}
+.listNym{}
+.listOrg{}
+.listPerson{}
+.listPlace{}
+.listRef{}
+.listRelation{}
+.listTranspose{}
+.listWit{}
+.localName{}
+.locale{}
+.location{}
+.locus{}
+.locusGrp{}
+.m{}
+.macroRef{}
+.macroSpec{}
+.mapping{}
+.material{}
+.measure{}
+.measureGrp{}
+.meeting{}
+.memberOf{}
+.mentioned{}
+.metDecl{}
+.metSym{}
+.metamark{}
+.milestone{}
+.mod{}
+.moduleRef{}
+.moduleSpec{}
+.monogr{}
+.mood{}
+.move{}
+.msContents{}
+.msDesc{}
+.msIdentifier{}
+.msItem{}
+.msItemStruct{}
+.msName{}
+.msPart{}
+.musicNotation{}
+.name{}
+.nameLink{}
+.namespace{}
+.nationality{}
+.node{}
+.normalization{}
+.notatedMusic{}
+.note{}
+.notesStmt{}
+.num{}
+.number{}
+.numeric{}
+.nym{}
+.oRef{}
+.oVar{}
+.objectDesc{}
+.objectType{}
+.occupation{}
+.offset{}
+.opener{}
+.org{}
+.orgName{}
+.orig{}
+.origDate{}
+.origPlace{}
+.origin{}
+.orth{}
+.p{}
+.pRef{}
+.pVar{}
+.particDesc{}
+.pause{}
+.pb{}
+.pc{}
+.per{}
+.performance{}
+.persName{}
+.person{}
+.personGrp{}
+.phr{}
+.physDesc{}
+.place{}
+.placeName{}
+.population{}
+.pos{}
+.postBox{}
+.postCode{}
+.postscript{}
+.precision{}
+.preparedness{}
+.principal{}
+.profileDesc{}
+.projectDesc{}
+.prologue{}
+.pron{}
+.provenance{}
+.ptr{}
+.pubPlace{}
+.publicationStmt{}
+.publisher{}
+.purpose
+.q{}
+.quotation{}
+.quote{}
+.rdg{}
+.rdgGrp{}
+.re{}
+.recordHist{}
+.recording{}
+.recordingStmt{}
+.redo{}
+.ref{}
+.refState{}
+.refsDecl{}
+.reg{}
+.region{}
+.relatedItem{}
+.relation{}
+.relationGrp{}
+.remarks{}
+.rendition{}
+.repository{}
+.residence{}
+.resp{}
+.respStmt{}
+.respons{}
+.restore{}
+.retrace{}
+.revisionDesc{}
+.rhyme{}
+.role{}
+.roleDesc{}
+.roleName{}
+.root{}
+.row{}
+.rs{}
+.rubric{}
+.s{}
+.said{}
+.salute{}
+.samplingDecl{}
+.schemaSpec{}
+.scriptDesc{}
+.scriptNote{}
+.scriptStmt{}
+.seal{}
+.sealDesc{}
+.secFol{}
+.seg{}
+.segmentation{}
+.sense{}
+.series{}
+.seriesStmt{}
+.set{}
+.setting{}
+.settingDesc{}
+.settlement{}
+.sex{}
+.shift{}
+.sic{}
+.signatures{}
+.signed{}
+.soCalled{}
+.socecStatus{}
+.sound{}
+.source{}
+.sourceDesc{}
+.sourceDoc{}
+.sp{}
+.spGrp{}
+.space{}
+.span{}
+.spanGrp{}
+.speaker{}
+.specDesc{}
+.specGrp{}
+.specGrpRef{}
+.specList{}
+.sponsor{}
+.stage{}
+.stamp{}
+.state{}
+.stdVals{}
+.street{}
+.stress{}
+.string{}
+.subc{}
+.subst{}
+.substJoin{}
+.summary{}
+.superEntry{}
+.supplied{}
+.support{}
+.supportDesc{}
+.surface{}
+.surfaceGrp{}
+.surname{}
+.surplus{}
+.surrogates{}
+.syll{}
+.symbol{}
+.TEI{}
+.table{}
+.tag{}
+.tagUsage{}
+.tagsDecl{}
+.taxonomy{}
+.tech{}
+.teiCorpus{}
+.teiHeader{}
+.term{}
+.terrain{}
+.text{}
+.textClass{}
+.textDesc{}
+.textLang{}
+.then{}
+.time{}
+.timeline{}
+.title{}
+.titlePage{}
+.titlePart{}
+.titleStmt{}
+.tns{}
+.trailer{}
+.trait{}
+.transpose{}
+.tree{}
+.triangle{}
+.typeDesc{}
+.typeNote{}
+.u{}
+.unclear{}
+.undo{}
+.unicodeName{}
+.usg{}
+.vAlt{}
+.vColl{}
+.vDefault{}
+.vLabel{}
+.vMerge{}
+.vNot{}
+.vRange{}
+.val{}
+.valDesc{}
+.valItem{}
+.valList{}
+.value{}
+.variantEncoding{}
+.view{}
+.vocal{}
+.w{}
+.watermark{}
+.when{}
+.width{}
+.wit{}
+.witDetail{}
+.witEnd{}
+.witStart{}
+.witness{}
+.writing{}
+.xr{}
+.zone{}
