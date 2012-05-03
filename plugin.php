@@ -187,46 +187,74 @@ function tei_display_after_save_item($item)
 				foreach ($dc as $name){
 					if ($name == 'Title'){
 						$queries = array('//*[local-name() = "teiHeader"]/*[local-name() = "fileDesc"]/*[local-name() = "titleStmt"]/*[local-name() = "title"]');
+						
 					} elseif ($name == 'Creator'){
 						$queries = array('//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="author"]');
+						
 					} elseif ($name == 'Subject'){
-						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="profileDesc"]/*[local-name()="textClass"]/*[local-name()="keywords"]/*[local-name()="list"]/*[local-name()="item"]');
+						$queries = array('//*[local-name()="teiHeader"]/*[local-name()="profileDesc"]/*[local-name()="textClass"]/*[local-name()="keywords"]/*[local-name()="list"]/*[local-name()="item"]',
+						'//*[local-name()="teiHeader"]/*[local-name()="profileDesc"]/*[local-name()="textClass"]/*[local-name()="keywords"]/*[local-name()="term"]');
+						
 					} elseif ($name == 'Description'){
-						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="encodingDesc"]/*[local-name()="refsDecl"]',
-											'//*[local-name()="teiHeader"]/*[local-name()="encodingDesc"]/*[local-name()="projectDesc"]',
-											'//*[local-name()="teiHeader"]/*[local-name()="encodingDesc"]/*[local-name()="editorialDesc"]');
+						$queries = array('//*[local-name()="teiHeader"]/*[local-name()="encodingDesc"]/*[local-name()="projectDesc"]',
+						'//*[local-name()="teiHeader"]/*[local-name()="encodingDesc"]/*[local-name()="samplingDecl"]',
+						'//*[local-name()="teiHeader"]/*[local-name()="encodingDesc"]/*[local-name()="editorialDecl"]',
+						'//*[local-name()="teiHeader"]/*[local-name()="encodingDesc"]/*[local-name()="refsDecl"]'
+															
+						);
+						
 					} elseif ($name == 'Publisher'){
-						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="publisher"]/*[local-name()="publisher"]',
-											'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="publisher"]/*[local-name()="pubPlace"]');
+						$queries = array('//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="publisher"]',
+						'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="pubPlace"]',
+						
+						);
+						
 					} elseif ($name == 'Contributor'){
-						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="editor"]',
-											'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="funder"]',
-											'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="sponsor"]',
-											'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="principle"]');
+						$queries = array('//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="editor"]',
+						'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="funder"]',
+						'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="sponsor"]',
+						'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="principal"]',
+						'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="titleStmt"]/*[local-name()="respStmt"]/*[local-name()="name"]'
+											
+						);
 					} elseif ($name == 'Date'){
-						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="date"]');
+						$queries = array('//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="date"]'
+				
+						);
 					} elseif ($name == 'Type'){
 						//type, defined with Item Type Metadata dropdown
 						$queries = array();				
 					} elseif ($name == 'Format'){
 						//format, added manually as text/*[local-name()="xml"] below
-						$queries == array();
+						$queries = array();
 					} elseif ($name == 'Identifier'){
-						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="idno"][@type="ARK"]');
+						$queries = array('//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="idno"]'
+						
+						);
 					} elseif ($name == 'Source'){
-						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="sourceDesc"]/*[local-name()="bibful"]/*[local-name()="publicationStmt"]/*[local-name()="publisher"]',
-											'//*[local-name()="teiHeader"]/*[local-name()="sourceDesc"]/*[local-name()="bibful"]/*[local-name()="publicationStmt"]/*[local-name()="pubPlace"]',
-											'//*[local-name()="teiHeader"]/*[local-name()="sourceDesc"]/*[local-name()="bibful"]/*[local-name()="publicationStmt"]/*[local-name()="date"]',
-											'//*[local-name()="teiHeader"]/*[local-name()="sourceDesc"]/*[local-name()="bibl"]');
+						$queries = array('//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="sourceDesc"]/*[local-name()="biblFull"]/*[local-name()="publicationStmt"]/*[local-name()="publisher"]',
+						'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="sourceDesc"]/*[local-name()="biblFull"]/*[local-name()="publicationStmt"]/*[local-name()="pubPlace"]',
+						'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="sourceDesc"]/*[local-name()="biblFull"]/*[local-name()="publicationStmt"]/*[local-name()="date"]',
+						
+						'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="sourceDesc"]/*[local-name()="bibl"]'
+						);					
 					} elseif ($name == 'Language'){
-						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="profileDesc"]/*[local-name()="langUsage"]/*[local-name()="language"]');
+						$queries = array('//*[local-name()="teiHeader"]/*[local-name()="profileDesc"]/*[local-name()="langUsage"]/*[local-name()="language"]'
+						
+						);
 					} elseif ($name == 'Relation'){
-						$queries = array(	'//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="seriesStmt"]/*[local-name()="title"]');
+						$queries = array('//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="seriesStmt"]/*[local-name()="title"]'
+						
+						);
 					} elseif ($name == 'Coverage'){
 						//skip coverage, there is no clear mapping from TEI Header to Dublin Core
-						$queries == array();
-					} elseif ($name == 'Rights'){
-						$queries == array('//*[local-name()="teiheader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="availability"]');
+						$queries = array();
+					} 
+					
+					elseif ($name == 'Rights'){
+						$queries = array('//*[local-name()="teiHeader"]/*[local-name()="fileDesc"]/*[local-name()="publicationStmt"]/*[local-name()="availability"]'
+						
+						);
 					}
 					
 					//get item element texts
