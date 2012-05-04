@@ -30,10 +30,8 @@ if (!defined('TEI_DISPLAY_STYLESHEET_FOLDER')) {
 
 require_once TEI_DISPLAY_DIRECTORY . '/TeiPlugin.php';
 
-new TeiPlugin;
 
-/*
-  * add_plugin_hook('install', 'tei_display_install');
+add_plugin_hook('install', 'tei_display_install');
 add_plugin_hook('uninstall', 'tei_display_uninstall');
 add_plugin_hook('after_save_item', 'tei_display_after_save_item');
 add_plugin_hook('before_delete_item', 'tei_display_before_delete_item');
@@ -382,10 +380,10 @@ function tei_display_config(){
 }
 
 
- */
+ *
 /*********
  * Displayable element form
- 
+ */ 
  function tei_display_options(){
 	$xslFiles = TeiDisplay_File::getFiles();
 
@@ -419,7 +417,7 @@ function tei_display_config(){
 
 /******************************
  * Public plugin functions
-
+ */
 function tei_display_installed(){
 	return 'active';
 }
@@ -517,5 +515,4 @@ function tei_display_local_display($id){
 	}
 }
 
- ******************************/
 
