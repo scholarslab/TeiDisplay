@@ -1,0 +1,21 @@
+<phpunit bootstrap="bootstrap.php"
+  convertErrorsToExceptions="true"
+  convertWarningsToExceptions="true"
+  verbose="true">
+  <php>
+    <includePath>..</includePath>
+    <includePath>../../..</includePath>
+  </php>
+  <testsuite name="TEI Display Tests">
+    <directory>unit</directory>
+    <directory>integration</directory>
+  </testsuite>
+  <logging>
+    <log type="coverage-html"
+      target="../build/coverage"
+      charset="UTF-8" yui="true"
+      highlight="true"
+      lowUpperBound="35"
+      highLowerBound="70" />
+  </logging>
+</phpunit>
