@@ -31,4 +31,10 @@ if (!defined('TEI_DISPLAY_STYLESHEET_FOLDER')) {
 require_once TEI_DISPLAY_DIRECTORY . '/TeiDisplayPlugin.php';
 
 new TeiPlugin;
-
+/*
+ * Local variables:
+ * tab-width: 4
+ * c-basic-offset: 4
+ * c-hanging-comment-ender-p: nil
+ * End:
+ */
