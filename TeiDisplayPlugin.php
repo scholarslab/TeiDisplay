@@ -1,5 +1,5 @@
 <?php
-/* vim: :set expandtab tabstop=4 shiftwidth=4 softtabstop=4; */
+/* vim: :set expandtab tabstop=4 shiftwidth=4 softtabstop=4 */
 
 /**
  * TeiDisplay Plugin
@@ -22,11 +22,10 @@
  * @license    http://www.apache.org/licenses/LICENSE-2.0.html Apache 2 License
  * @link       https://github.com/scholarslab/TeiDisplay
  */
-
 class TeiDisplayPlugin
 {
-    private static $_hooks = array (
-        'intall',
+    private static $_hooks = array(
+        'install',
         'uninstall',
         'define_acl',
         'after_save_item',
@@ -38,7 +37,7 @@ class TeiDisplayPlugin
     );
 
     private static $_filters = array(
-        'admin_navigation_main'
+        // 'admin_navigation_main'
     );
 
     private static $_db;
@@ -73,125 +72,53 @@ class TeiDisplayPlugin
     }
 
     /**
-     * Install the teiDisplay plugin
+     * install the teidisplay plugin
      *
      * @return void
      */
-    function install()
+    public function install()
     {
-        $db = get_db();
-        if (!class_exists('XSLTProcessor')) {
+        // Flow for this:
+
+        $ddl = <<<DDL
+CREATE TABLE IF NOT EXISTS `{$this->_db->prefix}tei_display_configs` (
+    `id` int(10) unsigned NOT NULL auto_increment,
+    `item_id` int(10) unsigned,
+    `file_id` int(10) unsigned,
+    `is_fedora_datastream` tinyint(1) unsigned NOT NULL,
+    `fedoraconnector_id` int(10) unsigned,
+    `tei_id` tinytext collate utf8_unicode_ci,
+    `stylesheet` tinytext collate utf8_unicode_ci,
+    `display_type` tinytext collate utf8_unicode_ci,	
+    PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+DDL;
+
+        $this->_db->exec($ddl);
+
+        if (!self::xsltExists()) {
             throw new Exception(
-                'Unable to access XSLTProcessor class. Make sure the php-xsl
-                package is installed.'
+                "XSLT processor is missing. Please ensure the php-xsl package is installed"
             );
-        } else {
-            $xh = new XSLTProcessor; // we check for the ability to use XSLT	
-            set_option('tei_display_type', 'entire');
-            set_option('tei_default_stylesheet', 'default.xsl');
-
-            // create for facet mapping
-            $db->exec(
-                "CREATE TABLE IF NOT EXISTS `{$db->prefix}tei_display_configs` (
-                    `id` int(10) unsigned NOT NULL auto_increment,
-                    `item_id` int(10) unsigned,
-                    `file_id` int(10) unsigned,
-                    `is_fedora_datastream` tinyint(1) unsigned NOT NULL,
-                    `fedoraconnector_id` int(10) unsigned,
-                    `tei_id` tinytext collate utf8_unicode_ci,
-                    `stylesheet` tinytext collate utf8_unicode_ci,
-                    `display_type` tinytext collate utf8_unicode_ci,	
-                    PRIMARY KEY  (`id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
-            );
-
-            //repopulate the tei_display_config table with existing TEI 
-            //Document typed files upon plugin reinstallation
-            $files = $db->getTable('File')->findBySql(
-                'mime_browser = ?',
-                array('application/xml')
-            );
-
-            foreach ($files as $file) {
-                $xml_doc = new DomDocument;	
-                $teiFile = $file->getWebPath('archive');
-                $xml_doc->load($teiFile);
-                $tei2 = $xml_doc->getElementsByTagName('TEI.2');
-
-                foreach ($tei2 as $tei2) {
-                    $tei_id = $tei2->getAttribute('id');
-                }
-
-                if ($tei_id != null && $tei_id != '') {
-                    $db->insert(
-                        'tei_display_config', array(
-                            'item_id'=>$file->item_id,
-                            'file_id'=>$file->id,
-                            'tei_id'=>trim($tei_id)
-                        )
-                    );
-                }
-            }
-
-            //repopulate the tei_display_config_table with existing TEI
-            //datastreams from Fedora if FedoraConnector is installed
-            //
-            //change datastream from 'TEI' to another string, if applicable
-            if (function_exists('fedora_connector_installed')) {
-                $datastreams = $db->getTable('FedoraConnector_Datastream')->findBySql('datastream = ?', array('TEI'));
-
-                foreach ($datastreams as $datastream) {
-                    $teiFile = fedora_connector_content_url($datastream);
-                    //get the TEI id
-                    $xml_doc = new DomDocument;									
-                    $xml_doc->load($teiFile);
-                    $xpath = new DOMXPath($xml_doc);
-
-                    $teiNode = $xml_doc->getElementsByTagName('TEI');
-                    $tei2Node = $xml_doc->getElementsByTagName('TEI.2');
-
-                    foreach ($teiNode as $teiNode) {
-                        $p5_id = $teiNode->getAttribute('xml:id');
-                    } 				
-                    foreach ($tei2Node as $tei2Node) {
-                        $p4_id = $tei2Node->getAttribute('id');
-                    }
-
-                    if (isset($p5_id)) {
-                        $tei_id = $p5_id;
-                    } else if (isset($p4_id)) {
-                        $tei_id = $p4_id;
-                    } else {
-                        $tei_id = null;
-                    }
-
-                    if ($tei_id != null) {
-                        $teiData = array(
-                            'item_id' => $datastream->item_id,
-                            'is_fedora_datastream' => 1,
-                            'fedoraconnector_id' => $datastream->id,
-                            'tei_id'=>$tei_id
-                        );
-                        $db->insert('tei_display_configs', $teiData);
-                    }
-                }
-            }
         }
+
+        self::setOptions();
+
+        self::batchAddDocs();
+        self::addFedoraItems();
+
     }
+
     /**
      * Uninstall the plugin
      *
      * @return void
      */
-    function uninstall()
+    public function uninstall()
     {
-        $db = get_db();
-        $sql = "DROP TABLE IF EXISTS `{$db->prefix}tei_display_configs`";
-        $db->query($sql);
-
-        //delete option
-        delete_option('tei_display_type');
-        delete_option('tei_default_stylesheet');
+        $sql = "DROP TABLE IF EXISTS `{$this->_db->prefix}tei_display_configs`";
+        $this->_db->query($sql);
+        self::deleteOptions();
     }
 
     /**
@@ -202,9 +129,8 @@ class TeiDisplayPlugin
      * @return void
      *
      */
-    function afterSaveItem($item)
+    public function afterSaveItem($item)
     {
-        $db = get_db();
         $files = $item->Files;
         foreach ($files as $file) {
             $mimeType = $file->mime_browser;
@@ -237,7 +163,7 @@ class TeiDisplayPlugin
                 if ($tei_id != null) {
                     //add the file to the tei_display_config table if it isn't 
                     //already there
-                    $configs = $db->getTable('TeiDisplay_Config')->findAll();
+                    $configs = $this->_db->getTable('TeiDisplay_Config')->findAll();
 
                     $configTeiIds = array();
                     foreach ($configs as $config) {
@@ -245,7 +171,7 @@ class TeiDisplayPlugin
                     }
 
                     if (!in_array(trim($tei_id), $configTeiIds)) {
-                        $db->insert(
+                        $this->_db->insert(
                             'tei_display_config', 
                             array(
                                 'item_id' => $item->id, 
@@ -256,11 +182,11 @@ class TeiDisplayPlugin
                     }
 
                     //get element_ids
-                    $dcSetId = $db->getTable('ElementSet')->findByName(
+                    $dcSetId = $this->_db->getTable('ElementSet')->findByName(
                         'Dublin Core'
                     )->id;
 
-                    $dcElements = $db->getTable('Element')->findBySql(
+                    $dcElements = $this->_db->getTable('Element')->findBySql(
                         'element_set_id = ?',
                         array($dcSetId)
                     );
@@ -412,7 +338,7 @@ class TeiDisplayPlugin
      *
      * @return void
      */
-    function beforeDeleteItem($item)
+    public function beforeDeleteItem($item)
     {
         $files = $this->_db->getTable('TeiDisplay_Config')->findBySql(
             'item_id = ?',
@@ -431,7 +357,7 @@ class TeiDisplayPlugin
      *
      * @return void
      */
-    function defineAcl($acl)
+    public function defineAcl($acl)
     {
         $acl->loadResourceList(
             array(
@@ -450,7 +376,7 @@ class TeiDisplayPlugin
      *
      * @return void
      */
-    function adminNavigation($tabs)
+    public function adminNavigation($tabs)
     {
         if (get_acl()->checkUserPermission('TeiDisplay_Config', 'index')) {
             $tabs['TEI Config'] = uri('tei-display/config/');
@@ -465,7 +391,7 @@ class TeiDisplayPlugin
      *
      * @return void
      */
-    function adminThemeHeader($request)
+    public function adminThemeHeader($request)
     {
         if ($request->getModuleName() == 'tei-display') {
             queue_css('tei_display_main');
@@ -480,7 +406,7 @@ class TeiDisplayPlugin
      *
      * @return void
      */
-    function publicThemeHeader($request)
+    public function publicThemeHeader($request)
     {
         //echo '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>';
         //echo '<link rel="stylesheet" media="screen" href="' . WEB_PLUGIN . '/TeiDisplay/views/public/css/tei_display_public.css"/>';
@@ -494,11 +420,11 @@ class TeiDisplayPlugin
      *
      * @return void
      */
-    function configForm()
+    public function configForm()
     {
-        $form = tei_display_options();
+        $form = self::getDisplayOptions();
 
-        static $formText = <<<FORM
+        $formText = <<<FORM
   <style type="text/css">.zend_form>dd{ margin-bottom:20px; }</style>
   <div class="field">
     <h3>TEI Display Type</h3>
@@ -520,7 +446,7 @@ FORM;
      *
      * @return voic
      */
-    function displayConfig()
+    public function displayConfig()
     {
         $form = tei_display_options();
         if ($form->isValid($_POST)) {
@@ -541,7 +467,7 @@ FORM;
      *
      * @return form to display
      */
-    function displayOptions()
+    public function getDisplayOptions()
     {
         $xslFiles = TeiDisplay_File::getFiles();
 
@@ -576,7 +502,7 @@ FORM;
      *
      * @return boolean
      */
-    function installed()
+    public function installed()
     {
         return 'active';
     }
@@ -589,10 +515,9 @@ FORM;
      *
      * @return void
      */
-    function renderTeiFiles($item_id, $section)
+    public function renderTeiFiles($item_id, $section)
     {
-        $db = get_db();
-        $item = $db->getTable('Item')->find($item_id);
+        $item = $this->_db->getTable('Item')->find($item_id);
         $hasTeiFile = array();
         foreach ($item->Files as $file) {
             if (trim(strip_formatting(item_file('Dublin Core', 'Type', $options, $file)) == 'TEI Document')) {
@@ -600,7 +525,7 @@ FORM;
             }
         }
         if (in_array('true', $hasTeiFile)) {
-            $teiFiles = $db->getTable('TeiDisplay_Config')->findBySql(
+            $teiFiles = $this->_db->getTable('TeiDisplay_Config')->findBySql(
                 'item_id = ?',
                 array($item_id)
             );
@@ -619,10 +544,9 @@ FORM;
      *
      * @return void
      */
-    function renderTeiFile($identifier, $section)
+    public function renderTeiFile($identifier, $section)
     {
-        $db = get_db();
-        $teiRecord = $db->getTable('TeiDisplay_Config')->find($identifier);
+        $teiRecord = $this->_db->getTable('TeiDisplay_Config')->find($identifier);
         //initialize Dom xslt, xml documents
         $xp = new XsltProcessor();
         $xsl = new DomDocument;
@@ -630,14 +554,14 @@ FORM;
 
         if ($teiRecord->file_id != null) {
             $file_id = $teiRecord->file_id;
-            $teiFile = $db->getTable('File')->find($file_id)->getWebPath('archive');
+            $teiFile = $this->_db->getTable('File')->find($file_id)->getWebPath('archive');
         }
 
         //render TEI file from Fedora.
         if (function_exists('fedora_connector_installed')) {
             if ($teiRecord->fedoraconnector_id != null) {
                 $pid = $teiRecord->fedoraconnector_id;
-                $datastream = $db->getTable('FedoraConnector_Datastream')->find($pid);
+                $datastream = $this->_db->getTable('FedoraConnector_Datastream')->find($pid);
                 $teiFile = fedora_connector_content_url($datastream);		
             }
         }
@@ -670,18 +594,17 @@ FORM;
      *
      * @return string Document title
      */
-    function getTitle($id)
+    public function getTitle($id)
     {
-        $db = get_db();
-        $teiFile = $db->getTable('TeiDisplay_Config')->find($id);
+        $teiFile = $this->_db->getTable('TeiDisplay_Config')->find($id);
 
         if ($teiFile->file_id != null) {
-            $file = $db->getTable('File')->find($teiFile->file_id);
+            $file = $this->_db->getTable('File')->find($teiFile->file_id);
             return strip_formatting(item_file('Dublin Core', 'Title', $options, $file));
         }
 
         if ($teiFile->fedoraconnector_id != null) {
-            $item = $db->getTable('Item')->find($teiFile->item_id);
+            $item = $this->_db->getTable('Item')->find($teiFile->item_id);
             return strip_formatting(item('Dublin Core', 'Title', $options, $item));
         }
     }
@@ -693,10 +616,9 @@ FORM;
      * 
      * @return string Stylesheet
      */
-    function localStylesheet($id)
+    public function localStylesheet($id)
     {
-        $db = get_db();
-        $teiFile = $db->getTable('TeiDisplay_Config')->find($id);
+        $teiFile = $this->_db->getTable('TeiDisplay_Config')->find($id);
         if ($teiFile->stylesheet != null && $teiFile->stylesheet != '') {
             return TEI_DISPLAY_STYLESHEET_FOLDER . $teiFile->stylesheet;
         } else {
@@ -712,17 +634,141 @@ FORM;
      *
      * @return string TEI display type
      */
-    function localDisplay($id)
+    public function localDisplay($id)
     {
-        $db = get_db();
-        $teiFile = $db->getTable('TeiDisplay_Config')->find($id);
+        $teiFile = $this->_db->getTable('TeiDisplay_Config')->find($id);
         if ($teiFile->display_type != null && $teiFile->display_type != '') {
             return $teiFile->display_type;
         } else {
             return get_option('tei_display_type');
         }
     }
+
+    /**
+     * Add Fedora data streams
+     *
+     * @return void
+     */
+    protected function addFedoraItems()
+    {
+        if (function_exists('fedora_connector_installed')) {
+            $datastreams = $this->_db->getTable('FedoraConnector_Datastream')->findBySql('datastream = ?', array('TEI'));
+
+            foreach ($datastreams as $datastream) {
+                $teiFile = fedora_connector_content_url($datastream);
+                //get the TEI id
+                $xml_doc = new DomDocument;									
+                $xml_doc->load($teiFile);
+                $xpath = new DOMXPath($xml_doc);
+
+                $teiNode = $xml_doc->getElementsByTagName('TEI');
+                $tei2Node = $xml_doc->getElementsByTagName('TEI.2');
+
+                foreach ($teiNode as $teiNode) {
+                    $p5_id = $teiNode->getAttribute('xml:id');
+                } 				
+                foreach ($tei2Node as $tei2Node) {
+                    $p4_id = $tei2Node->getAttribute('id');
+                }
+
+                if (isset($p5_id)) {
+                    $tei_id = $p5_id;
+                } else if (isset($p4_id)) {
+                    $tei_id = $p4_id;
+                } else {
+                    $tei_id = null;
+                }
+
+                if ($tei_id != null) {
+                    $teiData = array(
+                        'item_id' => $datastream->item_id,
+                        'is_fedora_datastream' => 1,
+                        'fedoraconnector_id' => $datastream->id,
+                        'tei_id'=>$tei_id
+                    );
+                    $this->_db->insert('tei_display_configs', $teiData);
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Checks if the XSLT PHP module is present
+     *
+     * @return boolean
+     */
+    protected function xsltExists()
+    {
+        return class_exists('xsltprocessor');
+    }
+
+    /**
+     * Populate the tei_display_config table with exisiting TEI
+     *
+     * @return void;
+     */
+    protected function batchAddDocs()
+    {
+        //repopulate the tei_display_config table with existing TEI 
+        //Document typed files upon plugin reinstallation
+        $files = $this->_db->getTable('File')->findBySql(
+            'mime_browser = ?',
+            array('application/xml')
+        );
+
+        foreach ($files as $file) {
+            $xml_doc = new DomDocument;	
+            $teiFile = $file->getWebPath('archive');
+            $xml_doc->load($teiFile);
+            $tei2 = $xml_doc->getElementsByTagName('TEI.2');
+
+            foreach ($tei2 as $tei2) {
+                $tei_id = $tei2->getAttribute('id');
+            }
+
+            if ($tei_id != null && $tei_id != '') {
+                $this->_db->insert(
+                    'tei_display_config', array(
+                        'item_id'=>$file->item_id,
+                        'file_id'=>$file->id,
+                        'tei_id'=>trim($tei_id)
+                    )
+                );
+            }
+        }
+
+        return;
+
+    }
+
+    /**
+     * set the options for the plugin
+     *
+     * @return void
+     */
+    protected function setOptions()
+    {
+        set_option('tei_display_type', 'entire');
+        set_option('tei_default_stylesheet', 'default.xsl');
+
+    }
+
+    /**
+     * Delete options
+     *
+     * @return void
+     */
+    protected function deleteOptions()
+    {
+        delete_option('tei_display_type');
+        delete_option('tei_default_stylesheet');
+
+    }
+
 }
+
+
 /*
  * Local variables:
  * tab-width: 4
