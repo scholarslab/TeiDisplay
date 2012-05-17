@@ -422,23 +422,12 @@ DDL;
      */
     public function configForm()
     {
-        $form = self::getDisplayOptions();
+        $form = TeiDisplay_ViewHelpers::makeConfigForm();
 
-        $formText = <<<FORM
-  <style type="text/css">.zend_form>dd{ margin-bottom:20px; }</style>
-  <div class="field">
-    <h3>TEI Display Type</h3>
-    <p class="explanation">There are two display types: Segmental or Entire
-Document. The segmental display incorporates a table of contents with links
-to display sections of the TEI document (generally div1 or div2).  This is
-perhaps the most appropriate mode for extremely large TEI documents that
-consist of hundreds of pages, especially those that include references to
-figure images.  The Entire Document display renders the entire TEI document
-in HTML form.</p>
-FORM;
+        if ($form->isValid($_POST)) {
+            $options = $form->getValues();
 
-        echo $formText . $form . '</div>';
-
+        }
     }
 
     /**

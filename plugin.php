@@ -29,6 +29,8 @@ if (!defined('TEI_DISPLAY_STYLESHEET_FOLDER')) {
 //}}}
 
 require_once TEI_DISPLAY_DIRECTORY . '/TeiDisplayPlugin.php';
+require_once TEI_DISPLAY_DIRECTORY . '/helpers/TeiDisplay_ViewHelpers.php';
+
 
 new TeiDisplayPlugin;
 /*
