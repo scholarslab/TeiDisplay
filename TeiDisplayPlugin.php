@@ -411,7 +411,8 @@ DDL;
         //echo '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>';
         //echo '<link rel="stylesheet" media="screen" href="' . WEB_PLUGIN . '/TeiDisplay/views/public/css/tei_display_public.css"/>';
         //echo js('tei_display_toggle_toc');
-        queue_css('tei_display_plublic.css');
+      //queue_css('tei_display_plublic');
+//        queue_js('jquery');
         queue_js('tei_display_toggle_toc');
     }
 
