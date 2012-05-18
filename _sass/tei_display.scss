@@ -1,0 +1,761 @@
+#tei_display{
+  display:table;	
+  width:100%;
+}
+.tei_toc {
+  width:30%;
+  float:left;
+  margin-right:10px;
+}
+.tei_toc>ul {
+  margin:0;
+  padding:0;
+}
+.tei_content {
+  width:95%;
+  margin-left:32%;
+}
+.toggle_toc {
+  float:right;
+  cursor:pointer;
+}
+.tei_section{
+  margin-bottom:40px;	
+}
+div.tei_subsection{
+  margin-bottom:20px;
+  margin-left:20px;
+}
+a.toggle_toc{
+  margin-bottom: 125px !important;
+}
+/*
+ *******************************
+ TEXT STYLING
+ *******************************
+ */
+  .toc_type {
+    text-transform:capitalize;
+  }
+
+  /* dynaXML CONTENT stylesheet for TEI */
+  /* DIVS */
+
+  div.illgrp {
+    text-align: center;
+  }
+
+  a.download-file {
+    font-size: 14px;
+  }
+  /* TEXT BLOCKS */
+
+  blockquote  {
+    font-size: 80%;
+    margin-left: 3%;
+    margin-right: 3%;
+    margin-top: 3%;
+    margin-bottom: 3%
+  }
+
+  p.normal {
+    text-indent: 4%;
+    margin-top: 0.5%;
+    margin-bottom: 0;
+  }
+
+  p.indent {
+    text-indent: 4%;
+    margin-top: 0.5%;
+    margin-bottom: 0;
+  }
+
+  p.noindent {
+    text-indent: 0;
+    margin-top: 0.5%;
+    margin-bottom: 10px;
+  }
+
+  p.padded {
+    text-indent: 4%;
+    margin-top: 0.5%;
+    margin-bottom: 2em; 
+  }
+
+  p.hang {
+    text-indent: -2em;
+    margin-left: 2em;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  p.right  {
+    text-indent: 0;
+    text-align: right;
+    margin-top: 0;
+    margin-bottom: 0; 
+  }
+
+  p.center  {
+    text-indent: 0;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 0; 
+  }
+
+  /* LISTS */
+
+  ul.nobull  {
+    list-style-type: none;
+  }
+
+  ul.alpha  {
+    list-style-type: lower-alpha;
+  }
+
+  ol.nobull  {
+    list-style-type: none;
+  }
+
+  ol.alpha  {
+    list-style-type: lower-alpha;
+  }
+
+  /* HR */
+
+  hr.pb {
+    color: #DDDDDD;
+    height: 1px;
+    margin-top: 3%;
+  }
+
+
+  /* pB IMAGE */
+  img.pb {
+    width:20%;
+    float:right;
+    margin:5px;
+  }
+
+
+
+  /* FONT CHANGES */
+
+  .normal  {
+    font-style: normal;
+  }
+
+  .sc  {
+    font-variant: small-caps;
+  }
+
+  .up1  {
+    font-size: 120%;
+  }
+
+  .down1  {
+    font-size: 80%;
+  }
+
+  .center  {
+    text-align: center;
+  }
+
+  .right  {
+    text-align: right;
+  }
+
+  .ref  {
+    font-size: 80%;
+    font-weight: bold;
+    line-height: 0px;
+  }
+
+  .ref-hi  {
+    font-size: 80%;
+    font-weight: bold;
+    line-height: 0px;
+    background-color: #FFCC66;
+  }
+
+  .note  {
+    font-size: 80%;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .note-hi  {
+    font-size: 80%;
+    margin-top: 0;
+    margin-bottom: 0;
+    background-color: #E9EEF4;
+  }
+
+  .inline-note  {
+    font-size: 80%;
+    font-family: Arial, sans-serif;
+    margin-top: 0;
+    margin-bottom: 0;
+    background-color: silver;
+  }
+
+  .bibl-hi  {
+    font-weight: bold;
+    background-color: #E9EEF4;
+  }
+
+  .run-head  { 
+    color: gray;
+  }
+
+  .linegroup{
+
+    margin-bottom:10px;	
+  }
+
+
+
+
+  /*
+   *******************************
+   ALL TEI ELEMENTS
+   *******************************
+   */
+
+  .ab{}
+  .abbr{}
+  .accMat{}
+  .acquisition{}
+  .activity{}
+  .actor{}
+  .add{}
+  .addName{}
+  .addSpan{}
+  .additional{}
+  .additions{}
+  .addrLine{}
+  .address{}
+  .adminInfo{}
+  .affiliation{}
+  .age{}
+  .alt{}
+  .altGrp{}
+  .altIdent{}
+  .altIdentifier{}
+  .am{}
+  .analytic{}
+  .anchor{}
+  .app{}
+  .appInfo{}
+  .application{}
+  .arc{}
+  .argument{}
+  .att{}
+  .attDef{}
+  .attList{}
+  .attRef{}
+  .author{}
+  .authority{}
+  .availability{}
+  .back{}
+  .bibl{}
+  .biblFull{}
+  .biblScope{}
+  .biblStruct{}
+  .bicond{}
+  .binary{}
+  .binaryObject{}
+  .binding{}
+  .bindingDesc{}
+  .birth{}
+  .bloc{}
+  .body{}
+  .broadcast{}
+  .byline{}
+  .c{}
+  .cRefpattern{}
+  .caesura{}
+  .calendar{}
+  .calendarDesc{}
+  .camera{}
+  .caption{}
+  .case{}
+  .castGroup{}
+  .castItem{}
+  .castList{}
+  .catDesc{}
+  .catRef{}
+  .catchwords{}
+  .category{}
+  .cb{}
+  .cell{}
+  .certainty{}
+  .change{}
+  .channel{}
+  .char{}
+  .charDecl{}
+  .charName{}
+  .charprop{}
+  .choice{}
+  .cit{}
+  .cl{}
+  .classCode{}
+  .classDecl{}
+  .classRef{}
+  .classSpec{}
+  .classes{}
+  .climate{}
+  .closer{}
+  .code{}
+  .collation{}
+  .collection{}
+  .colloc{}
+  .colophon{}
+  .cond{}
+  .condition{}
+  .constitution{}
+  .constraint{}
+  .constraintSpec{}
+  .content{}
+  .corr{}
+  .correction{}
+  .country{}
+  .creation{}
+  .custEvent{}
+  .custodialHist{}
+  .damage{}
+  .damageSpan{}
+  .datatype{}
+  .date{}
+  .dateline{}
+  .death{}
+  .decoDesc{}
+  .decoNote{}
+  .def{}
+  .default{}
+  .defaultVal{}
+  .del{}
+  .delSpan{}
+  .depth{}
+  .derivation{}
+  .desc{}
+  .dictScrap{}
+  .dim{}
+  .dimensions{}
+  .distinct{}
+  .distributor{}
+  .district{}
+  .div{}
+  .div1{}
+  .div2{}
+  .div3{}
+  .div4{}
+  .div5{}
+  .div6{}
+  .div7{}
+  .divGen{}
+  .docAuthor{}
+  .docDate{}
+  .docEdition{}
+  .docImprint{}
+  .docTitle{}
+  .domain{}
+  .eLeaf{}
+  .eTree{}
+  .edition{}
+  .editionStmt{}
+  .editor{}
+  .editorialDecl{}
+  .education{}
+  .eg{}
+  .egXML{}
+  .elementRef{}
+  .elementSpec{}
+  .email{}
+  .emph{}
+  .encodingDesc{}
+  .entry{}
+  .entryFree{}
+  .epigraph{}
+  .epilogue{}
+  .equipment{}
+  .equiv{}
+  .etym{}
+  .event{}
+  .ex{}
+  .exemplum{}
+  .expan{}
+  .explicit{}
+  .extent{}
+  .f{}
+  .fDecl{}
+  .fDescr{}
+  .fLib{}
+  .facsimile{}
+  .factuality{}
+  .faith{}
+  .figDesc{}
+  .figure{}
+  .fileDesc{}
+  .filiation{}
+  .finalRubric{}
+  .floatingText{}
+  .floruit{}
+  .foliation{}
+  .foreign{}
+  .forename{}
+  .forest{}
+  .form{}
+  .formula{}
+  .front{}
+  .fs{}
+  .fsConstraints{}
+  .fsDecl{}
+  .fsDescr{}
+  .fsdDecl{}
+  .fsdLink{}
+  .funder{}
+  .fvLib{}
+  .fw{}
+  .g{}
+  .gap{}
+  .gb{}
+  .gen{}
+  .genName{}
+  .geo{}
+  .geoDecl{}
+  .geogFeat{}
+  .geogName{}
+  .gi{}
+  .gloss{}
+  .glyph{}
+  .glyphName{}
+  .gram{}
+  .gramGrp{}
+  .graph{}
+  .graphic{}
+  .group{}
+  .handDesc{}
+  .handNote{}
+  .handNotes{}
+  .handShift{}
+  .head{}
+  .headItem{}
+  .headLabel{}
+  .height{}
+  .heraldry{}
+  .hi{}
+  .history{}
+  .hom{}
+  .hyph{}
+  .hyphenation{}
+  .iNode{}
+  .iType{}
+  .ident{}
+  .idno{}
+  .if{}
+  .iff{}
+  .imprimatur{}
+  .imprint{}
+  .incident{}
+  .incipit{}
+  .index{}
+  .institution{}
+  .interaction{}
+  .interp{}
+  .interpGrp{}
+  .interpretation{}
+  .item{}
+  .join{}
+  .joinGrp
+  .keywords{}
+  .kinesic{}
+  .l{}
+  .label{}
+  .lacunaEnd{}
+  .lacunaStart{}
+  .lang{}
+  .langKnowledge{}
+  .langKnown{}
+  .langUsage{}
+  .language{}
+  .layout{}
+  .layoutDesc{}
+  .lb{}
+  .lbl{}
+  .leaf{}
+  .lem{}
+  .lg{}
+  .licence{}
+  .line{}
+  .link{}
+  .linkGrp{}
+  .list{}
+  .listBibl{}
+  .listChange{}
+  .listEvent{}
+  .listForest{}
+  .listNym{}
+  .listOrg{}
+  .listperson{}
+  .listplace{}
+  .listRef{}
+  .listRelation{}
+  .listTranspose{}
+  .listWit{}
+  .localName{}
+  .locale{}
+  .location{}
+  .locus{}
+  .locusGrp{}
+  .m{}
+  .macroRef{}
+  .macroSpec{}
+  .mapping{}
+  .material{}
+  .measure{}
+  .measureGrp{}
+  .meeting{}
+  .memberOf{}
+  .mentioned{}
+  .metDecl{}
+  .metSym{}
+  .metamark{}
+  .milestone{}
+  .mod{}
+  .moduleRef{}
+  .moduleSpec{}
+  .monogr{}
+  .mood{}
+  .move{}
+  .msContents{}
+  .msDesc{}
+  .msIdentifier{}
+  .msItem{}
+  .msItemStruct{}
+  .msName{}
+  .mspart{}
+  .musicNotation{}
+  .name{}
+  .nameLink{}
+  .namespace{}
+  .nationality{}
+  .node{}
+  .normalization{}
+  .notatedMusic{}
+  .note{}
+  .notesStmt{}
+  .num{}
+  .number{}
+  .numeric{}
+  .nym{}
+  .oRef{}
+  .oVar{}
+  .objectDesc{}
+  .objectType{}
+  .occupation{}
+  .offset{}
+  .opener{}
+  .org{}
+  .orgName{}
+  .orig{}
+  .origDate{}
+  .origplace{}
+  .origin{}
+  .orth{}
+  .p{}
+  .pRef{}
+  .pVar{}
+  .particDesc{}
+  .pause{}
+  .pb{}
+  .pc{}
+  .per{}
+  .performance{}
+  .persName{}
+  .person{}
+  .personGrp{}
+  .phr{}
+  .physDesc{}
+  .place{}
+  .placeName{}
+  .population{}
+  .pos{}
+  .postBox{}
+  .postCode{}
+  .postscript{}
+  .precision{}
+  .preparedness{}
+  .principal{}
+  .profileDesc{}
+  .projectDesc{}
+  .prologue{}
+  .pron{}
+  .provenance{}
+  .ptr{}
+  .pubplace{}
+  .publicationStmt{}
+  .publisher{}
+  .purpose
+  .q{}
+  .quotation{}
+  .quote{}
+  .rdg{}
+  .rdgGrp{}
+  .re{}
+  .recordHist{}
+  .recording{}
+  .recordingStmt{}
+  .redo{}
+  .ref{}
+  .refState{}
+  .refsDecl{}
+  .reg{}
+  .region{}
+  .relatedItem{}
+  .relation{}
+  .relationGrp{}
+  .remarks{}
+  .rendition{}
+  .repository{}
+  .residence{}
+  .resp{}
+  .respStmt{}
+  .respons{}
+  .restore{}
+  .retrace{}
+  .revisionDesc{}
+  .rhyme{}
+  .role{}
+  .roleDesc{}
+  .roleName{}
+  .root{}
+  .row{}
+  .rs{}
+  .rubric{}
+  .s{}
+  .said{}
+  .salute{}
+  .samplingDecl{}
+  .schemaSpec{}
+  .scriptDesc{}
+  .scriptNote{}
+  .scriptStmt{}
+  .seal{}
+  .sealDesc{}
+  .secFol{}
+  .seg{}
+  .segmentation{}
+  .sense{}
+  .series{}
+  .seriesStmt{}
+  .set{}
+  .setting{}
+  .settingDesc{}
+  .settlement{}
+  .sex{}
+  .shift{}
+  .sic{}
+  .signatures{}
+  .signed{}
+  .soCalled{}
+  .socecStatus{}
+  .sound{}
+  .source{}
+  .sourceDesc{}
+  .sourceDoc{}
+  .sp{}
+  .spGrp{}
+  .space{}
+  .span{}
+  .spanGrp{}
+  .speaker{}
+  .specDesc{}
+  .specGrp{}
+  .specGrpRef{}
+  .specList{}
+  .sponsor{}
+  .stage{}
+  .stamp{}
+  .state{}
+  .stdVals{}
+  .street{}
+  .stress{}
+  .string{}
+  .subc{}
+  .subst{}
+  .substJoin{}
+  .summary{}
+  .superEntry{}
+  .supplied{}
+  .support{}
+  .supportDesc{}
+  .surface{}
+  .surfaceGrp{}
+  .surname{}
+  .surplus{}
+  .surrogates{}
+  .syll{}
+  .symbol{}
+  .TEI{}
+  .table{}
+  .tag{}
+  .tagUsage{}
+  .tagsDecl{}
+  .taxonomy{}
+  .tech{}
+  .teiCorpus{}
+  .teiHeader{}
+  .term{}
+  .terrain{}
+  .text{}
+  .textClass{}
+  .textDesc{}
+  .textLang{}
+  .then{}
+  .time{}
+  .timeline{}
+  .title{}
+  .titlepage{}
+  .titlepart{}
+  .titleStmt{}
+  .tns{}
+  .trailer{}
+  .trait{}
+  .transpose{}
+  .tree{}
+  .triangle{}
+  .typeDesc{}
+  .typeNote{}
+  .u{}
+  .unclear{}
+  .undo{}
+  .unicodeName{}
+  .usg{}
+  .vAlt{}
+  .vColl{}
+  .vDefault{}
+  .vLabel{}
+  .vMerge{}
+  .vNot{}
+  .vRange{}
+  .val{}
+  .valDesc{}
+  .valItem{}
+  .valList{}
+  .value{}
+  .variantEncoding{}
+  .view{}
+  .vocal{}
+  .w{}
+  .watermark{}
+  .when{}
+  .width{}
+  .wit{}
+  .witDetail{}
+  .witEnd{}
+  .witStart{}
+  .witness{}
+  .writing{}
+  .xr{}
+  .zone{}
