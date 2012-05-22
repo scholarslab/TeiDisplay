@@ -1,5 +1,5 @@
 <?php
-/* vim: :set expandtab tabstop=4 shiftwidth=4 softtabstop=4 */
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 */
 
 /**
  * TeiDisplay Plugin
@@ -103,7 +103,6 @@ DDL;
         }
 
         self::setOptions();
-
         self::batchAddDocs();
         self::addFedoraItems();
 
@@ -393,10 +392,7 @@ DDL;
      */
     public function adminThemeHeader($request)
     {
-        if ($request->getModuleName() == 'tei-display') {
-            queue_css('tei_display_main');
-            //echo '<link rel="stylesheet" href="' . html_escape(css('tei_display_main')) . '" />';
-        }
+        queue_css('tei_display_main');
     }
 
     /**
@@ -408,11 +404,6 @@ DDL;
      */
     public function publicThemeHeader($request)
     {
-        //echo '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>';
-        //echo '<link rel="stylesheet" media="screen" href="' . WEB_PLUGIN . '/TeiDisplay/views/public/css/tei_display_public.css"/>';
-        //echo js('tei_display_toggle_toc');
-      //queue_css('tei_display_plublic');
-      //        queue_js('jquery');
         queue_css('tei_display');
         queue_js('tei_display_toggle_toc');
     }
@@ -425,21 +416,39 @@ DDL;
     public function configForm()
     {
         $form = TeiDisplay_ViewHelpers::makeConfigForm();
+        echo $form; //TODO: fix this
 
-        if ($form->isValid($_POST)) {
-            $options = $form->getValues();
+    }
 
-        }
+
+    /**
+     * Return the configuration options
+     *
+     * @return array Array of the set options
+     */
+    public static function getConfigOptions()
+    {
+        $type = get_option('tei_display_type');
+        $style = get_option('tei_default_stylesheet');
+        $options = array(
+            'tei_display_type' => $type,
+            'tei_default_stylesheet' => $style
+        );
+        return $options;
     }
 
     /**
      * Display the config form
      *
-     * @return voic
+     * @return void
      */
     public function displayConfig()
     {
-        $form = tei_display_options();
+        $form = TeiDisplay_ViewHelpers::makeConfigForm();
+
+        echo $form;
+
+        //print_r(getConfigs());
         if ($form->isValid($_POST)) {
             //get posted values		
             $uploadedData = $form->getValues();
@@ -451,41 +460,6 @@ DDL;
                 }		
             }
         }
-    }
-
-    /**
-     * Displayable element form
-     *
-     * @return form to display
-     */
-    public function getDisplayOptions()
-    {
-        $xslFiles = TeiDisplay_File::getFiles();
-
-        include "Zend/Form/Element.php";
-        $form = new Zend_Form();  	
-        $form->setMethod('post');
-        $form->setAttrib('enctype', 'multipart/form-data');	
-
-        $teiDisplay = new Zend_Form_Element_Select('tei_display_type');
-        $teiDisplay->setLabel('Display Type:');
-        $teiDisplay->addMultiOption('entire', 'Entire Document');
-        $teiDisplay->addMultiOption('segmental', 'Segmental');    
-        $teiDisplay->setValue(get_option('tei_display_type'));
-        $form->addElement($teiDisplay);
-
-        //default stylesheet
-        $stylesheet = new Zend_Form_Element_Select('tei_default_stylesheet');
-        $stylesheet->setLabel('Default Stylesheet:');
-        $stylesheet->setValue(get_option('tei_default_stylesheet'));
-
-        foreach ($xslFiles as $xslFile) {
-            $stylesheet->addMultiOption($xslFile, $xslFile);
-        }
-
-        $form->addElement($stylesheet);
-
-        return $form;
     }
 
     /**
@@ -529,6 +503,7 @@ DDL;
 
     /**
      * Render a TEI file
+     * TODO: Refactor to model
      * 
      * @param string $identifier TEI identifier
      * @param string $section    TEI document section
@@ -580,6 +555,7 @@ DDL;
 
     /**
      * Get title
+     * TODO: refactor to model
      *
      * @param int $id TEI document id
      *
@@ -620,6 +596,7 @@ DDL;
 
     /**
      * get the display type
+     * TODO: refactor to ViewHelper
      *
      * @param int $id TEI document id to look up
      *
@@ -695,6 +672,42 @@ DDL;
     }
 
     /**
+     * Find XML files in the Omeka instance
+     *
+     * @return array
+     */
+    protected static function getXmlFiles()
+    {
+        $db = get_db();
+        $files = $db->getTable('File')->findBySql(
+            'mime_browser = ?',
+            array('application/xml')
+        );
+
+        return $files;
+    }
+
+    /**
+     * TODO: refactor to model
+     */
+    protected function parseTei($file)
+    {
+        $xml_doc = new DomDocument;
+        $teiFile = $file->getWebPath('archive');
+        $xml_doc->load($teiFile);
+    }
+
+    /**
+     * TODO: refactor to model
+     */
+    protected function getId($file)
+    {
+        $doc = parseTei($file);
+        $root = $doc->documentElement();
+        return $root->getAttribute('id');
+    }
+
+    /**
      * Populate the tei_display_config table with exisiting TEI
      *
      * @return void;
@@ -703,10 +716,7 @@ DDL;
     {
         //repopulate the tei_display_config table with existing TEI 
         //Document typed files upon plugin reinstallation
-        $files = $this->_db->getTable('File')->findBySql(
-            'mime_browser = ?',
-            array('application/xml')
-        );
+        $files = self::getXmlFiles();
 
         foreach ($files as $file) {
             $xml_doc = new DomDocument;	
@@ -736,12 +746,16 @@ DDL;
     /**
      * set the options for the plugin
      *
+     * @param string $type  Type of TEI display, valid options include entire
+     * or segmental
+     * @param string $style Stylesheet to use by default
+     *
      * @return void
      */
-    protected function setOptions()
+    protected function setOptions($type = 'entire', $style = 'default.xsl')
     {
-        set_option('tei_display_type', 'entire');
-        set_option('tei_default_stylesheet', 'default.xsl');
+        set_option('tei_display_type', $type);
+        set_option('tei_default_stylesheet', $style);
 
     }
 

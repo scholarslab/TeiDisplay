@@ -1,5 +1,16 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
+/**
+ * View Helpers for the TeiDisplay plugin
+ *
+ * @category  Plugin
+ * @package   Omeka
+ * @author    Scholars' Lab
+ * @copyright 2011 The Board and Visitors of the University of Virginia
+ * @license   http://www.apache.org/licenses/LICENSE-2.0.html Apache 2 License
+ * @link      https://github.com/scholarslab/TeiDisplay
+ */
 class TeiDisplay_ViewHelpers
 {
     /**
@@ -9,65 +20,43 @@ class TeiDisplay_ViewHelpers
      */
     public static function makeConfigForm()
     {
+        $xslFiles = TeiDisplay_File::getFiles();
+
         $form = new Zend_Form();
-        TeiDisplay_ViewHelpers::makeConfigFields($form);
+        $form->setMethod('post');
+
+        $form->addElement(
+            'select',
+            'tei_display_type',
+            array(
+                'label' => 'Display Type:',
+                'value' => get_option('tei_display_type'),
+                'multiOptions' => array(
+                    'entire' => 'Entire Document',
+                    'segmental' => 'Segmental'
+                )
+            )
+        );
+
+        $form->addElement(
+            'select',
+            'tei_default_stylesheet',
+            array(
+                'label' => 'Default Stylesheet',
+                'value' => get_option('tei_default_stylesheet'),
+                'multiOptions' => $xslFiles
+            )
+        );
+
+        $form->addElement(
+            'submit',
+            'submit',
+            array(
+                'label' => 'Save Changes'
+            )
+        );
+
         return $form;
     }
 
-    /**
-     * Creates fields for the configutation form. If a form is passed in, the
-     * fields are appended.
-     *
-     * @param Zend_Form|null $form The form to append fields
-     *
-     * @return array $fields An associative array mapping option names to fields
-     */
-    public static function makeConfigFields($form = null)
-    {
-        $xslFiles = TeiDisplay_File::getFiles();
-
-        $fields = array();
-
-        $fields[] = TeiDisplay_ViewHelpers::makeOptionField(
-            $form, 'tei_display_type', 'Display Type', true
-        );
-
-        $fields[] = TeiDisplay_ViewHelpers::makeOptionField(
-            $form, 'tei_default_stylesheet', 'Default Stylesheet', true
-        );
-
-        return $fields;
-    }
-
-    /**
-     * Create a single option field for a form
-     *
-     * @param Zend_Form $form     Form to add element to
-     * @param string    $name     Field name
-     * @param string    $label    Field label
-     * @param boolean   $required If the field is required
-     * @param string    $desc     Description
-     * @param string    $cls      Type of form element
-     *
-     * @return Zend_Form_Element
-     */
-    public static function makeOptionField(
-        $form, $name, $label, $required, $desc = null,
-        $cls = 'Zend_Form_Element_Text'
-    ) {
-        $field = new $cls($name, array(
-            'label' => $label,
-            'value' => get_option($name),
-            'required' => $required
-        ));
-        if ($descr != null) {
-            $field->setDescription($descr);
-        }
-
-        if ($form != null) {
-            $form->addElement($field);
-        }
-
-        return $field;
-    }
 }
