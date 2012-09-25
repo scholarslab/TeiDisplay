@@ -42,12 +42,14 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     public function hookInstall()
     {
 
-        // $sql = "CREATE TABLE IF NOT EXISTS `{$this->_db->prefix}name` (
-            // `id`                    int(10) unsigned not null auto_increment,
-             // PRIMARY KEY (`id`)
-        // ) ENGINE=innodb DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+        // Stylesheets table.
+        $sql = "CREATE TABLE IF NOT EXISTS `{$this->_db->prefix}stylesheets` (
+            `id`    int(10) unsigned not null auto_increment,
+            `xslt`  TEXT COLLATE utf8_unicode_ci NULL,
+             PRIMARY KEY (`id`)
+        ) ENGINE=innodb DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
-        // $this->_db->query($sql);
+        $this->_db->query($sql);
 
     }
 
@@ -58,8 +60,8 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function hookUninstall()
     {
-        // $sql = "DROP TABLE IF EXISTS `{$this->_db->prefix}neatline_exhibits`";
-        // $this->_db->query($sql);
+        $sql = "DROP TABLE IF EXISTS `{$this->_db->prefix}stylesheets`";
+        $this->_db->query($sql);
     }
 
     /**
