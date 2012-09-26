@@ -16,8 +16,8 @@ class TeiDisplayStylesheet extends Omeka_Record_AbstractRecord
 {
 
     /**
-     * The name of the layer.
-     * tinytext COLLATE utf8_unicode_ci NULL
+     * The XSLT stylesheet.
+     * TEXT COLLATE utf8_unicode_ci NULL
      */
     public $xslt;
 

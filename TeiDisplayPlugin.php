@@ -43,10 +43,14 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     {
 
         // Stylesheets table.
-        $sql = "CREATE TABLE IF NOT EXISTS `{$this->_db->prefix}stylesheets` (
-            `id`    int(10) unsigned not null auto_increment,
-            `xslt`  TEXT COLLATE utf8_unicode_ci NULL,
+        $tableName = $this->_db->TeiDisplayStylesheet;
+        $sql = "CREATE TABLE IF NOT EXISTS `$tableName` (
+
+            `id`        int(10) unsigned not null auto_increment,
+            `xslt`      TEXT COLLATE utf8_unicode_ci NULL,
+
              PRIMARY KEY (`id`)
+
         ) ENGINE=innodb DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
         $this->_db->query($sql);
@@ -60,7 +64,8 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function hookUninstall()
     {
-        $sql = "DROP TABLE IF EXISTS `{$this->_db->prefix}stylesheets`";
+        $tableName = $this->_db->TeiDisplayStylesheet;
+        $sql = "DROP TABLE IF EXISTS `$tableName`";
         $this->_db->query($sql);
     }
 
@@ -73,6 +78,19 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function hookDefineRoutes($args)
     {
+
+        // Stylesheets.
+        $router->addRoute(
+            'teiDisplayStylesheets',
+            new Zend_Controller_Router_Route(
+                'tei/stylesheets/:action',
+                array(
+                    'module'        => 'tei-display',
+                    'controller'    => 'stylesheets',
+                    'action'        => 'browse'
+                )
+            )
+        );
 
     }
 

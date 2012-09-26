@@ -15,13 +15,15 @@ class TeiDisplay_TeiDisplayStylesheetTest extends TeiDisplay_Test_AppTestCase
 {
 
     /**
-     * Test.
+     * Test attribute get/set.
      *
      * @return void.
      */
-    public function testStub()
+    public function testAttributeAccess()
     {
-
+        $stylesheet = new TeiDisplayStylesheet();
+        $stylesheet->xslt = 'xslt';
+        $this->assertEquals($stylesheet->xslt, 'xlst');
     }
 
 }
