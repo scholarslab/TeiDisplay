@@ -48,10 +48,9 @@ class TeiDisplay_Form_Stylesheet extends Omeka_Form
         ));
 
         // XSLT.
-        $this->addElement('textarea', 'xslt', array(
+        $this->addElement('file', 'xslt', array(
             'label'         => __('XSLT'),
-            'description'   => __('Paste in the XSLT.'),
-            'value'         => $this->_stylesheet->xslt,
+            'description'   => __('Select the XSLT file.'),
             'attribs'       => array('class' => 'html-editor', 'rows' => '10')
         ));
 

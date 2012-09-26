@@ -12,13 +12,11 @@
  */
 ?>
 
-<?php
-$title = __('TEI Display | Browse Stylesheets');
-echo head(array('title' => __('TEI Display | Browse Stylesheets')));
-?>
+
+<?php echo head(array('title' => __('TEI Display | Browse Stylesheets'))); ?>
 
 <p class="add-button">
-    <a class="add green button" href="<?php echo html_escape(url('tei-display/stylesheets//add')); ?>">
+    <a class="add green button" href="<?php echo html_escape(url('tei-display/stylesheets/add')); ?>">
         <?php echo __('Upload a Stylesheet'); ?>
     </a>
 </p>

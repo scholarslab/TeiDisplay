@@ -34,6 +34,11 @@ class TeiDisplay_StylesheetsController extends Omeka_Controller_AbstractActionCo
     public function addAction()
     {
 
+        // Create record and form.
+        $stylesheet = new TeiDisplayStylesheet;
+        $form = $this->_getForm($stylesheet);
+        $this->view->form = $form;
+
     }
 
     /**
