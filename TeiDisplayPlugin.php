@@ -47,6 +47,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         $sql = "CREATE TABLE IF NOT EXISTS `$tableName` (
 
             `id`        int(10) unsigned not null auto_increment,
+            `title`     tinytext collate utf8_unicode_ci,
             `xslt`      TEXT COLLATE utf8_unicode_ci NULL,
 
              PRIMARY KEY (`id`)

@@ -17,6 +17,12 @@ class TeiDisplayStylesheet extends Omeka_Record_AbstractRecord
 
     /**
      * The XSLT stylesheet.
+     * tinytext collate utf8_unicode_ci
+     */
+    public $title;
+
+    /**
+     * The XSLT stylesheet.
      * TEXT COLLATE utf8_unicode_ci NULL
      */
     public $xslt;
