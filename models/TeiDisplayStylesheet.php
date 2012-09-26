@@ -27,4 +27,10 @@ class TeiDisplayStylesheet extends Omeka_Record_AbstractRecord
      */
     public $xslt;
 
+    /**
+     * The date the stylesheet was last modified.
+     * TIMESTAMP NULL
+     */
+    public $modified;
+
 }

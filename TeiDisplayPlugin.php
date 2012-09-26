@@ -49,6 +49,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
             `id`        int(10) unsigned not null auto_increment,
             `title`     tinytext collate utf8_unicode_ci,
             `xslt`      TEXT COLLATE utf8_unicode_ci NULL,
+            `modified`  TIMESTAMP NULL,
 
              PRIMARY KEY (`id`)
 
