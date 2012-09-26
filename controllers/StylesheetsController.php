@@ -15,6 +15,18 @@ class TeiDisplay_StylesheetsController extends Omeka_Controller_AbstractActionCo
 {
 
     /**
+     * Get tables.
+     *
+     * @return void
+     */
+    public function init()
+    {
+        $modelName = 'TeiDisplayStylesheet';
+        $this->_helper->db->setDefaultModelName($modelName);
+        $this->_table = $this->_helper->db->getTable($modelName);
+    }
+
+    /**
      * Create stylesheet.
      *
      * @return void

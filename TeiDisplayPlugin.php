@@ -80,7 +80,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     {
 
         // Stylesheets.
-        $router->addRoute(
+        $args['router']->addRoute(
             'teiDisplayStylesheets',
             new Zend_Controller_Router_Route(
                 'tei/stylesheets/:action',
@@ -109,7 +109,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function filterAdminNavigationMain($tabs)
     {
-        $tabs['TEI'] = url('tei');
+        $tabs['TEI'] = url('tei/stylesheets');
         return $tabs;
     }
 
