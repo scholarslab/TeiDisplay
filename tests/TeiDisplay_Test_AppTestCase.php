@@ -32,25 +32,16 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
 
         // Set up Neatline.
         $pluginBroker = get_plugin_broker();
-        $this->_addHooksAndFilters($pluginBroker, 'TeiDisplay');
-        $pluginHelper = new Omeka_Test_Helper_Plugin;
-        $pluginHelper->setUp('Neatline');
+        $pluginBroker->setCurrentPluginDirName('TeiDisplay');
 
-        // Get table classes.
-        $this->_stylesheets = $this->db->getTable('TeiDisplayStylesheet');
-
-    }
-
-    /**
-     * Install Neatline.
-     *
-     * @return void.
-     */
-    public function _addHooksAndFilters($pluginBroker, $pluginName)
-    {
-        $pluginBroker->setCurrentPluginDirName($pluginName);
+        // Run plugin.
         $tei = new TeiDisplayPlugin;
         $tei->setUp();
+
+        // Configure helper.
+        $pluginHelper = new Omeka_Test_Helper_Plugin;
+        $pluginHelper->setUp('TeiDisplay');
+
     }
 
 }

@@ -23,7 +23,7 @@ class TeiDisplay_TeiDisplayStylesheetTest extends TeiDisplay_Test_AppTestCase
     {
         $stylesheet = new TeiDisplayStylesheet();
         $stylesheet->xslt = 'xslt';
-        $this->assertEquals($stylesheet->xslt, 'xlst');
+        $this->assertEquals($stylesheet->xslt, 'xslt');
     }
 
 }
