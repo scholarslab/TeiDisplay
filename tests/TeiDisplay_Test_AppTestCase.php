@@ -12,6 +12,8 @@
  */
 
 require_once dirname(__FILE__) . '/../TeiDisplayPlugin.php';
+require_once dirname(__FILE__) . '/mocks/StylesheetFormMock.php';
+require_once dirname(__FILE__) . '/mocks/FileElementMock.php';
 
 class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
 {

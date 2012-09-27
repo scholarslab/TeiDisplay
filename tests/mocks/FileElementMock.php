@@ -23,7 +23,7 @@ class FileElementMock
      * @return void.
      */
     public function __construct($path) {
-        $this->path = $title;
+        $this->path = $path;
     }
 
     /**

@@ -11,7 +11,6 @@
  * @license     http://www.apache.org/licenses/LICENSE-2.0.html
  */
 
-require_once 'StylesheetFormMock.php';
 
 class TeiDisplay_TeiDisplayStylesheetTest extends TeiDisplay_Test_AppTestCase
 {
@@ -36,6 +35,25 @@ class TeiDisplay_TeiDisplayStylesheetTest extends TeiDisplay_Test_AppTestCase
         $this->assertEquals($stylesheet->title, 'title');
         $this->assertEquals($stylesheet->xslt, 'xslt');
         $this->assertEquals($stylesheet->modified, 'yyyy-MM-dd HH:mm:ss');
+
+    }
+
+    /**
+     * saveForm() should set title and xslt content.
+     *
+     * @return void.
+     */
+    public function testSaveForm()
+    {
+
+        // Create stylesheet and form mock.
+        $stylesheet = new TeiDisplayStylesheet();
+        $form = new StylesheetFormMock('title', 'mocks/xslt.xslt');
+
+        // Save form, check attributes.
+        $stylesheet->saveForm($form);
+        $this->assertEquals($stylesheet->title, 'title');
+        $this->assertStringStartsWith('xslt mock', $stylesheet->xslt);
 
     }
 

@@ -11,7 +11,6 @@
  * @license     http://www.apache.org/licenses/LICENSE-2.0.html
  */
 
-require_once 'FileElementMock.php';
 
 class StylesheetFormMock
 {
@@ -35,7 +34,7 @@ class StylesheetFormMock
      * @return array The form values.
      */
     public function getValues() {
-        return array('title' => $title);
+        return array('title' => $this->title);
     }
 
 }
