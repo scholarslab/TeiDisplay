@@ -44,4 +44,23 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
 
     }
 
+
+    /**
+     * Testing helpers.
+     */
+
+
+    /**
+     * Create a stylesheet.
+     *
+     * @param string title The title.
+     * @param string xslt The xslt.
+     *
+     * @return void.
+     */
+    public function __stylesheet()
+    {
+
+    }
+
 }
