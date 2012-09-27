@@ -16,7 +16,7 @@ class TeiDisplay_StylesheetsController extends Omeka_Controller_AbstractActionCo
 {
 
     /**
-     * Get tables.
+     * Get tables, set constants.
      *
      * @return void
      */
@@ -25,6 +25,7 @@ class TeiDisplay_StylesheetsController extends Omeka_Controller_AbstractActionCo
         $modelName = 'TeiDisplayStylesheet';
         $this->_helper->db->setDefaultModelName($modelName);
         $this->_table = $this->_helper->db->getTable($modelName);
+        $this->_browseRecordsPerPage = get_option('per_page_admin');
     }
 
     /**

@@ -20,5 +20,6 @@
 function has_stylesheets_for_loop()
 {
     $view = get_view();
-    return ($view->stylesheets and count($view->stylesheets));
+    return ($view->tei_display_stylesheets and
+      count($view->tei_display_stylesheets));
 }

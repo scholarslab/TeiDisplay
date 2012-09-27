@@ -43,9 +43,9 @@
     <tbody>
         <!-- Stylesheet listings. -->
         <?php foreach(loop('TeiDisplayStylesheet') as $stylesheet): ?>
-        <tr id="stylesheet-<?php echo stylesheet('id'); ?>">
-            <td class="title"></td>
-            <td class="modified"></td>
+        <tr id="stylesheet-<?php echo $stylesheet->id; ?>">
+            <td class="title"><?php echo $stylesheet->title; ?></td>
+            <td class="modified"><?php echo format_date($stylesheet->modified); ?></td>
         </tr>
         <?php endforeach; ?>
     </tbody>
