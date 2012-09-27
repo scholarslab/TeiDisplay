@@ -11,6 +11,8 @@
  * @license     http://www.apache.org/licenses/LICENSE-2.0.html
  */
 
+require_once 'StylesheetFormMock.php';
+
 class TeiDisplay_TeiDisplayStylesheetTest extends TeiDisplay_Test_AppTestCase
 {
 
