@@ -13,6 +13,29 @@
 
 
 /**
+ * Constructs a link to a stylesheet.
+ *
+ * @param string $text HTML for the text of the link.
+ * @param array $props Attributes for the link tag. (optional)
+ * @param string $action The action for the link. Default is 'show'.
+ * @param $stylesheet TeiDisplayStylesheet|null A record to work on.
+ *
+ * @return string The link markup.
+ */
+function link_to_stylesheet(
+    $text=null, $props=array(), $action='show', $stylesheet = null)
+{
+
+    if (is_null($stylesheet)) $stylesheet = get_current_stylesheet();
+    $text = $text ? $text : strip_formatting(stylesheet('title', $stylesheet));
+
+    $route = 'tei/stylesheets/' . $action . '/' . $stylesheet->id;
+    $props['href'] = url($route);
+    return '<a ' . tag_attributes($props) . '>' . $text . '</a>';
+
+}
+
+/**
  * Check for sytlesheet records on the view.
  *
  * @return boolean
