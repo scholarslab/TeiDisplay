@@ -81,15 +81,30 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     public function hookDefineRoutes($args)
     {
 
-        // Stylesheets.
+        // Default stylesheets routes.
         $args['router']->addRoute(
-            'teiDisplayStylesheets',
+            'teiDisplayStylesheetsDefault',
             new Zend_Controller_Router_Route(
                 'tei/stylesheets/:action',
                 array(
                     'module'        => 'tei-display',
                     'controller'    => 'stylesheets',
                     'action'        => 'browse'
+                )
+            )
+        );
+
+        // Stylesheet-specific routes.
+        $args['router']->addRoute(
+            'teiDisplayStylesheetsId',
+            new Zend_Controller_Router_Route(
+                'tei/stylesheets/:action/:id',
+                array(
+                    'module'        => 'tei-display',
+                    'controller'    => 'stylesheets'
+                ),
+                array(
+                    'id'            => '\d+'
                 )
             )
         );

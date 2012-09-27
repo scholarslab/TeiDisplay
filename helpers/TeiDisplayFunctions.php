@@ -58,6 +58,18 @@ function get_current_stylesheet()
 }
 
 /**
+ * Sets the current stylesheet on the view.
+ *
+ * @param NeatlineExhibit|null The stylesheet.
+ *
+ * @return void
+ */
+function set_current_stylesheet($stylesheet = null)
+{
+    get_view()->tei_display_stylesheet = $stylesheet;
+}
+
+/**
  * Get field on stylesheet record.
  *
  * @param string $fieldname The attribute.

@@ -77,25 +77,25 @@ class TeiDisplay_StylesheetsController extends Omeka_Controller_AbstractActionCo
     /**
      * Set edit success message.
      */
-    protected function _getEditSuccessMessage($neatline)
+    protected function _getEditSuccessMessage($stylesheet)
     {
-        return __('The Neatline "%s" was successfully changed!', $stylesheet->title);
+        return __('The stylesheet "%s" was successfully changed!', $stylesheet->title);
     }
 
     /**
      * Set delete success message.
      */
-    protected function _getDeleteSuccessMessage($neatline)
+    protected function _getDeleteSuccessMessage($stylesheet)
     {
-        return __('The Neatline "%s" was successfully deleted!', $stylesheet->title);
+        return __('The stylesheet "%s" was successfully deleted!', $stylesheet->title);
     }
 
     /**
      * Set delete confirm message.
      */
-    protected function _getDeleteConfirmMessage($neatline)
+    protected function _getDeleteConfirmMessage($stylesheet)
     {
-        return __('This will delete the Neatline "%s" and its associated metadata.', $neatline->name);
+        return __('This will delete the stylesheet "%s" and its associated metadata.', $stylesheet->title);
     }
 
     /**
