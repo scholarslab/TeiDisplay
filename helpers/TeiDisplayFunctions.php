@@ -23,3 +23,27 @@ function has_stylesheets_for_loop()
     return ($view->tei_display_stylesheets and
       count($view->tei_display_stylesheets));
 }
+
+/**
+ * Get the current stylesheet on the view.
+ *
+ * @return TeiDisplayStylesheet|null The stylesheet.
+ */
+function get_current_stylesheet()
+{
+    return get_view()->tei_display_stylesheet;
+}
+
+/**
+ * Get field on stylesheet record.
+ *
+ * @param string $fieldname The attribute.
+ * @param TeiDisplayStylesheet $stylesheet A record to work on.
+ *
+ * @return string The field value.
+ */
+function stylesheet($fieldname, $stylesheet = null)
+{
+    if (is_null($stylesheet)) $stylesheet = get_current_stylesheet();
+    return $stylesheet->$fieldname;
+}
