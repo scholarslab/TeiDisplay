@@ -29,6 +29,7 @@ class TeiDisplay_Form_Stylesheet extends Omeka_Form
 
         $this->setMethod('post');
         $this->setAttrib('id', 'stylesheet-form');
+        $this->setAttrib('enctype', 'multipart/form-data');
         $this->addElementPrefixPath('TeiDisplay', dirname(__FILE__));
 
         // Title.

@@ -39,6 +39,19 @@ class TeiDisplay_StylesheetsController extends Omeka_Controller_AbstractActionCo
         $form = $this->_getForm($stylesheet);
         $this->view->form = $form;
 
+        if ($this->_request->isPost()) {
+
+            // Validate the form.
+            if ($form->isValid($this->_request->getPost())) {
+
+                // Save and redirect.
+                $stylesheet->saveForm($form);
+                $this->_redirect('tei/stylesheets');
+
+            }
+
+        }
+
     }
 
     /**
