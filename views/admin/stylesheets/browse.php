@@ -33,7 +33,7 @@
     <thead>
         <tr>
         <!-- Column headings. -->
-        <?php browse_headings(array(
+        <?php echo browse_headings(array(
             __('Title') => 'title',
             __('Modified') => 'modified',
             __('Actions') => null
