@@ -62,7 +62,7 @@
 <?php else: ?>
 
     <p class="tei-alert">
-        <?php echo __('There are no stylesheets exhibits yet.'); ?>
+        <?php echo __('There are no stylesheets yet.'); ?>
         <a href="<?php echo url('tei-display/stylesheets/add'); ?>"><?php echo __('Upload one!'); ?></a>
     </p>
 
