@@ -47,7 +47,10 @@
         <tr id="stylesheet-<?php echo stylesheet('id'); ?>">
             <td class="title"><?php echo link_to_stylesheet(null, array('class' => 'edit'), 'edit', null); ?></td>
             <td class="modified"><?php echo format_date(stylesheet('modified')); ?></td>
-            <td class="actions"><?php echo link_to_stylesheet(__('Delete'), array('class' => 'delete delete-confirm'), 'delete-confirm', null); ?></td>
+            <td class="actions">
+                <?php echo link_to_stylesheet(__('Edit'), null, 'edit', null); ?>
+                <?php echo link_to_stylesheet(__('Delete'), array('class' => 'delete delete-confirm'), 'delete-confirm', null); ?>
+            </td>
         </tr>
         <?php endforeach; ?>
     </tbody>
