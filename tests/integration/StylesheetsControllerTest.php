@@ -34,7 +34,13 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
      */
     public function testBrowseMarkupWithNoStylesheets()
     {
+
+        // Check for alert and add link.
         $this->dispatch('tei/stylesheets');
+        $this->assertQuery('p.tei-alert');
+        $this->assertQueryContentContains('a', 'Upload one!');
+        $this->assertNotQuery('primary table.tei-display');
+
     }
 
 }
