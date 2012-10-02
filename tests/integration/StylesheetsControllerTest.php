@@ -56,12 +56,79 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
      *
      * @return void.
      */
-    public function testAddFormMarkup()
+    public function testAddStylesheetFormMarkup()
     {
 
         $this->dispatch('tei/stylesheets/add');
         $this->assertXpath('//input[@name="title"]');
         $this->assertXpath('//input[@name="xslt"]');
+
+    }
+
+    /**
+     * Test for add form markup.
+     *
+     * @return void.
+     */
+    public function testAddStylesheetFormEmptyFieldErrors()
+    {
+
+        // Mock post.
+        $this->request->setMethod('POST')->setPost(
+            array('title' => '', 'xslt' => ''));
+
+        $this->dispatch('tei/stylesheets/add');
+        $this->assertQueryContentContains('ul.errors li', 'Enter a title.');
+
+        // TODO: How to mock file?
+
+    }
+
+    /**
+     * Valid form should create a stylesheet.
+     *
+     * @return void.
+     */
+    public function testAddStylesheetSuccess()
+    {
+        // TODO: How to mock file?
+    }
+
+    /**
+     * Test for edit form markup.
+     *
+     * @return void.
+     */
+    public function testEditStylesheetFormMarkup()
+    {
+
+        // Create stylesheet.
+        $sheet = $this->__stylesheet('Title');
+
+        $this->dispatch('tei/stylesheets/edit/'.$sheet->id);
+        $this->assertXpath('//input[@name="title"][@value="Title"]');
+
+    }
+
+    /**
+     * Test for edit form markup.
+     *
+     * @return void.
+     */
+    public function testEditStylesheetFormEmptyFieldErrors()
+    {
+
+        // Create stylesheet.
+        $sheet = $this->__stylesheet('Title');
+
+        // Mock post.
+        $this->request->setMethod('POST')->setPost(
+            array('title' => '', 'xslt' => ''));
+
+        $this->dispatch('tei/stylesheets/edit/'.$sheet->id);
+        $this->assertQueryContentContains('ul.errors li', 'Enter a title.');
+
+        // TODO: How to mock file?
 
     }
 
