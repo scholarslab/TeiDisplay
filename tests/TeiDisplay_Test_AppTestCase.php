@@ -55,13 +55,20 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
     /**
      * Create a stylesheet.
      *
-     * @param string title The title.
-     * @param string xslt The xslt.
+     * @param string $title The title.
+     * @param string $xslt The xslt.
      *
-     * @return void.
+     * @return TeiDisplayStylesheet $stylesheet.
      */
-    public function __stylesheet()
+    public function __stylesheet($title='Test Title', $xslt='xslt')
     {
+
+        $stylesheet = new TeiDisplayStylesheet;
+        $stylesheet->title = $title;
+        $stylesheet->xslt = $xslt;
+        $stylesheet->save();
+
+        return $stylesheet;
 
     }
 

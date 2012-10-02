@@ -28,18 +28,26 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
     }
 
     /**
-     * When no stylesheets, link to upload one.
+     * Check for listings table when stylesheets.
      *
      * @return void.
      */
-    public function testBrowseMarkupWithNoStylesheets()
+    public function testBrowseMarkup()
     {
 
-        // Check for alert and add link.
+        // Create stylesheets.
+        $sheet1 = $this->__stylesheet('Title 1');
+        $sheet2 = $this->__stylesheet('Title 2');
+
+        // Check for listings.
         $this->dispatch('tei/stylesheets');
-        $this->assertQuery('p.tei-alert');
-        $this->assertQueryContentContains('a', 'Upload one!');
-        $this->assertNotQuery('primary table.tei-display');
+        $this->assertQueryCount('table.tei-display tbody tr', 2);
+
+        // Check titles.
+        $this->assertQueryContentContains(
+            '#stylesheet-'.$sheet1->id.' td.title a.edit', 'Title 1');
+        $this->assertQueryContentContains(
+            '#stylesheet-'.$sheet2->id.' td.title a.edit', 'Title 2');
 
     }
 
