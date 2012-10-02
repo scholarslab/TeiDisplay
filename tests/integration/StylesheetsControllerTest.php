@@ -51,4 +51,18 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
 
     }
 
+    /**
+     * Test for add form markup.
+     *
+     * @return void.
+     */
+    public function testAddFormMarkup()
+    {
+
+        $this->dispatch('tei/stylesheets/add');
+        $this->assertXpath('//input[@name="title"]');
+        $this->assertXpath('//input[@name="xslt"]');
+
+    }
+
 }

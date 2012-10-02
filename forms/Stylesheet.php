@@ -52,7 +52,8 @@ class TeiDisplay_Form_Stylesheet extends Omeka_Form
         $this->addElement('file', 'xslt', array(
             'label'         => __('XSLT'),
             'description'   => __('Select the XSLT file.'),
-            'attribs'       => array('class' => 'html-editor', 'rows' => '10')
+            'attribs'       => array('class' => 'html-editor', 'rows' => '10'),
+            'required'      => true
         ));
 
         // Submit.
