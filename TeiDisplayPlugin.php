@@ -21,13 +21,25 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         'install',
         'uninstall',
         'define_routes',
-        'before_save_file'
+        'before_save_file',
+        'after_save_file'
     );
 
     // Filters.
     protected $_filters = array(
         'admin_navigation_main'
     );
+
+
+    /**
+     * Initialize registry key to track new XML uploads.
+     *
+     * @return void.
+     */
+    public function __construct()
+    {
+        Zend_Registry::set('teiDisplay:NewXml', false);
+    }
 
 
     // ------
@@ -127,7 +139,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     }
 
     /**
-     * Process new XML files.
+     * Listen for new XML file uploads.
      *
      * @param File $file The new file record.
      *
@@ -141,10 +153,33 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
 
         // Check for XML.
         if ($args['record']->getMimeType() == 'application/xml') {
+            Zend_Registry::set('teiDisplay:NewXml', true);
+        }
+
+    }
+
+    /**
+     * Create new text.
+     *
+     * @param File $file The new file record.
+     *
+     * @return void.
+     */
+    public function hookAfterSaveFile($args)
+    {
+
+        // Check for new file.
+        if (Zend_Registry::get('teiDisplay:NewXml')) {
+
+            // Create text.
             $text = new TeiDisplayText;
             $text->item_id = $args['record']->item_id;
             $text->file_id = $args['record']->id;
             $text->save();
+
+            // Reset tracker.
+            Zend_Registry::set('teiDisplay:NewXml', false);
+
         }
 
     }
