@@ -21,7 +21,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         'install',
         'uninstall',
         'define_routes',
-        'after_insert_file'
+        'before_save_file'
     );
 
     // Filters.
@@ -133,8 +133,19 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
      *
      * @return void.
      */
-    public function hookAfterInsertFile($args)
+    public function hookBeforeSaveFile($args)
     {
+
+        // Break if file exists.
+        if ($args['record']->exists()) return;
+
+        // Check for XML.
+        if ($args['record']->getMimeType() == 'application/xml') {
+            $text = new TeiDisplayText;
+            $text->item_id = $args['record']->item_id;
+            $text->file_id = $args['record']->id;
+            $text->save();
+        }
 
     }
 
