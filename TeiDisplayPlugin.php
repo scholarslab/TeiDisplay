@@ -46,10 +46,23 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         $tableName = $this->_db->TeiDisplayStylesheet;
         $sql = "CREATE TABLE IF NOT EXISTS `$tableName` (
 
-            `id`        int(10) unsigned not null auto_increment,
+            `id`        int(10) unsigned NOT NULL auto_increment,
             `title`     tinytext collate utf8_unicode_ci,
             `xslt`      TEXT COLLATE utf8_unicode_ci NULL,
             `modified`  TIMESTAMP NULL,
+
+             PRIMARY KEY (`id`)
+
+        ) ENGINE=innodb DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+
+        $this->_db->query($sql);
+
+        // Texts table.
+        $tableName = $this->_db->TeiDisplayText;
+        $sql = "CREATE TABLE IF NOT EXISTS `$tableName` (
+
+            `id`        int(10) unsigned NOT NULL auto_increment,
+            `file_id`   int(10) unsigned NOT NULL,
 
              PRIMARY KEY (`id`)
 
