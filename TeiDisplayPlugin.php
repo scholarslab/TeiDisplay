@@ -44,6 +44,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function __construct()
     {
+        parent::__construct();
         Zend_Registry::set('teiDisplay:NewXml', false);
     }
 
