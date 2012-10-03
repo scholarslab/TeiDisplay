@@ -20,7 +20,8 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     protected $_hooks = array(
         'install',
         'uninstall',
-        'define_routes'
+        'define_routes',
+        'after_insert_file'
     );
 
     // Filters.
@@ -62,6 +63,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         $sql = "CREATE TABLE IF NOT EXISTS `$tableName` (
 
             `id`        int(10) unsigned NOT NULL auto_increment,
+            `item_id`   int(10) unsigned NOT NULL,
             `file_id`   int(10) unsigned NOT NULL,
 
              PRIMARY KEY (`id`)
@@ -89,7 +91,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
      *
      * @param object $router Router passed in by the front controller.
      *
-     * @return void
+     * @return void.
      */
     public function hookDefineRoutes($args)
     {
@@ -121,6 +123,18 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
                 )
             )
         );
+
+    }
+
+    /**
+     * Process new XML files.
+     *
+     * @param File $file The new file record.
+     *
+     * @return void.
+     */
+    public function hookAfterInsertFile($args)
+    {
 
     }
 

@@ -17,28 +17,16 @@ class TeiDisplayText extends Omeka_Record_AbstractRecord
 
 
     /**
-     * The XSLT stylesheet.
-     * tinytext collate utf8_unicode_ci
+     * The parent item.
+     * int(10) unsigned NOT NULL
      */
-    // public $title;
+    public $item_id;
 
     /**
-     * The XSLT stylesheet.
-     * TEXT COLLATE utf8_unicode_ci NULL
+     * The parent file.
+     * int(10) unsigned NOT NULL
      */
-    // public $xslt;
-
-    /**
-     * The date the stylesheet was last modified.
-     * TIMESTAMP NULL
-     */
-    // public $modified;
-
-
-    /**
-     * Zend_Date format for MySQL timestamp.
-     */
-    // const DATE_FORMAT = 'yyyy-MM-dd HH:mm:ss';
+    public $file_id;
 
 
 }
