@@ -78,7 +78,7 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
             array('title' => '', 'xslt' => ''));
 
         $this->dispatch('tei/stylesheets/add');
-        $this->assertQueryContentContains('ul.errors li', 'Enter a title.');
+        $this->assertQueryContentContains('ul.error li', 'Enter a title.');
 
         // TODO: How to mock file?
 
@@ -126,7 +126,7 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
             array('title' => '', 'xslt' => ''));
 
         $this->dispatch('tei/stylesheets/edit/'.$sheet->id);
-        $this->assertQueryContentContains('ul.errors li', 'Enter a title.');
+        $this->assertQueryContentContains('ul.error li', 'Enter a title.');
 
         // TODO: How to mock file?
 
