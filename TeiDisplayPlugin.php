@@ -30,6 +30,12 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         'admin_navigation_main'
     );
 
+    // XML mime types.
+    protected $_xmlMimeTypes = array(
+        'application/xml',
+        'text/xml'
+    );
+
 
     /**
      * Initialize registry key to track new XML uploads.
@@ -152,7 +158,8 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         if ($args['record']->exists()) return;
 
         // Check for XML.
-        if ($args['record']->getMimeType() == 'application/xml') {
+        $mimeType = $args['record']->getMimeType();
+        if (in_array($mimeType, $this->_xmlMimeTypes)) {
             Zend_Registry::set('teiDisplay:NewXml', true);
         }
 
