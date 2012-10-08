@@ -15,8 +15,6 @@
 class TeiDisplay_Form_Text extends Omeka_Form
 {
 
-    // private $_stylesheet;
-
     /**
      * Build the add/edit form.
      *
@@ -31,11 +29,38 @@ class TeiDisplay_Form_Text extends Omeka_Form
         $this->setAttrib('id', 'text-form');
         $this->addElementPrefixPath('TeiDisplay', dirname(__FILE__));
 
+        // Stylesheet.
+        $this->addElement('select', 'stylesheet', array(
+            'label'         => __('Stylesheet'),
+            'description'   => __('Select an XSLT stylesheet.'),
+            'multiOptions'  => $this->getStylesheetsForSelect()
+        ));
+
     }
 
-    // public function setStylesheet(TeiDisplayStylesheet $stylesheet)
-    // {
-    //     $this->_stylesheet = $stylesheet;
-    // }
+    /**
+     * Get the list of XSLT stylesheets.
+     *
+     * @return array $servers The server.
+     */
+    public function getStylesheetsForSelect()
+    {
+
+        // Get file table.
+        $_db = get_db();
+        $_stylesheets = $_db->getTable('TeiDisplayStylesheet');
+
+        // Fetch.
+        $records = $_stylesheets->findAll();
+
+        // Build the array.
+        $stylesheets = array();
+        foreach($records as $record) {
+            $stylesheets[$record->id] = $record->title;
+        };
+
+        return $stylesheets;
+
+    }
 
 }

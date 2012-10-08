@@ -72,4 +72,16 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
 
     }
 
+    /**
+     * Create an item.
+     *
+     * @return Omeka_record $item The item.
+     */
+    public function __item()
+    {
+        $item = new Item;
+        $item->save();
+        return $item;
+    }
+
 }

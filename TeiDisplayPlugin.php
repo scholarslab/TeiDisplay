@@ -222,7 +222,32 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     public function filterAdminItemsFormTabs($tabs)
     {
 
-        $tabs['TEI'] = 'test';
+        // Construct the form, strip the <form> tag.
+        $form = new TeiDisplay_Form_Text();
+        $form->removeDecorator('form');
+
+        // Get the item.
+        $item = get_current_record('item');
+
+        // If the item is saved.
+        if (!is_null($item->id)) {
+
+            // // Try to get a datastream.
+            // $object = $this->_objects->findByItem($item);
+
+            // // Populate fields.
+            // if ($object) {
+            //     $form->populate(array(
+            //         'server' => $object->server_id,
+            //         'pid' => $object->pid,
+            //         'saved-dsids' => $object->dsids
+            //     ));
+            // }
+
+        }
+
+        // Add tab.
+        $tabs['TEI'] = $form;
         return $tabs;
 
     }
