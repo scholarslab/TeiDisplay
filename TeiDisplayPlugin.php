@@ -221,8 +221,10 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function filterAdminItemsFormTabs($tabs)
     {
+
         $tabs['TEI'] = 'test';
         return $tabs;
+
     }
 
 }

@@ -20,7 +20,8 @@ if (!defined('TEI_PLUGIN_DIR'))
 
 require_once TEI_PLUGIN_DIR . '/TeiDisplayPlugin.php';
 require_once TEI_PLUGIN_DIR . '/helpers/TeiDisplayFunctions.php';
-require_once TEI_PLUGIN_DIR . '/forms/Stylesheet.php';
+require_once TEI_PLUGIN_DIR . '/forms/StylesheetForm.php';
+require_once TEI_PLUGIN_DIR . '/forms/TextForm.php';
 
 $tei = new TeiDisplayPlugin();
 $tei->setUp();
