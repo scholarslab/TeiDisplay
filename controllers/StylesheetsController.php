@@ -12,7 +12,8 @@
  */
 
 
-class TeiDisplay_StylesheetsController extends Omeka_Controller_AbstractActionController
+class TeiDisplay_StylesheetsController extends
+    Omeka_Controller_AbstractActionController
 {
 
     /**
@@ -89,7 +90,8 @@ class TeiDisplay_StylesheetsController extends Omeka_Controller_AbstractActionCo
      */
     protected function _getAddSuccessMessage($stylesheet)
     {
-        return __('The stylesheet "%s" was successfully added!', $stylesheet->title);
+        return __('The stylesheet "%s" was successfully added!',
+            $stylesheet->title);
     }
 
     /**
@@ -97,7 +99,8 @@ class TeiDisplay_StylesheetsController extends Omeka_Controller_AbstractActionCo
      */
     protected function _getEditSuccessMessage($stylesheet)
     {
-        return __('The stylesheet "%s" was successfully changed!', $stylesheet->title);
+        return __('The stylesheet "%s" was successfully changed!',
+            $stylesheet->title);
     }
 
     /**
@@ -105,7 +108,8 @@ class TeiDisplay_StylesheetsController extends Omeka_Controller_AbstractActionCo
      */
     protected function _getDeleteSuccessMessage($stylesheet)
     {
-        return __('The stylesheet "%s" was successfully deleted!', $stylesheet->title);
+        return __('The stylesheet "%s" was successfully deleted!',
+            $stylesheet->title);
     }
 
     /**
@@ -113,7 +117,8 @@ class TeiDisplay_StylesheetsController extends Omeka_Controller_AbstractActionCo
      */
     protected function _getDeleteConfirmMessage($stylesheet)
     {
-        return __('This will delete the stylesheet "%s" and its associated metadata.', $stylesheet->title);
+        return __('This will delete the stylesheet "%s".',
+            $stylesheet->title);
     }
 
     /**
@@ -121,7 +126,8 @@ class TeiDisplay_StylesheetsController extends Omeka_Controller_AbstractActionCo
      */
     private function _getForm(TeiDisplayStylesheet $stylesheet)
     {
-        $form = new TeiDisplay_Form_Stylesheet(array('stylesheet' => $stylesheet));
+        $form = new TeiDisplay_Form_Stylesheet(array(
+            'stylesheet' => $stylesheet));
         return $form;
     }
 
