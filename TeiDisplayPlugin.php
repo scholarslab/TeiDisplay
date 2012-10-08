@@ -27,7 +27,8 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
 
     // Filters.
     protected $_filters = array(
-        'admin_navigation_main'
+        'admin_navigation_main',
+        'admin_items_form_tabs'
     );
 
     // XML mime types.
@@ -199,15 +200,28 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
 
 
     /**
-     * Add link to main admin menu bar.
+     * Add TEI tab to main admin menu bar.
      *
      * @param array $tabs This is an array of label => URI pairs.
      *
-     * @return array The tabs array with the Neatline Maps tab.
+     * @return array The tabs array with the TEI tab.
      */
     public function filterAdminNavigationMain($tabs)
     {
         $tabs['TEI'] = url('tei/stylesheets');
+        return $tabs;
+    }
+
+    /**
+     * Add TEI tab to item add/edit form.
+     *
+     * @param array $tabs This is an array of label => URI pairs.
+     *
+     * @return array The tabs array with the TEI tab.
+     */
+    public function filterAdminItemsFormTabs($tabs)
+    {
+        $tabs['TEI'] = 'test';
         return $tabs;
     }
 
