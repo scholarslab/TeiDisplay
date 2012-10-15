@@ -18,10 +18,16 @@ if (!defined('TEI_PLUGIN_VERSION'))
 if (!defined('TEI_PLUGIN_DIR'))
     define('TEI_PLUGIN_DIR', dirname(__FILE__));
 
+// Load assets.
 require_once TEI_PLUGIN_DIR . '/TeiDisplayPlugin.php';
 require_once TEI_PLUGIN_DIR . '/helpers/TeiDisplayFunctions.php';
 require_once TEI_PLUGIN_DIR . '/forms/StylesheetForm.php';
 require_once TEI_PLUGIN_DIR . '/forms/TextForm.php';
 
+// Set file transfer adapter.
+$adapter = new Zend_File_Transfer_Adapter_Http();
+Zend_Registry::set('adapter', $adapter);
+
+// Run.
 $tei = new TeiDisplayPlugin();
 $tei->setUp();

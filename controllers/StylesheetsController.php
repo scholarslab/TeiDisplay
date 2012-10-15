@@ -126,9 +126,17 @@ class TeiDisplay_StylesheetsController extends
      */
     private function _getForm(TeiDisplayStylesheet $stylesheet)
     {
+
+        // Build the form.
         $form = new TeiDisplay_Form_Stylesheet(array(
             'stylesheet' => $stylesheet));
+
+        // Set the transfer adapter.
+        $form->getElement('xslt')->setTransferAdapter(
+            Zend_Registry::get('adapter'));
+
         return $form;
+
     }
 
 }

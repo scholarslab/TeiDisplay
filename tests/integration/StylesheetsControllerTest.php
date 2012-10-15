@@ -60,8 +60,8 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
     {
 
         $this->dispatch('tei/stylesheets/add');
-        $this->assertXpath('//input[@name="title"]');
-        $this->assertXpath('//input[@name="xslt"]');
+        $this->assertXpath('//input[@type="text"][@name="title"]');
+        $this->assertXpath('//input[@type="file"][@name="xslt"]');
 
     }
 
@@ -75,14 +75,13 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
 
         // Mock post.
         $this->request->setMethod('POST')->setPost(
-            array('title' => '', 'xslt' => ''));
+            array('title' => ''));
 
         // Empty $_FILES.
         $this->__setEmptyStylesheetFileUpload();
 
         $this->dispatch('tei/stylesheets/add');
         $this->assertQueryContentContains('ul.error li', 'Enter a title.');
-        $this->assertQueryContentContains('ul.errors li', 'Select a file.');
 
     }
 
@@ -93,7 +92,23 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
      */
     public function testAddStylesheetSuccess()
     {
-        // TODO: How to mock file?
+
+        // Mock post.
+        $this->request->setMethod('POST')->setPost(
+            array('title' => 'Test Title'));
+
+        // Populate $_FILES.
+        $this->__setStylesheetFileUpload();
+
+        // Capture starting count.
+        $count = $this->sheetsTable->count();
+
+        // Add.
+        $this->dispatch('tei/stylesheets/add');
+
+        // Check count+1.
+        $this->assertEquals($this->sheetsTable->count(), $count+1);
+
     }
 
     /**
@@ -125,7 +140,7 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
 
         // Mock post.
         $this->request->setMethod('POST')->setPost(
-            array('title' => '', 'xslt' => ''));
+            array('title' => ''));
 
         $this->dispatch('tei/stylesheets/edit/'.$sheet->id);
         $this->assertQueryContentContains('ul.error li', 'Enter a title.');
@@ -148,7 +163,7 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
 
         // Mock post.
         $this->request->setMethod('POST')->setPost(
-            array('title' => 'New Title', 'xslt' => ''));
+            array('title' => 'New Title'));
 
         $this->dispatch('tei/stylesheets/edit/'.$sheet->id);
 

@@ -51,13 +51,18 @@ class TeiDisplayStylesheet extends Omeka_Record_AbstractRecord
     public function saveForm($form)
     {
 
-        // Read the file.
+        // Get values, set title.
         $values = $form->getValues();
-        $xslt = file_get_contents($form->xslt->getFilename());
-
-        // Set attributes.
         $this->title = $values['title'];
-        $this->xslt = $xslt;
+
+        // Try to get a filename.
+        $filename = $form->xslt->getFilename();
+
+        // If file, set value.
+        if ($filename) {
+            $xslt = file_get_contents($filename);
+            if (!is_null($xslt)) $this->xslt = $xslt;
+        }
 
         $this->save();
 

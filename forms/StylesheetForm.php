@@ -53,15 +53,6 @@ class TeiDisplay_Form_Stylesheet extends Omeka_Form
             'label'         => __('XSLT'),
             'description'   => __('Select the XSLT file.'),
             'validators'    => array(
-                array('validator' => 'count', 'breakChainOnFailure' => true, 'options' =>
-                    array(
-                        'min' => 1,
-                        'max' => 1,
-                        'messages' => array(
-                            Zend_Validate_File_Count::TOO_FEW => __('Select a file.')
-                        )
-                    )
-                ),
                 array('validator' => 'extension', 'breakChainOnFailure' => true, 'options' =>
                     array(
                         'extension' => 'xslt',
