@@ -35,12 +35,15 @@ class TeiDisplay_ItemsControllerTest extends TeiDisplay_Test_AppTestCase
             'TEI'
         );
 
-        // Check markup.
+        // Check stylesheet dropdown.
         $this->assertXpath('//select[@id="stylesheet"][@name="stylesheet"]');
         $this->assertXpath('//select[@name="stylesheet"]/option[@value="'.$sheet1->id.'"]
           [@label="Test Title 1"]');
         $this->assertXpath('//select[@name="stylesheet"]/option[@value="'.$sheet2->id.'"]
           [@label="Test Title 2"]');
+
+        // Check import TEI header checkbox.
+        $this->assertXpath('//input[@type="checkbox"][@id="import"][@name="import"]');
 
     }
 
@@ -75,39 +78,30 @@ class TeiDisplay_ItemsControllerTest extends TeiDisplay_Test_AppTestCase
         $this->assertXpath('//select[@name="stylesheet"]/option[@value="'.$sheet2->id.'"]
           [@label="Test Title 2"]');
 
+        // Check import TEI header checkbox.
+        $this->assertXpath('//input[@type="checkbox"][@id="import"][@name="import"]');
+
     }
 
     /**
-     * If there is an existing Fedora object for the item, the data should be
-     * populated in the textareas.
+     * If there is an existing text record for the item, the data should
+     * be populated.
      *
      * @return void.
      */
-    // public function testItemEditData()
-    // {
+    public function testItemEditData()
+    {
 
-    //     // Create item.
-    //     $item = $this->__item();
+        // Create stylesheets.
+        $sheet1 = $this->__stylesheet('Test Title 1');
+        $sheet2 = $this->__stylesheet('Test Title 2');
 
-    //     // Create servers.
-    //     $server1 = $this->__server('Test Title 1', 'http://test1.org/fedora');
-    //     $server2 = $this->__server('Test Title 2', 'http://test2.org/fedora');
+        // Create item.
+        $item = $this->__item();
 
-    //     // Create Fedora object.
-    //     $object = $this->__object($item, $server2);
+        // Create text.
 
-    //     // Hit item edit.
-    //     $this->dispatch('items/edit/' . $item->id);
-
-    //     // Check server select and PID input.
-    //     $this->assertXpath('//select[@id="server"][@name="server"]/option[@value="'.$server2->id.'"][@label="Test Title 2"][@selected="selected"]');
-    //     $this->assertXpath('//input[@id="pid"][@name="pid"][@value="pid:test"]');
-
-    //     // Check hidden fields.
-    //     $this->assertXpath('//input[@type="hidden"][@name="datastreamsuri"]');
-    //     $this->assertXpath('//input[@type="hidden"][@name="saveddsids"][@value="DC,content"]');
-
-    // }
+    }
 
     /**
      * When an item is added and Fedora data is entered, the service should

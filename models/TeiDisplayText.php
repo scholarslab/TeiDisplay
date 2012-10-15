@@ -28,5 +28,11 @@ class TeiDisplayText extends Omeka_Record_AbstractRecord
      */
     public $file_id;
 
+    /**
+     * True if the text is active.
+     * tinyint(1) NOT NULL
+     */
+    public $active;
+
 
 }

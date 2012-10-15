@@ -36,6 +36,12 @@ class TeiDisplay_Form_Text extends Omeka_Form
             'multiOptions'  => $this->getStylesheetsForSelect()
         ));
 
+        // Import.
+        $this->addElement('checkbox', 'import', array(
+            'label'         => 'Import TEI Header?',
+            'description'   => 'Map TEI header data to Dublin Core when the Item form is saved.'
+        ));
+
     }
 
     /**

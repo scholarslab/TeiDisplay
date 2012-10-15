@@ -22,7 +22,8 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         'uninstall',
         'define_routes',
         'before_save_file',
-        'after_save_file'
+        'after_save_file',
+        'after_save_item'
     );
 
     // Filters.
@@ -85,6 +86,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
             `id`        int(10) unsigned NOT NULL auto_increment,
             `item_id`   int(10) unsigned NOT NULL,
             `file_id`   int(10) unsigned NOT NULL,
+            `active`    tinyint(1) NOT NULL,
 
              PRIMARY KEY (`id`)
 
@@ -101,9 +103,17 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function hookUninstall()
     {
+
+        // Drop stylesheets.
         $tableName = $this->_db->TeiDisplayStylesheet;
         $sql = "DROP TABLE IF EXISTS `$tableName`";
         $this->_db->query($sql);
+
+        // Drop texts.
+        $tableName = $this->_db->TeiDisplayText;
+        $sql = "DROP TABLE IF EXISTS `$tableName`";
+        $this->_db->query($sql);
+
     }
 
     /**
@@ -149,7 +159,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     /**
      * Listen for new XML file uploads.
      *
-     * @param File $file The new file record.
+     * @param array $args The hook arguments, with key 'record'.
      *
      * @return void.
      */
@@ -170,7 +180,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     /**
      * Create new text.
      *
-     * @param File $file The new file record.
+     * @param array $args The hook arguments, with key 'record'.
      *
      * @return void.
      */
@@ -190,6 +200,19 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
             Zend_Registry::set('teiDisplay:NewXml', false);
 
         }
+
+    }
+
+    /**
+     * Process Item add/edit TEI tab.
+     *
+     * @param array $args The hook arguments, with keys 'record'
+     * and 'post'.
+     *
+     * @return void.
+     */
+    public function hookAfterSaveItem($args)
+    {
 
     }
 

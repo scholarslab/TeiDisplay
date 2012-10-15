@@ -78,6 +78,54 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
     }
 
     /**
+     * Create a text.
+     *
+     * @param Item $item The parent item.
+     * @param File $file The parent file.
+     *
+     * @return TeiDisplayText $text.
+     */
+    public function __text($item, $file, $active=true)
+    {
+
+        // Create item.
+        if (is_null($item)) $item = $this->__item();
+
+        // Create file.
+        if (is_null($file)) $file = $this->__file($item);
+
+        $text = new TeiDisplayText;
+        // TODO: Set file_id, item_id.
+        $text->active = true;
+        $text->save();
+
+        return $text;
+
+    }
+
+    /**
+     * Create a file.
+     *
+     * @param Item $item The parent item.
+     * @param string $originalFilename The filename.
+     *
+     * @return File $file.
+     */
+    public function __file($item=null, $originalFilename='text.xml')
+    {
+
+        // Create item.
+        if (is_null($item)) $item = $this->__item();
+
+        $file = new File;
+        // TODO: Mock the file.
+        // $file->save();
+
+        return $file;
+
+    }
+
+    /**
      * Create an item.
      *
      * @return Omeka_record $item The item.
