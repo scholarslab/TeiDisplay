@@ -46,8 +46,8 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         $pluginHelper->setUp('TeiDisplay');
 
         // Get plugin tables.
-        $this->sheetsTable = $this->db->getTable('TeiDisplayStylesheets');
-        $this->textsTable = $this->db->getTable('TeiDisplayTexts');
+        $this->sheetsTable = $this->db->getTable('TeiDisplayStylesheet');
+        $this->textsTable = $this->db->getTable('TeiDisplayText');
 
     }
 
@@ -94,39 +94,24 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
      *
      * @return Omeka_record $item The item.
      */
-    public function __setEmptyStylesheetFileUpload()
-    {
-
-        // Mock $_FILES.
-        $_FILES = array('xslt' => array(
-            'name' =>       '',
-            'type' =>       null,
-            'tmp_name' =>   '',
-            'error' =>      4,
-            'size' =>       ''
-        ));
-
-    }
-
-    /**
-     * Mock an empty file input on the stylesheet add/edit form.
-     *
-     * @return Omeka_record $item The item.
-     */
     public function __setStylesheetFileUpload()
     {
 
-        // Set mock adapter.
-        Zend_Registry::set('adapter', new TransferAdapterMock());
+        // Write mock tmp file.
+        $tmpDir = sys_get_temp_dir();
+        file_put_contents($tmpDir . '/mock.xslt', 'xslt mock');
 
         // Mock $_FILES.
         $_FILES = array('xslt' => array(
-            'name' =>       'xslt.xslt',
+            'name' =>       'mock.xslt',
+            'tmp_name' =>   'mock.xslt',
             'type' =>       'application/octet-stream',
-            'tmp_name' =>   dirname(__FILE__) . '/mocks/xslt.xslt',
             'error' =>      0,
             'size' =>       '10'
         ));
+
+        // Set mock adapter.
+        Zend_Registry::set('adapter', new TransferAdapterMock());
 
     }
 

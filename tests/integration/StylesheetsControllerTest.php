@@ -77,9 +77,6 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
         $this->request->setMethod('POST')->setPost(
             array('title' => ''));
 
-        // Empty $_FILES.
-        $this->__setEmptyStylesheetFileUpload();
-
         $this->dispatch('tei/stylesheets/add');
         $this->assertQueryContentContains('ul.error li', 'Enter a title.');
 
@@ -108,6 +105,11 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
 
         // Check count+1.
         $this->assertEquals($this->sheetsTable->count(), $count+1);
+
+        // Get new sheet, check params.
+        $sheet = $this->sheetsTable->find(1);
+        $this->assertEquals($sheet->title, 'Test Title');
+        $this->assertEquals($sheet->xslt, 'xslt mock');
 
     }
 
