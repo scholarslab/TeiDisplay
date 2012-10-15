@@ -94,12 +94,36 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
      *
      * @return Omeka_record $item The item.
      */
-    public function __setStylesheetFileUpload()
+    public function __setEmptyStylesheetFileUpload()
+    {
+
+        // Mock $_FILES.
+        $_FILES = array('xslt' => array(
+            'name' =>       '',
+            'type' =>       null,
+            'tmp_name' =>   '',
+            'error' =>      4,
+            'size' =>       ''
+        ));
+
+        // Set mock adapter.
+        Zend_Registry::set('adapter', new TransferAdapterMock());
+
+    }
+
+    /**
+     * Mock an empty file input on the stylesheet add/edit form.
+     *
+     * @param string $xslt The mock xslt content.
+     *
+     * @return Omeka_record $item The item.
+     */
+    public function __setStylesheetFileUpload($xslt = 'xslt mock')
     {
 
         // Write mock tmp file.
         $tmpDir = sys_get_temp_dir();
-        file_put_contents($tmpDir . '/mock.xslt', 'xslt mock');
+        file_put_contents($tmpDir . '/mock.xslt', $xslt);
 
         // Mock $_FILES.
         $_FILES = array('xslt' => array(

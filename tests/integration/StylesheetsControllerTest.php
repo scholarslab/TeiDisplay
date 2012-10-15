@@ -147,13 +147,12 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
         $this->dispatch('tei/stylesheets/edit/'.$sheet->id);
         $this->assertQueryContentContains('ul.error li', 'Enter a title.');
 
-        // TODO: How to mock file?
-
     }
 
     /**
      * When a stylesheet form is saved without a new file upload,
-     * modifications to other fields should be saved.
+     * modifications to other fields should be saved and the value of
+     * the xslt field should not be changed.
      *
      * @return void.
      */
@@ -161,15 +160,22 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
     {
 
         // Create stylesheet.
-        $sheet = $this->__stylesheet('Title');
+        $sheet = $this->__stylesheet('Title', 'xslt');
+
+        // Empty $_FILES.
+        $this->__setEmptyStylesheetFileUpload();
 
         // Mock post.
         $this->request->setMethod('POST')->setPost(
             array('title' => 'New Title'));
 
+        // Edit.
         $this->dispatch('tei/stylesheets/edit/'.$sheet->id);
 
-        // TODO: Check new title.
+        // Get new sheet, check params.
+        $sheet = $this->sheetsTable->find($sheet->id);
+        $this->assertEquals($sheet->title, 'New Title');
+        $this->assertEquals($sheet->xslt, 'xslt');
 
     }
 
@@ -181,7 +187,25 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
      */
     public function testEditStylesheetNewFile()
     {
-        // TODO: How to mock file?
+
+        // Create stylesheet.
+        $sheet = $this->__stylesheet('Title', 'xslt');
+
+        // Populate $_FILES.
+        $this->__setStylesheetFileUpload('new xslt');
+
+        // Mock post.
+        $this->request->setMethod('POST')->setPost(
+            array('title' => 'New Title'));
+
+        // Edit.
+        $this->dispatch('tei/stylesheets/edit/'.$sheet->id);
+
+        // Get new sheet, check params.
+        $sheet = $this->sheetsTable->find($sheet->id);
+        $this->assertEquals($sheet->title, 'New Title');
+        $this->assertEquals($sheet->xslt, 'new xslt');
+
     }
 
 }
