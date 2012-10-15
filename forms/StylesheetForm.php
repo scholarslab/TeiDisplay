@@ -35,7 +35,7 @@ class TeiDisplay_Form_Stylesheet extends Omeka_Form
         // Title.
         $this->addElement('text', 'title', array(
             'label'         => __('Title'),
-            'description'   => __('An identified used for internal content management.'),
+            'description'   => __('An identifier used for internal content management.'),
             'size'          => 40,
             'value'         => $this->_stylesheet->title,
             'required'      => true,

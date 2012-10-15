@@ -84,4 +84,20 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         return $item;
     }
 
+    /**
+     * Mock an empty file input on the stylesheet add/edit form.
+     *
+     * @return Omeka_record $item The item.
+     */
+    public function __setEmptyStylesheetFileUpload()
+    {
+        $_FILES = array('xslt' => array(
+            'name' =>       '',
+            'type' =>       null,
+            'tmp_name' =>   '',
+            'error' =>      4,
+            'size' =>       ''
+        ));
+    }
+
 }

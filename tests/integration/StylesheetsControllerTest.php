@@ -77,10 +77,12 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
         $this->request->setMethod('POST')->setPost(
             array('title' => '', 'xslt' => ''));
 
+        // Empty $_FILES.
+        $this->__setEmptyStylesheetFileUpload();
+
         $this->dispatch('tei/stylesheets/add');
         $this->assertQueryContentContains('ul.error li', 'Enter a title.');
-
-        // TODO: How to mock file?
+        $this->assertQueryContentContains('ul.errors li', 'Select a file.');
 
     }
 
@@ -130,6 +132,39 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
 
         // TODO: How to mock file?
 
+    }
+
+    /**
+     * When a stylesheet form is saved without a new file upload,
+     * modifications to other fields should be saved.
+     *
+     * @return void.
+     */
+    public function testEditStylesheetNoNewFile()
+    {
+
+        // Create stylesheet.
+        $sheet = $this->__stylesheet('Title');
+
+        // Mock post.
+        $this->request->setMethod('POST')->setPost(
+            array('title' => 'New Title', 'xslt' => ''));
+
+        $this->dispatch('tei/stylesheets/edit/'.$sheet->id);
+
+        // TODO: Check new title.
+
+    }
+
+    /**
+     * When a stylesheet form is saved and a new file is uploaded,
+     * the new file should be saved.
+     *
+     * @return void.
+     */
+    public function testEditStylesheetNewFile()
+    {
+        // TODO: How to mock file?
     }
 
 }
