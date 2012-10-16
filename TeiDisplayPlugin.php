@@ -231,7 +231,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function filterAdminNavigationMain($tabs)
     {
-        $tabs['TEI'] = url('tei/stylesheets');
+        $tabs[] = array('label' => 'TEI', 'uri' => url('tei/stylesheets'));
         return $tabs;
     }
 
