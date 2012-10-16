@@ -184,7 +184,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         if ($args['record']->exists()) return;
 
         // Check for XML.
-        $mimeType = $args['record']->getMimeType();
+        $mimeType = $args['record']->mime_type;
         if (in_array($mimeType, $this->_xmlMimeTypes)) {
             Zend_Registry::set('teiDisplay:NewXml', true);
         }
