@@ -94,6 +94,20 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
 
         $this->_db->query($sql);
 
+        // Whitelist XML extension.
+        $extensions = get_option('file_extension_whitelist');
+        if (strpos($extensions, 'xml') === false) {
+            set_option('file_extension_whitelist',
+              get_option('file_extension_whitelist').',xml');
+        }
+
+        // Whitelist XML mime type.
+        $mimes = get_option('file_mime_type_whitelist');
+        if (strpos($mimes, 'application/xml') === false) {
+            set_option('file_mime_type_whitelist',
+              get_option('file_mime_type_whitelist').',application/xml');
+        }
+
     }
 
     /**
