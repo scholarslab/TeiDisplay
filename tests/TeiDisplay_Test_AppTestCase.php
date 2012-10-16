@@ -49,6 +49,15 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         $this->sheetsTable = $this->db->getTable('TeiDisplayStylesheet');
         $this->textsTable = $this->db->getTable('TeiDisplayText');
 
+        // Copy XML mock to tmp.
+        $tmpDir = sys_get_temp_dir();
+        copy('mocks/winters-tale.xml',
+          $tmpDir . '/winters-tale.xml');
+
+        // Copy XML mock to Omeka.
+        copy('mocks/winters-tale.xml',
+          '../../../files/original/winters-tale.xml');
+
     }
 
 
@@ -85,7 +94,7 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
      *
      * @return TeiDisplayText $text.
      */
-    public function __text($item, $file, $active=true)
+    public function __text($item=null, $file=null, $active=true)
     {
 
         // Create item.

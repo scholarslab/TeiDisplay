@@ -20,8 +20,15 @@ class TeiDisplay_TeiDisplayTextTableTest extends TeiDisplay_Test_AppTestCase
      *
      * @return void.
      */
-    public function testGetActiveText()
+    public function testGetActiveTextWhenTextsExist()
     {
+
+        // Create item.
+        $item = $this->__item();
+
+        // Create texts.
+        $text1 = $this->__text($item);
+        $text2 = $this->__text($item);
 
     }
 
