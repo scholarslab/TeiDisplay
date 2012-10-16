@@ -205,10 +205,11 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         if (Zend_Registry::get('teiDisplay:NewXml')) {
 
             // Create text.
-            $text = new TeiDisplayText;
-            $text->item_id = $args['record']->item_id;
-            $text->file_id = $args['record']->id;
-            $text->save();
+            // $text = new TeiDisplayText;
+            // $text->item_id = $args['record']->item_id;
+            // $text->file_id = $args['record']->id;
+            // $text->active = true;
+            // $text->save();
 
             // Reset tracker.
             Zend_Registry::set('teiDisplay:NewXml', false);

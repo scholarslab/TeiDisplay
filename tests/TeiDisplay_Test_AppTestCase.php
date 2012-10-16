@@ -95,7 +95,8 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         if (is_null($file)) $file = $this->__file($item);
 
         $text = new TeiDisplayText;
-        // TODO: Set file_id, item_id.
+        $text->item_id = $item->id;
+        $text->file_id = $file->id;
         $text->active = true;
         $text->save();
 
@@ -104,22 +105,27 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
     }
 
     /**
-     * Create a file.
+     * Create a file, using mocks/winters-tale.xml as the source.
      *
      * @param Item $item The parent item.
      * @param string $originalFilename The filename.
      *
      * @return File $file.
      */
-    public function __file($item=null, $originalFilename='text.xml')
+    public function __file($item=null, $originalFilename='winters-tale.xml')
     {
 
         // Create item.
         if (is_null($item)) $item = $this->__item();
 
         $file = new File;
-        // TODO: Mock the file.
-        // $file->save();
+        $file->item_id = $item->id;
+        $file->size = 310112;
+        $file->has_derivative_image = 0;
+        $file->filename = 'winters-tale.xml';
+        $file->original_filename = 'winters-tale.xml';
+        $file->metadata = '[]';
+        $file->save();
 
         return $file;
 
