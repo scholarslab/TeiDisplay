@@ -26,8 +26,8 @@ class TeiDisplay_TeiDisplayTextTableTest extends TeiDisplay_Test_AppTestCase
         $item = $this->__item();
 
         // Create texts.
-        $text1 = $this->__text($item, null, 0);
-        $text2 = $this->__text($item, null, 1);
+        $text1 = $this->__text($item);
+        $text2 = $this->__text($item);
 
         // Get texts.
         $texts = $this->textsTable->findByItem($item);
