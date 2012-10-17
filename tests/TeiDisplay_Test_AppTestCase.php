@@ -116,7 +116,7 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
      *
      * @return File $file.
      */
-    public function __file($item=null, $originalFilename='winters-tale.xml')
+    public function __file($item=null, $filename='winters-tale.xml')
     {
 
         // Create item.
@@ -126,8 +126,8 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
             'item_id' => $item->id,
             'size' => 310112,
             'has_derivative_image' => 0,
-            'filename' => 'winters-tale.xml',
-            'original_filename' => 'winters-tale.xml',
+            'filename' => $filename,
+            'original_filename' => $filename,
             'metadata' => '[]',
         ));
 

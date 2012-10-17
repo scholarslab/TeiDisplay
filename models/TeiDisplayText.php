@@ -47,6 +47,17 @@ class TeiDisplayText extends Omeka_Record_AbstractRecord
     }
 
     /**
+     * Get the the original filename of the parent file.
+     *
+     * @return string: The filename.
+     */
+    public function getFileName()
+    {
+        $_filesTable = $this->getTable('File');
+        return $_filesTable->find($this->file_id)->original_filename;
+    }
+
+    /**
      * Manage `active` uniqueness.
      *
      * @return void.

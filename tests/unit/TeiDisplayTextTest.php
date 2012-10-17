@@ -58,6 +58,24 @@ class TeiDisplay_TeiDisplayTextTest extends TeiDisplay_Test_AppTestCase
     }
 
     /**
+     * getFileName() should return the original filename of the
+     * parent file.
+     *
+     * @return void.
+     */
+    public function testGetFileName()
+    {
+
+        // Create file and text.
+        $file = $this->__file(null, 'original.xml');
+        $text = $this->__text(null, $file);
+
+        // Check file name.
+        $this->assertEquals($text->getFileName(), 'original.xml');
+
+    }
+
+    /**
      * beforeSave() should manage per-item `active` uniqueness.
      *
      * @return void.
