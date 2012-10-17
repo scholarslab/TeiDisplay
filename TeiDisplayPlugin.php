@@ -208,23 +208,21 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     {
 
         // Construct the form.
-        $form = new TeiDisplay_Form_Text();
+        $item = get_current_record('item');
+        $form = new TeiDisplay_Form_Text(array('item' => $item));
         $form->removeDecorator('form');
 
         // If the item exists.
-        $item = get_current_record('item');
         if ($item->exists()) {
 
             // Try to get a text.
             $text = $this->_texts->findByItem($item);
 
             // Populate fields.
-            if ($text) {
-                $form->populate(array(
-                    'text' => $text->text_id,
-                    'stylesheet' => $object->sheet_id
-                ));
-            }
+            if ($text) $form->populate(array(
+                'text' => $text->text_id,
+                'stylesheet' => $object->sheet_id
+            ));
 
         }
 

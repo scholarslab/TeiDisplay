@@ -65,8 +65,7 @@ class TeiDisplay_Form_Text extends Omeka_Form
         $_files = $_db->getTable('File');
 
         // Fetch texts.
-        $item = get_current_record('item');
-        $records = $_files->findByItem($item->id);
+        $records = $_files->findByItem($this->_item->id);
 
         // Build the array.
         $texts = array();
