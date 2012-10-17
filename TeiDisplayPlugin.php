@@ -208,7 +208,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
             // $text = new TeiDisplayText;
             // $text->item_id = $args['record']->item_id;
             // $text->file_id = $args['record']->id;
-            // $text->active = true;
+            // $text->active = 1;
             // $text->save();
 
             // Reset tracker.

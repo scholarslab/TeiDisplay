@@ -35,4 +35,40 @@ class TeiDisplayText extends Omeka_Record_AbstractRecord
     public $active;
 
 
+    /**
+     * Get the parent item.
+     *
+     * @return Item: The parent item.
+     */
+    public function getItem()
+    {
+        $_itemsTable = $this->getTable('Item');
+        return $_itemsTable->find($this->item_id);
+    }
+
+    /**
+     * Manage `active` uniqueness.
+     *
+     * @return void.
+     */
+    public function beforeSave()
+    {
+
+        // Get the current active text.
+        $_textsTable = $this->getTable('TeiDisplayText');
+        $activeText = $_textsTable->getActiveText($this->getItem());
+
+        // Is the new text set to active?
+        if ($this->active == 1) {
+
+            // Is the current active non-self?
+            if ($activeText && $activeText->id !== $this->id) {
+                $activeText->active = 0;
+                $activeText->save();
+            }
+
+        }
+
+    }
+
 }

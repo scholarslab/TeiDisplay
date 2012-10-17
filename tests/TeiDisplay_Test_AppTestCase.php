@@ -89,7 +89,7 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
      *
      * @return TeiDisplayText $text.
      */
-    public function __text($item=null, $file=null, $active=true)
+    public function __text($item=null, $file=null, $active=1)
     {
 
         // Create item.
@@ -101,7 +101,7 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         $text = new TeiDisplayText;
         $text->item_id = $item->id;
         $text->file_id = $file->id;
-        $text->active = true;
+        $text->active = $active;
         $text->save();
 
         return $text;
