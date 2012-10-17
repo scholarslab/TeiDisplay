@@ -36,14 +36,14 @@ class TeiDisplay_ItemsControllerTest extends TeiDisplay_Test_AppTestCase
         );
 
         // Check stylesheet dropdown.
-        $this->assertXpath('//select[@id="stylesheet"][@name="stylesheet"]');
-        $this->assertXpath('//select[@name="stylesheet"]/option[@value="'.$sheet1->id.'"]
+        $this->assertXpath('//select[@id="teistylesheet"][@name="teistylesheet"]');
+        $this->assertXpath('//select[@name="teistylesheet"]/option[@value="'.$sheet1->id.'"]
           [@label="Test Title 1"]');
-        $this->assertXpath('//select[@name="stylesheet"]/option[@value="'.$sheet2->id.'"]
+        $this->assertXpath('//select[@name="teistylesheet"]/option[@value="'.$sheet2->id.'"]
           [@label="Test Title 2"]');
 
         // Check import TEI header checkbox.
-        $this->assertXpath('//input[@type="checkbox"][@id="import"][@name="import"]');
+        $this->assertXpath('//input[@type="checkbox"][@id="teiimport"][@name="teiimport"]');
 
     }
 
@@ -72,14 +72,14 @@ class TeiDisplay_ItemsControllerTest extends TeiDisplay_Test_AppTestCase
         );
 
         // Check markup.
-        $this->assertXpath('//select[@id="stylesheet"][@name="stylesheet"]');
-        $this->assertXpath('//select[@name="stylesheet"]/option[@value="'.$sheet1->id.'"]
+        $this->assertXpath('//select[@id="teistylesheet"][@name="teistylesheet"]');
+        $this->assertXpath('//select[@name="teistylesheet"]/option[@value="'.$sheet1->id.'"]
           [@label="Test Title 1"]');
-        $this->assertXpath('//select[@name="stylesheet"]/option[@value="'.$sheet2->id.'"]
+        $this->assertXpath('//select[@name="teistylesheet"]/option[@value="'.$sheet2->id.'"]
           [@label="Test Title 2"]');
 
         // Check import TEI header checkbox.
-        $this->assertXpath('//input[@type="checkbox"][@id="import"][@name="import"]');
+        $this->assertXpath('//input[@type="checkbox"][@id="teiimport"][@name="teiimport"]');
 
     }
 

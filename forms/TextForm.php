@@ -32,21 +32,21 @@ class TeiDisplay_Form_Text extends Omeka_Form
         $this->addElementPrefixPath('TeiDisplay', dirname(__FILE__));
 
         // Text.
-        $this->addElement('select', 'text', array(
+        $this->addElement('select', 'teitext', array(
             'label'         => __('TEI Texts'),
             'description'   => __('Select an active text.'),
             'multiOptions'  => $this->getTextsForSelect()
         ));
 
         // Stylesheet.
-        $this->addElement('select', 'stylesheet', array(
+        $this->addElement('select', 'teistylesheet', array(
             'label'         => __('Stylesheet'),
             'description'   => __('Select an XSLT stylesheet.'),
             'multiOptions'  => $this->getStylesheetsForSelect()
         ));
 
         // Import.
-        $this->addElement('checkbox', 'import', array(
+        $this->addElement('checkbox', 'teiimport', array(
             'label'         => 'Import TEI Header?',
             'description'   => 'Map TEI header data to Dublin Core when the Item form is saved.'
         ));
