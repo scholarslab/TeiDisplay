@@ -49,11 +49,6 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         $this->sheetsTable = $this->db->getTable('TeiDisplayStylesheet');
         $this->textsTable = $this->db->getTable('TeiDisplayText');
 
-        // Copy XML mock to tmp.
-        $tmpDir = sys_get_temp_dir();
-        copy('mocks/winters-tale.xml',
-          $tmpDir . '/winters-tale.xml');
-
         // Copy XML mock to Omeka.
         copy('mocks/winters-tale.xml',
           '../../../files/original/winters-tale.xml');
@@ -127,16 +122,20 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         // Create item.
         if (is_null($item)) $item = $this->__item();
 
-        $file = new File;
-        $file->item_id = $item->id;
-        $file->size = 310112;
-        $file->has_derivative_image = 0;
-        $file->filename = 'winters-tale.xml';
-        $file->original_filename = 'winters-tale.xml';
-        $file->metadata = '[]';
-        $file->save();
+        $this->db->insert('File', array(
+            'item_id' => $item->id,
+            'size' => 310112,
+            'has_derivative_image' => 0,
+            'filename' => 'winters-tale.xml',
+            'original_filename' => 'winters-tale.xml',
+            'metadata' => '[]',
+        ));
 
-        return $file;
+        // Get the File table.
+        $_fileTable = $this->db->getTable('File');
+
+        $newId = $_fileTable->lastInsertId();
+        return $_fileTable->find($newId);
 
     }
 
