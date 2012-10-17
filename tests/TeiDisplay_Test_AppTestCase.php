@@ -86,10 +86,11 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
      *
      * @param Item $item The parent item.
      * @param File $file The parent file.
+     * @param TeiDisplayStylesheet $sheet The current sheet.
      *
      * @return TeiDisplayText $text.
      */
-    public function __text($item=null, $file=null, $active=1)
+    public function __text($item=null, $file=null, $sheet=null)
     {
 
         // Create item.
@@ -98,10 +99,13 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         // Create file.
         if (is_null($file)) $file = $this->__file($item);
 
+        // Create sheet.
+        if (is_null($sheet)) $sheet = $this->__stylesheet();
+
         $text = new TeiDisplayText;
         $text->item_id = $item->id;
         $text->file_id = $file->id;
-        $text->active = $active;
+        $text->sheet_id = $sheet->id;
         $text->save();
 
         return $text;

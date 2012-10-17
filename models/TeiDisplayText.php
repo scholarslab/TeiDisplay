@@ -23,16 +23,16 @@ class TeiDisplayText extends Omeka_Record_AbstractRecord
     public $item_id;
 
     /**
-     * The parent file.
+     * The current file.
      * int(10) unsigned NOT NULL
      */
     public $file_id;
 
     /**
-     * True if the text is active.
-     * tinyint(1) NOT NULL
+     * The current stylesheet.
+     * int(10) unsigned NOT NULL
      */
-    public $active;
+    public $sheet_id;
 
 
     /**
@@ -44,42 +44,6 @@ class TeiDisplayText extends Omeka_Record_AbstractRecord
     {
         $_itemsTable = $this->getTable('Item');
         return $_itemsTable->find($this->item_id);
-    }
-
-    /**
-     * Get the the original filename of the parent file.
-     *
-     * @return string: The filename.
-     */
-    public function getFileName()
-    {
-        $_filesTable = $this->getTable('File');
-        return $_filesTable->find($this->file_id)->original_filename;
-    }
-
-    /**
-     * Manage `active` uniqueness.
-     *
-     * @return void.
-     */
-    public function beforeSave()
-    {
-
-        // Get the current active text.
-        $_textsTable = $this->getTable('TeiDisplayText');
-        $activeText = $_textsTable->getActiveText($this->getItem());
-
-        // Is the new text set to active?
-        if ($this->active == 1) {
-
-            // Is the current active non-self?
-            if ($activeText && $activeText->id !== $this->id) {
-                $activeText->active = 0;
-                $activeText->save();
-            }
-
-        }
-
     }
 
 }

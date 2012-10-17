@@ -28,18 +28,4 @@ class TeiDisplayTextTable extends Omeka_Db_Table
         return $this->fetchObjects($select);
     }
 
-    /**
-     * Get the current active text for an item.
-     *
-     * @param Item $item The item.
-     *
-     * @return TeiDisplayText $text The active text.
-     */
-    public function getActiveText($item)
-    {
-        $select = $this->getSelect()->
-            where('active=1 AND item_id=?', $item->id);
-        return $this->fetchObject($select);
-    }
-
 }

@@ -32,8 +32,7 @@ class TeiDisplay_Form_Text extends Omeka_Form
         // Text.
         $this->addElement('select', 'text', array(
             'label'         => __('TEI Texts'),
-            'description'   => __('Select an active text.'),
-            'multiOptions'  => array()
+            'description'   => __('Select an active text.')
         ));
 
         // Stylesheet.
@@ -54,16 +53,18 @@ class TeiDisplay_Form_Text extends Omeka_Form
     /**
      * Get the list of texts.
      *
-     * @return array $servers The server.
+     * @param Item $item The parent item.
+     *
+     * @return void.
      */
-    public function getTextsForSelect()
+    public function setTextsForSelect($item)
     {
 
         $_db = get_db();
         $_texts = $_db->getTable('TeiDisplayText');
 
-        // Fetch.
-        $records = $_texts->findByItem(get_current_item());
+        // Fetch texts.
+        $records = $_texts->findByItem($item);
 
         // Build the array.
         $texts = array();
@@ -71,7 +72,8 @@ class TeiDisplay_Form_Text extends Omeka_Form
             $texts[$record->id] = $record->getFileName();
         };
 
-        return $texts;
+        // Set the options.
+        $this->getElement('text')->setMultiOptions($texts);
 
     }
 

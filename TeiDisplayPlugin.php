@@ -21,8 +21,6 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         'install',
         'uninstall',
         'define_routes',
-        'before_save_file',
-        'after_save_file',
         'after_save_item'
     );
 
@@ -37,18 +35,6 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         'application/xml',
         'text/xml'
     );
-
-
-    /**
-     * Initialize registry key to track new XML uploads.
-     *
-     * @return void.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        Zend_Registry::set('teiDisplay:NewXml', false);
-    }
 
 
     // ------
@@ -76,7 +62,6 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
              PRIMARY KEY (`id`)
 
         ) ENGINE=innodb DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
         $this->_db->query($sql);
 
         // Texts table.
@@ -86,12 +71,11 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
             `id`        int(10) unsigned NOT NULL auto_increment,
             `item_id`   int(10) unsigned NOT NULL,
             `file_id`   int(10) unsigned NOT NULL,
-            `active`    tinyint(1) NOT NULL,
+            `sheet_id`  int(10) unsigned NOT NULL,
 
              PRIMARY KEY (`id`)
 
         ) ENGINE=innodb DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
         $this->_db->query($sql);
 
         // Whitelist XML extension.
@@ -171,54 +155,6 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     }
 
     /**
-     * Listen for new XML file uploads.
-     *
-     * @param array $args The hook arguments, with key 'record'.
-     *
-     * @return void.
-     */
-    public function hookBeforeSaveFile($args)
-    {
-
-        // Break if file exists.
-        if ($args['record']->exists()) return;
-
-        // Check for XML.
-        $mimeType = $args['record']->mime_type;
-        if (in_array($mimeType, $this->_xmlMimeTypes)) {
-            Zend_Registry::set('teiDisplay:NewXml', true);
-        }
-
-    }
-
-    /**
-     * Create new text.
-     *
-     * @param array $args The hook arguments, with key 'record'.
-     *
-     * @return void.
-     */
-    public function hookAfterSaveFile($args)
-    {
-
-        // Check for new file.
-        if (Zend_Registry::get('teiDisplay:NewXml')) {
-
-            // Create text.
-            // $text = new TeiDisplayText;
-            // $text->item_id = $args['record']->item_id;
-            // $text->file_id = $args['record']->id;
-            // $text->active = 1;
-            // $text->save();
-
-            // Reset tracker.
-            Zend_Registry::set('teiDisplay:NewXml', false);
-
-        }
-
-    }
-
-    /**
      * Process Item add/edit TEI tab.
      *
      * @param array $args The hook arguments, with keys 'record'
@@ -269,6 +205,9 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
 
         // If the item is saved.
         if (!is_null($item->id)) {
+
+            // Set texts for the item.
+            $form->setTextsForSelect($item);
 
             // // Try to get a datastream.
             // $object = $this->_objects->findByItem($item);
