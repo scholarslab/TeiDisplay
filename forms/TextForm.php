@@ -29,6 +29,13 @@ class TeiDisplay_Form_Text extends Omeka_Form
         $this->setAttrib('id', 'text-form');
         $this->addElementPrefixPath('TeiDisplay', dirname(__FILE__));
 
+        // Text.
+        $this->addElement('select', 'text', array(
+            'label'         => __('TEI Texts'),
+            'description'   => __('Select an active text.'),
+            'multiOptions'  => array()
+        ));
+
         // Stylesheet.
         $this->addElement('select', 'stylesheet', array(
             'label'         => __('Stylesheet'),
@@ -45,6 +52,30 @@ class TeiDisplay_Form_Text extends Omeka_Form
     }
 
     /**
+     * Get the list of texts.
+     *
+     * @return array $servers The server.
+     */
+    public function getTextsForSelect()
+    {
+
+        $_db = get_db();
+        $_texts = $_db->getTable('TeiDisplayText');
+
+        // Fetch.
+        $records = $_texts->findByItem(get_current_item());
+
+        // Build the array.
+        $texts = array();
+        foreach($records as $record) {
+            $texts[$record->id] = $record->getFileName();
+        };
+
+        return $texts;
+
+    }
+
+    /**
      * Get the list of XSLT stylesheets.
      *
      * @return array $servers The server.
@@ -52,7 +83,6 @@ class TeiDisplay_Form_Text extends Omeka_Form
     public function getStylesheetsForSelect()
     {
 
-        // Get file table.
         $_db = get_db();
         $_stylesheets = $_db->getTable('TeiDisplayStylesheet');
 

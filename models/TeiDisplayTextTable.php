@@ -16,6 +16,19 @@ class TeiDisplayTextTable extends Omeka_Db_Table
 {
 
     /**
+     * Get all texts for an item.
+     *
+     * @param Item $item The item.
+     *
+     * @return array TeiDisplayText $texts The texts.
+     */
+    public function findByItem($item)
+    {
+        $select = $this->getSelect()->where('item_id=?', $item->id);
+        return $this->fetchObjects($select);
+    }
+
+    /**
      * Get the current active text for an item.
      *
      * @param Item $item The item.

@@ -15,6 +15,28 @@ class TeiDisplay_TeiDisplayTextTableTest extends TeiDisplay_Test_AppTestCase
 {
 
     /**
+     * findByItem() should return all texts for an item.
+     *
+     * @return void.
+     */
+    public function testFindByItem()
+    {
+
+        // Create item.
+        $item = $this->__item();
+
+        // Create texts.
+        $text1 = $this->__text($item, null, 0);
+        $text2 = $this->__text($item, null, 1);
+
+        // Get texts.
+        $texts = $this->textsTable->findByItem($item);
+        $this->assertEquals($texts[0]->id, $text1->id);
+        $this->assertEquals($texts[1]->id, $text2->id);
+
+    }
+
+    /**
      * getActiveText() should return the current active text when
      * there are 1 or more texts.
      *
