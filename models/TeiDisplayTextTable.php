@@ -25,7 +25,32 @@ class TeiDisplayTextTable extends Omeka_Db_Table
     public function findByItem($item)
     {
         $select = $this->getSelect()->where('item_id=?', $item->id);
-        return $this->fetchObjects($select);
+        return $this->fetchObject($select);
+    }
+
+    /**
+     * Create text record for item or update existing record.
+     *
+     * @param Item $item The item.
+     * @param integer $sheetId The id of the stylesheet.
+     * @param integer $fileId The id of the XML file.
+     *
+     * @return array TeiDisplayText $texts The texts.
+     */
+    public function createOrUpdate($item, $sheetId, $fileId)
+    {
+
+        // Try to get an existing text.
+        $text = $this->findByItem($item);
+
+        // If no existing text, create one.
+        if (!$text) $text = new TeiDisplayText($item);
+
+        // Update and save.
+        $text->file_id = $fileId;
+        $text->sheet_id = $sheetId;
+        return $text->save();
+
     }
 
 }

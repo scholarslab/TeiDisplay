@@ -176,6 +176,17 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     public function hookAfterSaveItem($args)
     {
 
+        // Create or update the text.
+        $text = $this->_texts->createOrUpdate($args['record'],
+            (int) $args['record']['teistylesheet'],
+            (int) $args['record']['teitext']
+        );
+
+        // Import header.
+        if ((bool) $args['post']['teiimport']) {
+            // TODO: do import.
+        }
+
     }
 
 
@@ -221,7 +232,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
             // Populate fields.
             if ($text) $form->populate(array(
                 'text' => $text->text_id,
-                'stylesheet' => $object->sheet_id
+                'stylesheet' => $text->sheet_id
             ));
 
         }

@@ -36,6 +36,19 @@ class TeiDisplayText extends Omeka_Record_AbstractRecord
 
 
     /**
+     * Set the parent item.
+     *
+     * @param Item $item The parent item.
+     *
+     * @return void.
+     */
+    public function __construct($item=null)
+    {
+        parent::__construct();
+        if ($item) $this->item_id = $item->id;
+    }
+
+    /**
      * Get the parent item.
      *
      * @return Item: The parent item.
