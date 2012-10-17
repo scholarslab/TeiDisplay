@@ -36,6 +36,17 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         'text/xml'
     );
 
+    /**
+     * Get tables.
+     *
+     * @return void.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->_texts = $this->_db->getTable('TeiDisplayText');
+    }
+
 
     // ------
     // Hooks.
@@ -196,30 +207,24 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     public function filterAdminItemsFormTabs($tabs)
     {
 
-        // Construct the form, strip the <form> tag.
+        // Construct the form.
         $form = new TeiDisplay_Form_Text();
         $form->removeDecorator('form');
 
-        // Get the item.
+        // If the item exists.
         $item = get_current_record('item');
+        if ($item->exists()) {
 
-        // If the item is saved.
-        if (!is_null($item->id)) {
+            // Try to get a text.
+            $text = $this->_texts->findByItem($item);
 
-            // Set texts for the item.
-            $form->setTextsForSelect($item);
-
-            // // Try to get a datastream.
-            // $object = $this->_objects->findByItem($item);
-
-            // // Populate fields.
-            // if ($object) {
-            //     $form->populate(array(
-            //         'server' => $object->server_id,
-            //         'pid' => $object->pid,
-            //         'saved-dsids' => $object->dsids
-            //     ));
-            // }
+            // Populate fields.
+            if ($text) {
+                $form->populate(array(
+                    'text' => $text->text_id,
+                    'stylesheet' => $object->sheet_id
+                ));
+            }
 
         }
 

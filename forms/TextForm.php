@@ -15,6 +15,8 @@
 class TeiDisplay_Form_Text extends Omeka_Form
 {
 
+    private $_item;
+
     /**
      * Build the add/edit form.
      *
@@ -32,7 +34,8 @@ class TeiDisplay_Form_Text extends Omeka_Form
         // Text.
         $this->addElement('select', 'text', array(
             'label'         => __('TEI Texts'),
-            'description'   => __('Select an active text.')
+            'description'   => __('Select an active text.'),
+            'multiOptions'  => $this->getTextsForSelect()
         ));
 
         // Stylesheet.
@@ -53,27 +56,27 @@ class TeiDisplay_Form_Text extends Omeka_Form
     /**
      * Get the list of texts.
      *
-     * @param Item $item The parent item.
-     *
      * @return void.
      */
-    public function setTextsForSelect($item)
+    public function getTextsForSelect()
     {
 
         $_db = get_db();
-        $_texts = $_db->getTable('TeiDisplayText');
+        $_files = $_db->getTable('File');
 
         // Fetch texts.
-        $records = $_texts->findByItem($item);
+        $item = get_current_record('item');
+        $records = $_files->findByItem($item->id);
 
         // Build the array.
         $texts = array();
         foreach($records as $record) {
-            $texts[$record->id] = $record->getFileName();
+            if ($record->mime_type == 'application/xml') {
+                $texts[$record->id] = $record->original_filename;
+            }
         };
 
-        // Set the options.
-        $this->getElement('text')->setMultiOptions($texts);
+        return $texts;
 
     }
 
@@ -99,6 +102,16 @@ class TeiDisplay_Form_Text extends Omeka_Form
 
         return $stylesheets;
 
+    }
+
+    /**
+     * Set the parent item.
+     *
+     * @return void.
+     */
+    public function setItem(Item $item)
+    {
+        $this->_item = $item;
     }
 
 }
