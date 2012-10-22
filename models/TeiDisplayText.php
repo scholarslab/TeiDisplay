@@ -59,4 +59,56 @@ class TeiDisplayText extends Omeka_Record_AbstractRecord
         return $_itemsTable->find($this->item_id);
     }
 
+    /**
+     * Get the parent file.
+     *
+     * @return File: The parent file.
+     */
+    public function getFile()
+    {
+        $_filesTable = $this->getTable('File');
+        return $_filesTable->find($this->file_id);
+    }
+
+    /**
+     * Get the parent stylesheet.
+     *
+     * @return TeiDisplayStylesheet: The parent sheet.
+     */
+    public function getSheet()
+    {
+        $_sheetsTable = $this->getTable('TeiDisplayStylesheet');
+        return $_sheetsTable->find($this->sheet_id);
+    }
+
+    /**
+     * Render XML->HTML.
+     *
+     * @return string The generated markup.
+     */
+    public function render()
+    {
+
+        // Get tei and xslt.
+        $tei = $this->getFile();
+        $xsl = $this->getSheet();
+
+        // Create documents.
+        $teiDoc = new DOMDocument();
+        $xslDoc = new DOMDocument();
+
+        // Load content.
+        $teiDoc->load($tei->getWebPath('original'));
+        $xslDoc->loadXml($xsl->xslt);
+
+        // XSLT processor.
+        $proc = new XSLTProcessor();
+        $proc->importStylesheet($xslDoc);
+
+        // Render.
+        // return $proc->transformToXml($teiDoc);
+        return htmlspecialchars($xsl->xslt);
+
+    }
+
 }
