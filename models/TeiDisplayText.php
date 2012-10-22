@@ -106,8 +106,7 @@ class TeiDisplayText extends Omeka_Record_AbstractRecord
         $proc->importStylesheet($xslDoc);
 
         // Render.
-        // return $proc->transformToXml($teiDoc);
-        return htmlspecialchars($xsl->xslt);
+        return $proc->transformToXml($teiDoc);
 
     }
 
