@@ -27,7 +27,9 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     // Filters.
     protected $_filters = array(
         'admin_navigation_main',
-        'admin_items_form_tabs'
+        'admin_items_form_tabs',
+        'define_action_contexts',
+        'define_response_contexts'
     );
 
     // XML mime types.
@@ -241,6 +243,34 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         $tabs['TEI'] = $form;
         return $tabs;
 
+    }
+
+    /**
+     * Register `tei` output format.
+     *
+     * @param array $context The action contexts.
+     * @param array $controller The front controller.
+     *
+     * @return array $contexts The modified array.
+     */
+    public function filterDefineActionContexts($context, $controller)
+    {
+        $context['show'][] = 'tei';
+        return $context;
+    }
+
+    /**
+     * Render the `tei` output format.
+     *
+     * @param array $context The current context.
+     *
+     * @return array $context The modified context.
+     */
+    public function filterDefineResponseContexts($context)
+    {
+        $context['tei'] = array('suffix' => 'tei', 'headers' => array(
+            'Content-Type' => 'text/html'));
+        return $context;
     }
 
 }
