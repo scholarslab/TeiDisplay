@@ -231,8 +231,8 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
 
             // Populate fields.
             if ($text) $form->populate(array(
-                'text' => $text->text_id,
-                'stylesheet' => $text->sheet_id
+                'teitext' => $text->text_id,
+                'teistylesheet' => $text->sheet_id
             ));
 
         }

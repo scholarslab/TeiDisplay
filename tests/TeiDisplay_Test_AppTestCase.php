@@ -33,7 +33,7 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         $this->user = $this->db->getTable('User')->find(1);
         $this->_authenticateUser($this->user);
 
-        // Set up Neatline.
+        // Set up TeiDisplay.
         $pluginBroker = get_plugin_broker();
         $pluginBroker->setCurrentPluginDirName('TeiDisplay');
 
