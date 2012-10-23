@@ -134,314 +134,136 @@ class TeiDisplay_ItemsControllerTest extends TeiDisplay_Test_AppTestCase
     }
 
     /**
-     * When an item is added and Fedora data is entered, the service should
+     * When an item is added and the stylesheet is set, the text should
      * be created.
      *
      * @return void.
      */
-    // public function testFedoraObjectCreationOnItemAdd()
-    // {
+    public function testTextCreationOnItemAdd()
+    {
 
-    //     // Capture starting count.
-    //     $count = $this->objectsTable->count();
+        // Create stylesheet.
+        $sheet = $this->__sheet('Test Title 1');
 
-    //     // Set exhibit id.
-    //     $this->request->setMethod('POST')
-    //         ->setPost(array(
-    //             'public' => 1,
-    //             'featured' => 0,
-    //             'Elements' => array(),
-    //             'order' => array(),
-    //             'server' => 1,
-    //             'pid' => 'pid:test',
-    //             'dsids' => array('DC', 'content'),
-    //             'import' => 0
-    //         )
-    //     );
+        // Capture starting count.
+        $count = $this->textsTable->count();
 
-    //     // Hit item edit.
-    //     $this->dispatch('items/add');
+        // Set exhibit id.
+        $this->request->setMethod('POST')->setPost(array(
+            'public' => 1,
+            'featured' => 0,
+            'Elements' => array(),
+            'order' => array(),
+            'tags' => '',
+            'teistylesheet' => $sheet->id
+        ));
 
-    //     // +1 editions.
-    //     $this->assertEquals($this->objectsTable->count(), $count+1);
+        // Hit item edit.
+        $this->dispatch('items/add');
 
-    //     // Get out service and check.
-    //     $object = $this->objectsTable->find(1);
-    //     $this->assertEquals($object->server_id, 1);
-    //     $this->assertEquals($object->pid, 'pid:test');
-    //     $this->assertEquals($object->dsids, 'DC,content');
+        // +1 texts.
+        $this->assertEquals($this->textsTable->count(), $count+1);
 
-    // }
+        // Get out text and check.
+        $item = $this->getLastItem();
+        $text = $this->getFirstText();
+        $this->assertEquals($text->item_id, $item->id);
+        $this->assertEquals($text->sheet_id, $sheet->id);
+
+    }
 
     /**
-     * When an item is added and the "Import now?" checkbox is checked,
-     * the datastreams should be imported.
+     * When an item is edited and TEI data is set, the text should be
+     * created.
      *
      * @return void.
      */
-    // public function testImportOnItemAdd()
-    // {
+    public function testTextCreationOnItemEdit()
+    {
 
-    //     // Create server.
-    //     $this->__server();
+        // Create item.
+        $item = $this->__item();
 
-    //     // Mock post.
-    //     $this->request->setMethod('POST')
-    //         ->setPost(array(
-    //             'public' => 1,
-    //             'featured' => 0,
-    //             'Elements' => array(),
-    //             'order' => array(),
-    //             'server' => 1,
-    //             'pid' => 'pid:test',
-    //             'dsids' => array('DC'),
-    //             'import' => 1
-    //         )
-    //     );
+        // Create file and stylesheet.
+        $sheet = $this->__sheet('Test Title');
+        $file = $this->__file($item, 'text.xml');
 
-    //     // Mock Fedora.
-    //     $this->__mockImport('describe-v3x.xml', 'dc.xml');
+        // Capture starting count.
+        $count = $this->textsTable->count();
 
-    //     // Hit item edit.
-    //     $this->dispatch('items/add');
+        // Set exhibit id.
+        $this->request->setMethod('POST')->setPost(array(
+            'public' => 1,
+            'featured' => 0,
+            'Elements' => array(),
+            'order' => array(),
+            'tags' => '',
+            'teistylesheet' => $sheet->id,
+            'teitext' => $file->id
+        ));
 
-    //     // Get the new item.
-    //     $item = $this->itemsTable->find(2);
+        // Hit item edit.
+        $this->dispatch('items/edit/'.$item->id);
 
-    //     // Title.
-    //     $title = $item->getElementTextsByElementNameAndSetName('Title', 'Dublin Core');
-    //     $this->assertEquals($title[0]->text, 'Dr. J.S. Grasty');
+        // +1 texts.
+        $this->assertEquals($this->textsTable->count(), $count+1);
 
-    //     // Contributor
-    //     $contributor = $item->getElementTextsByElementNameAndSetName('Contributor', 'Dublin Core');
-    //     $this->assertEquals($contributor[0]->text, 'Holsinger, Rufus W., 1866-1930');
+        // Get out text and check.
+        $text = $this->getFirstText();
+        $this->assertEquals($text->item_id, $item->id);
+        $this->assertEquals($text->sheet_id, $sheet->id);
+        $this->assertEquals($text->file_id, $file->id);
 
-    //     // Types.
-    //     $types = $item->getElementTextsByElementNameAndSetName('Type', 'Dublin Core');
-    //     $this->assertEquals($types[0]->text, 'Collection');
-    //     $this->assertEquals($types[1]->text, 'StillImage');
-    //     $this->assertEquals($types[2]->text, 'Photographs');
-
-    //     // Formats.
-    //     $formats = $item->getElementTextsByElementNameAndSetName('Format', 'Dublin Core');
-    //     $this->assertEquals($formats[0]->text, 'Glass negatives');
-    //     $this->assertEquals($formats[1]->text, 'image/jpeg');
-
-    //     // Description.
-    //     $description = $item->getElementTextsByElementNameAndSetName('Description', 'Dublin Core');
-    //     $this->assertEquals($description[0]->text, 'With Child, Two Poses');
-
-    //     // Subjects.
-    //     $subjects = $item->getElementTextsByElementNameAndSetName('Subject', 'Dublin Core');
-    //     $this->assertEquals($subjects[0]->text, 'Photography');
-    //     $this->assertEquals($subjects[1]->text, 'Portraits, Group');
-    //     $this->assertEquals($subjects[2]->text, 'Children');
-    //     $this->assertEquals($subjects[3]->text, 'Holsinger Studio (Charlottesville, Va.)');
-
-    //     // Identifiers.
-    //     $identifiers = $item->getElementTextsByElementNameAndSetName('Identifier', 'Dublin Core');
-    //     $this->assertEquals($identifiers[0]->text, 'H03424B');
-    //     $this->assertEquals($identifiers[1]->text, 'uva-lib:1038848');
-    //     $this->assertEquals($identifiers[2]->text, '39667');
-    //     $this->assertEquals($identifiers[3]->text, 'uri: uva-lib:1038848');
-    //     $this->assertEquals($identifiers[4]->text, '7688');
-    //     $this->assertEquals($identifiers[5]->text, '365106');
-    //     $this->assertEquals($identifiers[6]->text, '000007688_0004.tif');
-    //     $this->assertEquals($identifiers[7]->text, 'MSS 9862');
-
-    // }
+    }
 
     /**
-     * When an item is edited and Fedora data is entered, the service should
-     * be created.
+     * When an item is edited and new TEI data is set, the text should be
+     * updated.
      *
      * @return void.
      */
-    // public function testFedoraObjectCreationOnItemEdit()
-    // {
+    public function testTextEditOnItemEdit()
+    {
 
-    //     // Create item.
-    //     $item = $this->__item();
+        // Create item.
+        $item = $this->__item();
 
-    //     // Capture starting count.
-    //     $count = $this->objectsTable->count();
+        // Create stylesheets.
+        $sheet1 = $this->__sheet('Test Title 1');
+        $sheet2 = $this->__sheet('Test Title 2');
 
-    //     // Set exhibit id.
-    //     $this->request->setMethod('POST')
-    //         ->setPost(array(
-    //             'public' => 1,
-    //             'featured' => 0,
-    //             'Elements' => array(),
-    //             'order' => array(),
-    //             'server' => 1,
-    //             'pid' => 'pid:test',
-    //             'dsids' => array('DC', 'content'),
-    //             'import' => 0
-    //         )
-    //     );
+        // Create files.
+        $file1 = $this->__file($item, 'text1.xml');
+        $file2 = $this->__file($item, 'text2.xml');
 
-    //     // Hit item edit.
-    //     $this->dispatch('items/edit/' . $item->id);
+        // Create text.
+        $text = $this->__text($item, $file1, $sheet1);
 
-    //     // +1 editions.
-    //     $this->assertEquals($this->objectsTable->count(), $count+1);
+        // Capture starting count.
+        $count = $this->textsTable->count();
 
-    //     // Get out service and check.
-    //     $object = $this->objectsTable->find(1);
-    //     $this->assertEquals($object->server_id, 1);
-    //     $this->assertEquals($object->pid, 'pid:test');
-    //     $this->assertEquals($object->dsids, 'DC,content');
+        // Set exhibit id.
+        $this->request->setMethod('POST')->setPost(array(
+            'public' => 1,
+            'featured' => 0,
+            'Elements' => array(),
+            'order' => array(),
+            'tags' => '',
+            'teistylesheet' => $sheet2->id,
+            'teitext' => $file2->id
+        ));
 
-    // }
+        // Hit item edit.
+        $this->dispatch('items/edit/'.$item->id);
 
-    /**
-     * When an item is edited and Fedora data is entered, the service should
-     * be created.
-     *
-     * @return void.
-     */
-    // public function testFedoraObjectUpdateOnItemEdit()
-    // {
+        // +0 texts.
+        $this->assertEquals($this->textsTable->count(), $count);
 
-    //     // Create item.
-    //     $item = $this->__item();
+        // Re-get text and check.
+        $text = $this->textsTable->find($text->id);
+        $this->assertEquals($text->sheet_id, $sheet2->id);
+        $this->assertEquals($text->file_id, $file2->id);
 
-    //     // Create Fedora object.
-    //     $object = $this->__object($item);
-
-    //     // Capture starting count.
-    //     $count = $this->objectsTable->count();
-
-    //     // Set exhibit id.
-    //     $this->request->setMethod('POST')
-    //         ->setPost(array(
-    //             'public' => 1,
-    //             'featured' => 0,
-    //             'Elements' => array(),
-    //             'order' => array(),
-    //             'server' => 1,
-    //             'pid' => 'pid:test2',
-    //             'dsids' => array('DC2', 'content2'),
-    //             'import' => 0
-    //         )
-    //     );
-
-    //     // Hit item edit.
-    //     $this->dispatch('items/edit/' . $item->id);
-
-    //     // +0 editions.
-    //     $this->assertEquals($this->objectsTable->count(), $count);
-
-    //     // Get out service and check.
-    //     $object = $this->objectsTable->find(1);
-    //     $this->assertEquals($object->server_id, 1);
-    //     $this->assertEquals($object->pid, 'pid:test2');
-    //     $this->assertEquals($object->dsids, 'DC2,content2');
-
-    // }
-
-    /**
-     * When an item is edited and the "Import now?" checkbox is checked,
-     * the datastreams should be imported.
-     *
-     * @return void.
-     */
-    // public function testImportOnItemEdit()
-    // {
-
-    //     // Create item and object.
-    //     $item = $this->__item();
-    //     $this->__object($item);
-
-    //     // Mock post.
-    //     $this->request->setMethod('POST')
-    //         ->setPost(array(
-    //             'public' => 1,
-    //             'featured' => 0,
-    //             'Elements' => array(),
-    //             'order' => array(),
-    //             'server' => 1,
-    //             'pid' => 'pid:test',
-    //             'dsids' => array('DC'),
-    //             'import' => 1
-    //         )
-    //     );
-
-    //     // Mock Fedora.
-    //     $this->__mockImport('describe-v3x.xml', 'dc.xml');
-
-    //     // Hit item edit.
-    //     $this->dispatch('items/edit/' . $item->id);
-
-    //     // Title.
-    //     $title = $item->getElementTextsByElementNameAndSetName('Title', 'Dublin Core');
-    //     $this->assertEquals($title[0]->text, 'Dr. J.S. Grasty');
-
-    //     // Contributor
-    //     $contributor = $item->getElementTextsByElementNameAndSetName('Contributor', 'Dublin Core');
-    //     $this->assertEquals($contributor[0]->text, 'Holsinger, Rufus W., 1866-1930');
-
-    //     // Types.
-    //     $types = $item->getElementTextsByElementNameAndSetName('Type', 'Dublin Core');
-    //     $this->assertEquals($types[0]->text, 'Collection');
-    //     $this->assertEquals($types[1]->text, 'StillImage');
-    //     $this->assertEquals($types[2]->text, 'Photographs');
-
-    //     // Formats.
-    //     $formats = $item->getElementTextsByElementNameAndSetName('Format', 'Dublin Core');
-    //     $this->assertEquals($formats[0]->text, 'Glass negatives');
-    //     $this->assertEquals($formats[1]->text, 'image/jpeg');
-
-    //     // Description.
-    //     $description = $item->getElementTextsByElementNameAndSetName('Description', 'Dublin Core');
-    //     $this->assertEquals($description[0]->text, 'With Child, Two Poses');
-
-    //     // Subjects.
-    //     $subjects = $item->getElementTextsByElementNameAndSetName('Subject', 'Dublin Core');
-    //     $this->assertEquals($subjects[0]->text, 'Photography');
-    //     $this->assertEquals($subjects[1]->text, 'Portraits, Group');
-    //     $this->assertEquals($subjects[2]->text, 'Children');
-    //     $this->assertEquals($subjects[3]->text, 'Holsinger Studio (Charlottesville, Va.)');
-
-    //     // Identifiers.
-    //     $identifiers = $item->getElementTextsByElementNameAndSetName('Identifier', 'Dublin Core');
-    //     $this->assertEquals($identifiers[0]->text, 'H03424B');
-    //     $this->assertEquals($identifiers[1]->text, 'uva-lib:1038848');
-    //     $this->assertEquals($identifiers[2]->text, '39667');
-    //     $this->assertEquals($identifiers[3]->text, 'uri: uva-lib:1038848');
-    //     $this->assertEquals($identifiers[4]->text, '7688');
-    //     $this->assertEquals($identifiers[5]->text, '365106');
-    //     $this->assertEquals($identifiers[6]->text, '000007688_0004.tif');
-    //     $this->assertEquals($identifiers[7]->text, 'MSS 9862');
-
-    // }
-
-    /**
-     * When an item has a Fedora object with a dsid activated that has
-     * a renderer, the dsid should be rendered at the bottom of the admin
-     * item show page.
-     *
-     * @return void.
-     */
-    // public function testRenderOnItemAdminShow()
-    // {
-
-    //     // Create item and object.
-    //     $item = $this->__item();
-    //     $this->__object($item);
-
-    //     // Mock getMimeType().
-    //     $this->__mockFedora(
-    //         'datastreams.xml',
-    //         "//*[local-name() = 'datastream'][@dsid='content']"
-    //     );
-
-    //     // Hit item show.
-    //     $this->dispatch('items/show/' . $item->id);
-
-    //     // Check for image.
-    //     $this->assertXpath('//img[@class="fedora-renderer"]');
-
-    // }
+    }
 
 }

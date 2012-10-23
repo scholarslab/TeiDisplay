@@ -42,6 +42,7 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         if (is_null($teiDisplay)) $pluginHelper->setUp('TeiDisplay');
 
         // Get plugin tables.
+        $this->itemsTable = $this->db->getTable('Item');
         $this->sheetsTable = $this->db->getTable('TeiDisplayStylesheet');
         $this->textsTable = $this->db->getTable('TeiDisplayText');
 
@@ -225,6 +226,18 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         $texts = $this->textsTable->fetchObjects(
             $this->textsTable->getSelect());
         return $texts[0];
+    }
+
+    /**
+     * Get the last item record.
+     *
+     * @return Item The record.
+     */
+    public function getLastItem()
+    {
+        $items = $this->itemsTable->fetchObjects(
+            $this->itemsTable->getSelect());
+        return end($items);
     }
 
 }
