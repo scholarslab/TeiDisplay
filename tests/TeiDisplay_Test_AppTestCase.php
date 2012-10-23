@@ -128,7 +128,8 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
             'has_derivative_image' => 0,
             'filename' => $filename,
             'original_filename' => $filename,
-            'metadata' => '[]',
+            'mime_type' => 'application/xml',
+            'metadata' => '[]'
         ));
 
         // Get the File table.
