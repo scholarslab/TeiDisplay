@@ -31,19 +31,19 @@ class TeiDisplay_ItemsControllerTest extends TeiDisplay_Test_AppTestCase
 
         // Check for tab.
         $this->assertXpathContentContains(
-            '//ul[@id="section-nav"]/li/a[@href="#tei-metadata"]',
-            'TEI'
-        );
+            '//ul[@id="section-nav"]/li/a[@href="#tei-metadata"]', 'TEI');
 
         // Check stylesheet dropdown.
-        $this->assertXpath('//select[@id="teistylesheet"][@name="teistylesheet"]');
-        $this->assertXpath('//select[@name="teistylesheet"]/option[@value="'.$sheet1->id.'"]
-          [@label="Test Title 1"]');
-        $this->assertXpath('//select[@name="teistylesheet"]/option[@value="'.$sheet2->id.'"]
-          [@label="Test Title 2"]');
+        $this->assertXpath('//select[@id="teistylesheet"]
+            [@name="teistylesheet"]');
+        $this->assertXpath('//select[@name="teistylesheet"]/
+            option[@value="'.$sheet1->id.'"][@label="Test Title 1"]');
+        $this->assertXpath('//select[@name="teistylesheet"]/
+            option[@value="'.$sheet2->id.'"][@label="Test Title 2"]');
 
         // Check import TEI header checkbox.
-        $this->assertXpath('//input[@type="checkbox"][@id="teiimport"][@name="teiimport"]');
+        $this->assertXpath('//input[@type="checkbox"][@id="teiimport"]
+            [@name="teiimport"]');
 
     }
 
@@ -55,31 +55,43 @@ class TeiDisplay_ItemsControllerTest extends TeiDisplay_Test_AppTestCase
     public function testItemEditTab()
     {
 
+        // Create item.
+        $item = $this->__item();
+
         // Create stylesheets.
         $sheet1 = $this->__sheet('Test Title 1');
         $sheet2 = $this->__sheet('Test Title 2');
 
-        // Create item.
-        $item = $this->__item();
+        // Create files.
+        $file1 = $this->__file($item, 'text1.xml');
+        $file2 = $this->__file($item, 'text2.xml');
 
         // Hit item edit.
         $this->dispatch('items/edit/' . $item->id);
 
         // Check for tab.
         $this->assertXpathContentContains(
-            '//ul[@id="section-nav"]/li/a[@href="#tei-metadata"]',
-            'TEI'
-        );
+            '//ul[@id="section-nav"]/li/a[@href="#tei-metadata"]', 'TEI');
 
-        // Check markup.
-        $this->assertXpath('//select[@id="teistylesheet"][@name="teistylesheet"]');
-        $this->assertXpath('//select[@name="teistylesheet"]/option[@value="'.$sheet1->id.'"]
-          [@label="Test Title 1"]');
-        $this->assertXpath('//select[@name="teistylesheet"]/option[@value="'.$sheet2->id.'"]
-          [@label="Test Title 2"]');
+        // Check files.
+        $this->assertXpath('//select[@id="teitext"]
+            [@name="teitext"]');
+        $this->assertXpath('//select[@name="teitext"]/
+            option[@value="'.$file1->id.'"][@label="text1.xml"]');
+        $this->assertXpath('//select[@name="teitext"]/
+            option[@value="'.$file2->id.'"][@label="text2.xml"]');
+
+        // Check stylesheets.
+        $this->assertXpath('//select[@id="teistylesheet"]
+            [@name="teistylesheet"]');
+        $this->assertXpath('//select[@name="teistylesheet"]/
+            option[@value="'.$sheet1->id.'"][@label="Test Title 1"]');
+        $this->assertXpath('//select[@name="teistylesheet"]/
+            option[@value="'.$sheet2->id.'"][@label="Test Title 2"]');
 
         // Check import TEI header checkbox.
-        $this->assertXpath('//input[@type="checkbox"][@id="teiimport"][@name="teiimport"]');
+        $this->assertXpath('//input[@type="checkbox"][@id="teiimport"]
+            [@name="teiimport"]');
 
     }
 
@@ -92,14 +104,32 @@ class TeiDisplay_ItemsControllerTest extends TeiDisplay_Test_AppTestCase
     public function testItemEditData()
     {
 
+        // Create item.
+        $item = $this->__item();
+
         // Create stylesheets.
         $sheet1 = $this->__sheet('Test Title 1');
         $sheet2 = $this->__sheet('Test Title 2');
 
-        // Create item.
-        $item = $this->__item();
+        // Create files.
+        $file1 = $this->__file($item, 'text1.xml');
+        $file2 = $this->__file($item, 'text2.xml');
 
         // Create text.
+        $text = $this->__text($item, $file2, $sheet2);
+
+        // Hit item edit.
+        $this->dispatch('items/edit/' . $item->id);
+
+        // Check files.
+        $this->assertXpath('//select[@name="teitext"]/
+            option[@value="'.$file2->id.'"][@label="text2.xml"]
+            [@selected="selected"]');
+
+        // Check stylesheets.
+        $this->assertXpath('//select[@name="teistylesheet"]/
+            option[@value="'.$sheet2->id.'"][@label="Test Title 2"]
+            [@selected="selected"]');
 
     }
 

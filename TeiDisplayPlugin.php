@@ -179,7 +179,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     {
 
         // If post is defined.
-        if (array_key_exists('post', $args)) {
+        if ($args['0']['post']) { // TODO: wtf?
 
             // Create or update the text.
             $text = $this->_texts->createOrUpdate($args['record'],
@@ -238,7 +238,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
 
             // Populate fields.
             if ($text) $form->populate(array(
-                'teitext' => $text->text_id,
+                'teitext' => $text->file_id,
                 'teistylesheet' => $text->sheet_id
             ));
 
