@@ -16,6 +16,7 @@ require_once dirname(__FILE__) . '/mocks/StylesheetFormMock.php';
 require_once dirname(__FILE__) . '/mocks/FileElementMock.php';
 require_once dirname(__FILE__) . '/mocks/TransferAdapterMock.php';
 
+
 class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
 {
 
@@ -29,21 +30,12 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
 
         parent::setUp();
 
-        // Authenticate and set the current user.
-        $this->user = $this->db->getTable('User')->find(1);
-        $this->_authenticateUser($this->user);
-
-        // Set up TeiDisplay.
-        $pluginBroker = get_plugin_broker();
-        $pluginBroker->setCurrentPluginDirName('TeiDisplay');
-
-        // Run plugin.
-        $tei = new TeiDisplayPlugin;
-        $tei->setUp();
-
-        // Configure helper.
+        // Configure helper, try to get plugin.
         $pluginHelper = new Omeka_Test_Helper_Plugin;
-        $pluginHelper->setUp('TeiDisplay');
+        $teiDisplay = $pluginHelper->pluginLoader->getPlugin('TeiDisplay');
+
+        // Load plugin on first test.
+        if (is_null($teiDisplay)) $pluginHelper->setUp('TeiDisplay');
 
         // Get plugin tables.
         $this->sheetsTable = $this->db->getTable('TeiDisplayStylesheet');

@@ -246,7 +246,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     }
 
     /**
-     * Register `tei` output format.
+     * Register `tei` action context.
      *
      * @param array $context The action contexts.
      * @param array $controller The front controller.
@@ -260,7 +260,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     }
 
     /**
-     * Render the `tei` output format.
+     * Register the `tei` response context.
      *
      * @param array $context The current context.
      *
