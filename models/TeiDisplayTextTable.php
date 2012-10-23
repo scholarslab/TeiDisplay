@@ -16,11 +16,11 @@ class TeiDisplayTextTable extends Omeka_Db_Table
 {
 
     /**
-     * Get all texts for an item.
+     * Get text for an item.
      *
      * @param Item $item The item.
      *
-     * @return array TeiDisplayText $texts The texts.
+     * @return TeiDisplayText The text.
      */
     public function findByItem($item)
     {

@@ -107,7 +107,7 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
         $this->assertEquals($this->sheetsTable->count(), $count+1);
 
         // Get new sheet, check params.
-        $sheet = $this->sheetsTable->find(1);
+        $sheet = $this->getFirstStylesheet();
         $this->assertEquals($sheet->title, 'Test Title');
         $this->assertEquals($sheet->xslt, 'xslt mock');
 

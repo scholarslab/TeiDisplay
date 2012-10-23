@@ -178,16 +178,21 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     public function hookAfterSaveItem($args)
     {
 
-        // Create or update the text.
-        $text = $this->_texts->createOrUpdate($args['record'],
-            (int) $args['record']['teistylesheet'],
-            (int) $args['record']['teitext']
-        );
+        // If post is defined.
+        if (array_key_exists('post', $args)) {
 
-        // Import header.
-        // if ((bool) $args['post']['teiimport']) {
-            // TODO: do import.
-        // }
+            // Create or update the text.
+            $text = $this->_texts->createOrUpdate($args['record'],
+                (int) $args['record']['teistylesheet'],
+                (int) $args['record']['teitext']
+            );
+
+            // Import header.
+            // if ((bool) $args['post']['teiimport']) {
+                // TODO: do import.
+            // }
+
+        }
 
     }
 

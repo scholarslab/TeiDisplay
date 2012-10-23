@@ -202,4 +202,16 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
 
     }
 
+    /**
+     * Get the first stylesheet record.
+     *
+     * @return TeiDisplayStylesheet The record.
+     */
+    public function getFirstStylesheet()
+    {
+        $sheets = $this->sheetsTable->fetchObjects(
+            $this->sheetsTable->getSelect());
+        return $sheets[0];
+    }
+
 }
