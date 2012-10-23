@@ -30,6 +30,10 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
 
         parent::setUp();
 
+        // Authenticate and set the current user.
+        $this->user = $this->db->getTable('User')->find(1);
+        $this->_authenticateUser($this->user);
+
         // Configure helper, try to get plugin.
         $pluginHelper = new Omeka_Test_Helper_Plugin;
         $teiDisplay = $pluginHelper->pluginLoader->getPlugin('TeiDisplay');
@@ -130,6 +134,7 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         // Get the File table.
         $_fileTable = $this->db->getTable('File');
 
+        // Get the new record.
         $newId = $_fileTable->lastInsertId();
         return $_fileTable->find($newId);
 

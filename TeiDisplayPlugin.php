@@ -185,9 +185,9 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         );
 
         // Import header.
-        if ((bool) $args['post']['teiimport']) {
+        // if ((bool) $args['post']['teiimport']) {
             // TODO: do import.
-        }
+        // }
 
     }
 
