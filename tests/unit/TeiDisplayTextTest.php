@@ -39,6 +39,23 @@ class TeiDisplay_TeiDisplayTextTest extends TeiDisplay_Test_AppTestCase
     }
 
     /**
+     * __construct() should set the item_id if an item is passed.
+     *
+     * @return void.
+     */
+    public function testConstruct()
+    {
+
+        // Create item and text.
+        $item = $this->__item();
+        $text = new TeiDisplayText($item);
+
+        // Check for set item_id.
+        $this->assertEquals($text->item_id, $item->id);
+
+    }
+
+    /**
      * getItem() should return the parent item.
      *
      * @return void.
