@@ -23,8 +23,8 @@ class TeiDisplay_ItemsControllerTest extends TeiDisplay_Test_AppTestCase
     {
 
         // Create stylesheets.
-        $sheet1 = $this->__stylesheet('Test Title 1');
-        $sheet2 = $this->__stylesheet('Test Title 2');
+        $sheet1 = $this->__sheet('Test Title 1');
+        $sheet2 = $this->__sheet('Test Title 2');
 
         // Hit item add.
         $this->dispatch('items/add');
@@ -56,8 +56,8 @@ class TeiDisplay_ItemsControllerTest extends TeiDisplay_Test_AppTestCase
     {
 
         // Create stylesheets.
-        $sheet1 = $this->__stylesheet('Test Title 1');
-        $sheet2 = $this->__stylesheet('Test Title 2');
+        $sheet1 = $this->__sheet('Test Title 1');
+        $sheet2 = $this->__sheet('Test Title 2');
 
         // Create item.
         $item = $this->__item();
@@ -93,8 +93,8 @@ class TeiDisplay_ItemsControllerTest extends TeiDisplay_Test_AppTestCase
     {
 
         // Create stylesheets.
-        $sheet1 = $this->__stylesheet('Test Title 1');
-        $sheet2 = $this->__stylesheet('Test Title 2');
+        $sheet1 = $this->__sheet('Test Title 1');
+        $sheet2 = $this->__sheet('Test Title 2');
 
         // Create item.
         $item = $this->__item();

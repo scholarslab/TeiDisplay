@@ -36,8 +36,8 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
     {
 
         // Create stylesheets.
-        $sheet1 = $this->__stylesheet('Title 1');
-        $sheet2 = $this->__stylesheet('Title 2');
+        $sheet1 = $this->__sheet('Title 1');
+        $sheet2 = $this->__sheet('Title 2');
 
         // Check for listings.
         $this->dispatch('tei/stylesheets');
@@ -122,7 +122,7 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
     {
 
         // Create stylesheet.
-        $sheet = $this->__stylesheet('Title');
+        $sheet = $this->__sheet('Title');
 
         $this->dispatch('tei/stylesheets/edit/'.$sheet->id);
         $this->assertXpath('//input[@name="title"][@value="Title"]');
@@ -138,7 +138,7 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
     {
 
         // Create stylesheet.
-        $sheet = $this->__stylesheet('Title');
+        $sheet = $this->__sheet('Title');
 
         // Mock post.
         $this->request->setMethod('POST')->setPost(
@@ -160,7 +160,7 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
     {
 
         // Create stylesheet.
-        $sheet = $this->__stylesheet('Title', 'xslt');
+        $sheet = $this->__sheet('Title', 'xslt');
 
         // Empty $_FILES.
         $this->__setEmptyStylesheetFileUpload();
@@ -189,7 +189,7 @@ class TeiDisplay_StylesheetsControllerTest extends TeiDisplay_Test_AppTestCase
     {
 
         // Create stylesheet.
-        $sheet = $this->__stylesheet('Title', 'xslt');
+        $sheet = $this->__sheet('Title', 'xslt');
 
         // Populate $_FILES.
         $this->__setStylesheetFileUpload('new xslt');

@@ -65,7 +65,7 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
      *
      * @return TeiDisplayStylesheet $stylesheet.
      */
-    public function __stylesheet($title='Test Title', $xslt='xslt')
+    public function __sheet($title='Test Title', $xslt='xslt')
     {
 
         $stylesheet = new TeiDisplayStylesheet;
@@ -96,7 +96,7 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         if (is_null($file)) $file = $this->__file($item);
 
         // Create sheet.
-        if (is_null($sheet)) $sheet = $this->__stylesheet();
+        if (is_null($sheet)) $sheet = $this->__sheet();
 
         $text = new TeiDisplayText;
         $text->item_id = $item->id;
@@ -212,6 +212,18 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
         $sheets = $this->sheetsTable->fetchObjects(
             $this->sheetsTable->getSelect());
         return $sheets[0];
+    }
+
+    /**
+     * Get the first text record.
+     *
+     * @return TeiDisplayText The record.
+     */
+    public function getFirstText()
+    {
+        $texts = $this->textsTable->fetchObjects(
+            $this->textsTable->getSelect());
+        return $texts[0];
     }
 
 }
