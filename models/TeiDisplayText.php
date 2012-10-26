@@ -89,24 +89,24 @@ class TeiDisplayText extends Omeka_Record_AbstractRecord
     public function render()
     {
 
-        // // Get tei and xslt.
-        // $tei = $this->getFile();
-        // $xsl = $this->getSheet();
+        // Get tei and xslt.
+        $tei = $this->getFile();
+        $xsl = $this->getSheet();
 
-        // // Create documents.
-        // $teiDoc = new DOMDocument();
-        // $xslDoc = new DOMDocument();
+        // Create documents.
+        $teiDoc = new DOMDocument();
+        $xslDoc = new DOMDocument();
 
-        // // Load content.
-        // $teiDoc->load($tei->getWebPath('original'));
-        // $xslDoc->loadXml($xsl->xslt);
+        // Load content.
+        $teiDoc->load($tei->getWebPath('original'));
+        $xslDoc->loadXml($xsl->xslt);
 
-        // // XSLT processor.
-        // $proc = new XSLTProcessor();
-        // $proc->importStylesheet($xslDoc);
+        // XSLT processor.
+        $proc = new XSLTProcessor();
+        $proc->importStylesheet($xslDoc);
 
-        // // Render.
-        // return $proc->transformToXml($teiDoc);
+        // Render.
+        return $proc->transformToXml($teiDoc);
 
     }
 

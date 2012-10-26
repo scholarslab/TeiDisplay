@@ -13,6 +13,24 @@
 
 
 /**
+ * Render the TEI document associated with the current view item.
+ *
+ * @return string The transformed HTML.
+ */
+function render_tei_document()
+{
+
+    $_db = get_db();
+    $_textsTable = $_db->getTable('TeiDisplayText');
+
+    // Try to get a text record.
+    $item = get_current_record('item');
+    $text = $_textsTable->findByItem($item);
+    return $text->render();
+
+}
+
+/**
  * Constructs a link to a stylesheet.
  *
  * @param string $text HTML for the text of the link.

@@ -14,5 +14,5 @@
 
 
 <?php echo head(); ?>
-<div id="primary"></div>
+<div id="primary"><?php echo render_tei_document(); ?></div>
 <?php echo foot(); ?>
