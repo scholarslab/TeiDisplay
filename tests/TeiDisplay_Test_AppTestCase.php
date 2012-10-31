@@ -205,6 +205,16 @@ class TeiDisplay_Test_AppTestCase extends Omeka_Test_AppTestCase
     }
 
     /**
+     * Get real XSLT transform for _The Winter's Tale_.
+     *
+     * @return string The xslt.
+     */
+    public function getWintersTaleXslt()
+    {
+        return file_get_contents('mocks/xslt.xslt');
+    }
+
+    /**
      * Get the first stylesheet record.
      *
      * @return TeiDisplayStylesheet The record.

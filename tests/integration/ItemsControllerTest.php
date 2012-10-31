@@ -274,6 +274,23 @@ class TeiDisplay_ItemsControllerTest extends TeiDisplay_Test_AppTestCase
     public function testTeiOutputFormat()
     {
 
+        // Create item and file.
+        $item = $this->__item();
+        $file = $this->__file($item);
+
+        // Create sheet.
+        $xslt = $this->getWintersTaleXslt();
+        $sheet = $this->__sheet('Winter\'s Tale', $xslt);
+
+        // Create text.
+        $text = $this->__text($item, $file, $sheet);
+
+        // TODO: Relative path to original file breaks in tests.
+        // How to fix?
+
+        // Hit the tei output.
+        // $this->dispatch('items/show/'.$item->id.'?output=tei');
+
     }
 
 }
