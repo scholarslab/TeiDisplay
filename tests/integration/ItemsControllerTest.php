@@ -266,4 +266,14 @@ class TeiDisplay_ItemsControllerTest extends TeiDisplay_Test_AppTestCase
 
     }
 
+    /**
+     * The TEI item output format should render the document.
+     *
+     * @return void.
+     */
+    public function testTeiOutputFormat()
+    {
+
+    }
+
 }

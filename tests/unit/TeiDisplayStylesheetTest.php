@@ -53,7 +53,8 @@ class TeiDisplay_TeiDisplayStylesheetTest extends TeiDisplay_Test_AppTestCase
         // Save form, check attributes.
         $stylesheet->saveForm($form);
         $this->assertEquals($stylesheet->title, 'title');
-        $this->assertStringStartsWith('xslt mock', $stylesheet->xslt);
+        $this->assertStringStartsWith('<?xml version="1.0" ?>',
+            $stylesheet->xslt);
 
     }
 
