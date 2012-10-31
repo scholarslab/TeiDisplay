@@ -21,7 +21,9 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
         'install',
         'uninstall',
         'define_routes',
-        'after_save_item'
+        'after_save_item',
+        'config_form',
+        'config'
     );
 
     // Filters.
@@ -168,6 +170,26 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     }
 
     /**
+     * Render configuration form.
+     *
+     * @return void.
+     */
+    public function hookConfigForm()
+    {
+        echo new TeiDisplay_Form_Header();
+    }
+
+    /**
+     * Save configuration form.
+     *
+     * @return void.
+     */
+    public function hookConfig()
+    {
+
+    }
+
+    /**
      * Process Item add/edit TEI tab.
      *
      * @param array $args The hook arguments, with keys 'record'
@@ -188,9 +210,9 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
             );
 
             // Import header.
-            // if ((bool) $args['post']['teiimport']) {
-                // TODO: do import.
-            // }
+            if ((bool) $args['record']['teiimport']) {
+                $this->_texts->importTeiHeader($args['record']);
+            }
 
         }
 

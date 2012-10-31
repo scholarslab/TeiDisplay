@@ -53,4 +53,16 @@ class TeiDisplayTextTable extends Omeka_Db_Table
 
     }
 
+    /**
+     * Write the TEI header onto the Dublin Core record.
+     *
+     * @param Item $item The item.
+     *
+     * @return void.
+     */
+    public function importTeiHeader($item)
+    {
+
+    }
+
 }

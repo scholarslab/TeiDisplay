@@ -23,6 +23,7 @@ require_once TEI_PLUGIN_DIR . '/TeiDisplayPlugin.php';
 require_once TEI_PLUGIN_DIR . '/helpers/TeiDisplayFunctions.php';
 require_once TEI_PLUGIN_DIR . '/forms/StylesheetForm.php';
 require_once TEI_PLUGIN_DIR . '/forms/TextForm.php';
+require_once TEI_PLUGIN_DIR . '/forms/HeaderForm.php';
 
 // Set file transfer adapter.
 $adapter = new Zend_File_Transfer_Adapter_Http();
