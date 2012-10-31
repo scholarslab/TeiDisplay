@@ -25,11 +25,21 @@ class TeiDisplay_Form_Header extends Omeka_Form
 
         parent::init();
 
+        $_db = get_db();
         $this->setMethod('post');
         $this->setAttrib('id', 'text-form');
         $this->addElementPrefixPath('TeiDisplay', dirname(__FILE__));
 
-        // TODO: DC elements, input boxes.
+        // Get DC elements.
+        $elements = $_db->getTable('Element')->findBySet('Dublin Core');
+
+        // Construct elements.
+        foreach ($elements as $element) {
+            $this->addElement('text', $element->name, array(
+                'label' => __($element->name),
+                'value' => ''
+            ));
+        }
 
     }
 
