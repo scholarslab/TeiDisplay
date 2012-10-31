@@ -37,9 +37,14 @@ class TeiDisplay_Form_Header extends Omeka_Form
         foreach ($elements as $element) {
             $this->addElement('text', $element->name, array(
                 'label' => __($element->name),
-                'value' => ''
+                'value' => get_tei_mapping(strtolower($element->name))
             ));
         }
+
+        // Reser.
+        $this->addElement('checkbox', 'reset', array(
+            'label'     => 'Restore defalts'
+        ));
 
     }
 

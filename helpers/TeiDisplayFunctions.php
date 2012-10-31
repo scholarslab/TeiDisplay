@@ -31,6 +31,27 @@ function render_tei_document()
 }
 
 /**
+ * Set default DC->TEI mappings.
+ *
+ * @param string $element The name of the Dublin Core element.
+ *
+ * @return void.
+ */
+function get_tei_mapping($element)
+{
+
+    // Construct the key.
+    $key = 'tei:dc:'.strtolower($element);
+
+    // Try to get a custom setting.
+    $custom = get_option($key);
+    if (!is_null($custom)) return $custom;
+
+    // Revent to system default.
+    return get_plugin_ini('TeiDisplay', $key);
+}
+
+/**
  * Constructs a link to a stylesheet.
  *
  * @param string $text HTML for the text of the link.

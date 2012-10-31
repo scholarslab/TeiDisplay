@@ -54,6 +54,40 @@ class TeiDisplayTextTable extends Omeka_Db_Table
     }
 
     /**
+     * Save DC->TEI mappings from config form.
+     *
+     * @param array $post The post.
+     *
+     * @return void.
+     */
+    public function saveTeiMappings($post)
+    {
+
+        // Get DC elements.
+        $elements = $this->getTable('Element')->findBySet('Dublin Core');
+
+        // Save mappings.
+        foreach ($elements as $element) {
+
+            // Get key and value.
+            $key = 'tei:dc:'.strtolower($element->name);
+            $val = $post[$element->name];
+
+            // If resetting, delete.
+            if ($post['reset'] == 1) {
+                delete_option($key);
+                continue;
+            }
+
+            // If different from default, set.
+            if ($val && $val !== get_plugin_ini('TeiDisplay', $key))
+                set_option($key, $val);
+
+        }
+
+    }
+
+    /**
      * Write the TEI header onto the Dublin Core record.
      *
      * @param Item $item The item.

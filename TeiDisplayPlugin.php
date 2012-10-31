@@ -176,7 +176,9 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function hookConfigForm()
     {
-        echo new TeiDisplay_Form_Header();
+        $form = new TeiDisplay_Form_Header();
+        $form->removeDecorator('form');
+        echo $form;
     }
 
     /**
@@ -184,9 +186,9 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
      *
      * @return void.
      */
-    public function hookConfig()
+    public function hookConfig($args)
     {
-
+        $this->_texts->saveTeiMappings($args['post']);
     }
 
     /**
