@@ -53,6 +53,29 @@ function get_tei_mapping($elementName)
 }
 
 /**
+ * Construct an xpath 1.0 query.
+ * eg., titleStmt/title =>
+ * //*[local-name()="titleStmt"]/*[local-name()="title"]
+ *
+ * @param string $query The query.
+ *
+ * @return string The formed query.
+ */
+function format_query($query)
+{
+
+    $modifiedParts = array();
+    $originalParts = explode('/', $query);
+
+    // Construct the xpath 1.0 parts.
+    foreach ($originalParts as $part)
+        $modifiedParts[] = '*[local-name()="'.$part.'"]';
+
+    return '//'.implode('/', $modifiedParts);
+
+}
+
+/**
  * Run an xpath query on a document.
  *
  * @param string $uri The uri of the document.
@@ -87,15 +110,14 @@ function xpath_query($uri, $xpath)
  *
  * @return ElementText The new text.
  */
-function create_element_text()
+function create_element_text($item, $element, $text)
 {
-    $text = new ElementText;
-    $text->record_id = $item->id;
-    $text->record_type = 'Item';
-    $text->element_id = $element->id;
-    $text->html = 0;
-    $text->text = $text;
-    return $text->save();
+    $elementText = new ElementText;
+    $elementText->record_id = $item->id;
+    $elementText->element_id = $element->id;
+    $elementText->record_type = 'Item';
+    $elementText->text = $text;
+    return $elementText->save();
 }
 
 /**

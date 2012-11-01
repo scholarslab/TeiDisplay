@@ -99,18 +99,27 @@ class TeiDisplayTextTable extends Omeka_Db_Table
 
         // Try to get a text record.
         $text = $this->findByItem($item);
+        if (!$text) return;
 
-        // TODO:
-        // for each element, try to get a mapped xpath query,
-        // run it on the teiHeader, if result, create a new
-        // element text on the item.
+        // Get file and document uri.
+        $file = $text->getFile();
+        $uri = $file->getWebPath('original');
 
         // Get DC elements.
         $elements = $this->getTable('Element')->findBySet('Dublin Core');
 
         // Map values.
         foreach ($elements as $element) {
-            $query = get_tei_mapping($element->name);
+
+            // Construct and execute the query.
+            $query = format_query(get_tei_mapping($element->name));
+            $nodes = xpath_query($uri, $query);
+
+            // Create the new texts.
+            foreach ($nodes as $node) {
+                create_element_text($item, $element, $node->nodeValue);
+            }
+
         }
 
     }
