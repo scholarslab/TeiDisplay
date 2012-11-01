@@ -97,6 +97,22 @@ class TeiDisplayTextTable extends Omeka_Db_Table
     public function importTeiHeader($item)
     {
 
+        // Try to get a text record.
+        $text = $this->findByItem($item);
+
+        // TODO:
+        // for each element, try to get a mapped xpath query,
+        // run it on the teiHeader, if result, create a new
+        // element text on the item.
+
+        // Get DC elements.
+        $elements = $this->getTable('Element')->findBySet('Dublin Core');
+
+        // Map values.
+        foreach ($elements as $element) {
+            $query = get_tei_mapping($element->name);
+        }
+
     }
 
 }

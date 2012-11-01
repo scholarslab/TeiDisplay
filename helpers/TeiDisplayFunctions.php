@@ -37,11 +37,11 @@ function render_tei_document()
  *
  * @return void.
  */
-function get_tei_mapping($element)
+function get_tei_mapping($elementName)
 {
 
     // Construct the key.
-    $key = 'tei:dc:'.strtolower($element);
+    $key = 'tei:dc:'.strtolower($elementName);
 
     // Try to get a custom setting.
     $custom = get_option($key);
@@ -49,6 +49,53 @@ function get_tei_mapping($element)
 
     // Revent to system default.
     return get_plugin_ini('TeiDisplay', $key);
+
+}
+
+/**
+ * Run an xpath query on a document.
+ *
+ * @param string $uri The uri of the document.
+ * @param string $xpath The XPath query.
+ *
+ * @return object|boolean The matching nodes, false if no result.
+ */
+function xpath_query($uri, $xpath)
+{
+
+  $xml = new DomDocument();
+
+  try {
+
+    $xml->load($uri);
+    $query = new DOMXPath($xml);
+    $result = $query->query($xpath);
+
+  }
+
+  catch (Exception $e) { $result = false; }
+  return $result;
+
+}
+
+/**
+ * Create a new element text for an item.
+ *
+ * @param Item $item The parent item.
+ * @param Element $element The element.
+ * @param string $text The text content.
+ *
+ * @return ElementText The new text.
+ */
+function create_element_text()
+{
+    $text = new ElementText;
+    $text->record_id = $item->id;
+    $text->record_type = 'Item';
+    $text->element_id = $element->id;
+    $text->html = 0;
+    $text->text = $text;
+    return $text->save();
 }
 
 /**
