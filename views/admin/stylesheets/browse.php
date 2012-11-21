@@ -32,16 +32,22 @@
 
     <thead>
         <tr>
+
         <!-- Column headings. -->
-        <?php echo browse_headings(array(
+        <?php echo browse_sort_links(array(
             __('Title') => 'title',
             __('Modified') => 'modified',
             __('Actions') => null
+        ), array(
+            'link_tag' => 'th scope="col"',
+            'list_tag' => ''
         )); ?>
+
         </tr>
     </thead>
 
     <tbody>
+
         <!-- Stylesheet listings. -->
         <?php foreach(loop('TeiDisplayStylesheet') as $stylesheet): ?>
         <tr id="stylesheet-<?php echo stylesheet('id'); ?>">
@@ -53,10 +59,12 @@
             </td>
         </tr>
         <?php endforeach; ?>
+
     </tbody>
 
 </table>
 
+<!-- Pagination. -->
 <div class="pagination"><?php echo pagination_links(); ?></div>
 
 <?php else: ?>
