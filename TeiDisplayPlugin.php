@@ -30,8 +30,8 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     protected $_filters = array(
         'admin_navigation_main',
         'admin_items_form_tabs',
-        'define_action_contexts',
-        'define_response_contexts'
+        'action_contexts',
+        'response_contexts'
     );
 
     // XML mime types.
@@ -203,7 +203,7 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     {
 
         // If post is defined.
-        if ($args['0']['post']) { // TODO: wtf?
+        if ($args['post']) { // TODO: wtf?
 
             // Create or update the text.
             $text = $this->_texts->createOrUpdate($args['record'],
@@ -277,15 +277,14 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
     /**
      * Register `tei` action context.
      *
-     * @param array $context The action contexts.
-     * @param array $controller The front controller.
+     * @param array $contexts The action contexts.
      *
      * @return array $contexts The modified array.
      */
-    public function filterDefineActionContexts($context, $controller)
+    public function filterActionContexts($contexts)
     {
-        $context['show'][] = 'tei';
-        return $context;
+        $contexts['show'][] = 'tei';
+        return $contexts;
     }
 
     /**
@@ -295,11 +294,16 @@ class TeiDisplayPlugin extends Omeka_Plugin_AbstractPlugin
      *
      * @return array $context The modified context.
      */
-    public function filterDefineResponseContexts($context)
+    public function filterResponseContexts($contexts)
     {
-        $context['tei'] = array('suffix' => 'tei', 'headers' => array(
-            'Content-Type' => 'text/html'));
-        return $context;
+
+        $contexts['tei'] = array(
+            'suffix' => 'tei',
+            'headers' => array('Content-Type' => 'text/html')
+        );
+
+        return $contexts;
+
     }
 
 }
